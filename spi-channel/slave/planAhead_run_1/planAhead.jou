@@ -1,0 +1,31 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:29:51 MDT 2013
+# Start of session at: Wed Mar 23 13:36:54 2016
+# Process ID: 5976
+# Log file: C:/Users/TM/Desktop/FPGA/FPGA_Arduino_Shield-master/FPGA_Arduino_Shield-master/Examples/LinkTest/planAhead_run_1/planAhead.log
+# Journal file: C:/Users/TM/Desktop/FPGA/FPGA_Arduino_Shield-master/FPGA_Arduino_Shield-master/Examples/LinkTest/planAhead_run_1/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source C:/Users/TM/Desktop/FPGA/FPGA_Arduino_Shield-master/FPGA_Arduino_Shield-master/Examples/LinkTest/pa.fromNetlist.tcl
+set_property package_pin "" [get_ports [list  MOSI]]
+startgroup
+set_property package_pin P2 [get_ports MOSI]
+endgroup
+startgroup
+set_property package_pin P6 [get_ports SCLK]
+endgroup
+startgroup
+set_property package_pin P10 [get_ports MISO]
+endgroup
+set_property package_pin "" [get_ports [list  clk]]
+startgroup
+set_property package_pin P56 [get_ports clk]
+endgroup
+startgroup
+set_property package_pin P118 [get_ports MOSI]
+endgroup
+startgroup
+set_property package_pin P123 [get_ports SCLK]
+endgroup
+save_constraints

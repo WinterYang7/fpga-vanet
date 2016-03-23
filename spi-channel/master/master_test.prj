@@ -1,0 +1,2 @@
+verilog work "spi_master.v"
+verilog work "master_test.v"

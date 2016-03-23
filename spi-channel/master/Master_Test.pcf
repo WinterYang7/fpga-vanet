@@ -1,0 +1,12 @@
+//! **************************************************************************
+// Written by: Map P.20131013 on Fri Mar 18 10:56:34 2016
+//! **************************************************************************
+
+SCHEMATIC START;
+COMP "clk" LOCATE = SITE "P56" LEVEL 1;
+COMP "MISO" LOCATE = SITE "P104" LEVEL 1;
+COMP "SCLK" LOCATE = SITE "P105" LEVEL 1;
+COMP "MOSI" LOCATE = SITE "P102" LEVEL 1;
+COMP "SS_n" LOCATE = SITE "P74" LEVEL 1;
+SCHEMATIC END;
+

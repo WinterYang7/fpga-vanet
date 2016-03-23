@@ -1,0 +1,10 @@
+
+
+NET "MISO" LOC = P104;
+NET "MOSI" LOC = P102;
+NET "SS_n" LOC = P74;
+
+# PlanAhead Generated physical constraints 
+
+NET "clk" LOC = P56;
+NET "SCLK" LOC = P105;

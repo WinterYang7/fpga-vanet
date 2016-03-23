@@ -1,0 +1,2 @@
+verilog work "SPI_slave.v"
+verilog work "LinkTest.v"
