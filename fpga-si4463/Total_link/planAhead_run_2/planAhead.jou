@@ -1,0 +1,25 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:29:51 MDT 2013
+# Start of session at: Wed Apr 06 10:11:33 2016
+# Process ID: 6776
+# Log file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2/planAhead.log
+# Journal file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source C:/Users/TM/Desktop/FPGA/Total/Total_link/pa.fromHdl.tcl
+update_compile_order -fileset sim_1
+set_property package_pin "" [get_ports [list  {led[0]}]]
+startgroup
+set_property package_pin P126 [get_ports {led[1]}]
+endgroup
+startgroup
+set_property package_pin P134 [get_ports {led[0]}]
+endgroup
+startgroup
+set_property package_pin P120 [get_ports {led[2]}]
+endgroup
+startgroup
+set_property package_pin P116 [get_ports {led[3]}]
+endgroup
+save_constraints

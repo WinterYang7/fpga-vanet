@@ -1,8 +1,0 @@
-INTSTYLE=ise
-INFILE=C:\Users\TM\Desktop\FPGA\FPGA_Arduino_Shield-master\FPGA_Arduino_Shield-master\Examples\LinkTest\LinkTest.ncd
-OUTFILE=C:\Users\TM\Desktop\FPGA\FPGA_Arduino_Shield-master\FPGA_Arduino_Shield-master\Examples\LinkTest\LinkTest.bit
-FAMILY=Spartan6
-PART=xc6slx9-3tqg144
-WORKINGDIR=C:\Users\TM\Desktop\FPGA\FPGA_Arduino_Shield-master\FPGA_Arduino_Shield-master\Examples\LinkTest
-LICENSE=WebPack
-USER_INFO=__0_0_0

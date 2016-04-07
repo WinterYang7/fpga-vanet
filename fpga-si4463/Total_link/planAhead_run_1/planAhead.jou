@@ -1,0 +1,168 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:29:51 MDT 2013
+# Start of session at: Tue Apr 05 17:13:12 2016
+# Process ID: 7708
+# Log file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_1/planAhead.log
+# Journal file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_1/planAhead.jou
+#-----------------------------------------------------------
+start_gui
+source C:/Users/TM/Desktop/FPGA/Total/Total_link/pa.fromNetlist.tcl
+startgroup
+set_property package_pin P27 [get_ports {Dout[0]}]
+endgroup
+startgroup
+set_property package_pin P29 [get_ports {Dout[1]}]
+endgroup
+startgroup
+set_property package_pin P30 [get_ports {Dout[2]}]
+endgroup
+startgroup
+set_property package_pin P32 [get_ports {Dout[3]}]
+endgroup
+startgroup
+set_property package_pin P79 [get_ports {Dout[4]}]
+endgroup
+startgroup
+set_property package_pin P81 [get_ports {Dout[5]}]
+endgroup
+startgroup
+set_property package_pin P80 [get_ports {Dout[6]}]
+endgroup
+startgroup
+set_property package_pin P82 [get_ports {Dout[7]}]
+endgroup
+startgroup
+set_property package_pin P10 [get_ports {Dout[8]}]
+endgroup
+startgroup
+set_property package_pin P8 [get_ports {Dout[9]}]
+endgroup
+startgroup
+set_property package_pin P9 [get_ports {Dout[10]}]
+endgroup
+startgroup
+set_property package_pin P7 [get_ports {Dout[11]}]
+endgroup
+startgroup
+set_property package_pin P100 [get_ports {Dout[12]}]
+endgroup
+startgroup
+set_property package_pin P98 [get_ports {Dout[13]}]
+endgroup
+startgroup
+set_property package_pin P99 [get_ports {Dout[14]}]
+endgroup
+startgroup
+set_property package_pin P97 [get_ports {Dout[15]}]
+endgroup
+startgroup
+set_property package_pin P16 [get_ports {sram_mem_addr[0]}]
+endgroup
+startgroup
+set_property package_pin P21 [get_ports {sram_mem_addr[1]}]
+endgroup
+startgroup
+set_property package_pin P24 [get_ports {sram_mem_addr[2]}]
+endgroup
+startgroup
+set_property package_pin P17 [get_ports {sram_mem_addr[3]}]
+endgroup
+startgroup
+set_property package_pin P23 [get_ports {sram_mem_addr[4]}]
+endgroup
+startgroup
+set_property package_pin P15 [get_ports {sram_mem_addr[5]}]
+endgroup
+startgroup
+set_property package_pin P22 [get_ports {sram_mem_addr[6]}]
+endgroup
+startgroup
+set_property package_pin P33 [get_ports {sram_mem_addr[7]}]
+endgroup
+startgroup
+set_property package_pin P95 [get_ports {sram_mem_addr[8]}]
+endgroup
+startgroup
+set_property package_pin P93 [get_ports {sram_mem_addr[9]}]
+endgroup
+startgroup
+set_property package_pin P88 [get_ports {sram_mem_addr[10]}]
+endgroup
+startgroup
+set_property package_pin P84 [get_ports {sram_mem_addr[11]}]
+endgroup
+startgroup
+set_property package_pin P92 [get_ports {sram_mem_addr[12]}]
+endgroup
+startgroup
+set_property package_pin P87 [get_ports {sram_mem_addr[13]}]
+endgroup
+startgroup
+set_property package_pin P94 [get_ports {sram_mem_addr[14]}]
+endgroup
+startgroup
+set_property package_pin P85 [get_ports {sram_mem_addr[15]}]
+endgroup
+startgroup
+set_property package_pin P78 [get_ports {sram_mem_addr[16]}]
+endgroup
+startgroup
+set_property package_pin P6 [get_ports {sram_mem_addr[17]}]
+endgroup
+set_property package_pin "" [get_ports [list  CE_n]]
+startgroup
+set_property package_pin P26 [get_ports CE_n]
+endgroup
+startgroup
+set_property package_pin P56 [get_ports clk]
+endgroup
+startgroup
+set_property package_pin P55 [get_ports cpu_miso]
+endgroup
+startgroup
+set_property package_pin P57 [get_ports cpu_mosi]
+endgroup
+startgroup
+set_property package_pin P75 [get_ports cpu_sclk]
+endgroup
+startgroup
+set_property package_pin P11 [get_ports LB_n]
+endgroup
+startgroup
+set_property package_pin P12 [get_ports UB_n]
+endgroup
+startgroup
+set_property package_pin P83 [get_ports WE_n]
+endgroup
+startgroup
+set_property package_pin P14 [get_ports OE_n]
+endgroup
+startgroup
+set_property package_pin P105 [get_ports si4463_sclk]
+endgroup
+set_property package_pin "" [get_ports [list  si4463_miso]]
+set_property package_pin "" [get_ports [list  si4463_reset]]
+startgroup
+set_property package_pin P104 [get_ports si4463_miso]
+endgroup
+startgroup
+set_property package_pin P102 [get_ports si4463_mosi]
+endgroup
+set_property package_pin "" [get_ports [list  si4463_reset]]
+startgroup
+set_property package_pin P74 [get_ports si4463_ss_n]
+endgroup
+set_property package_pin "" [get_ports [list  si4463_reset]]
+set_property package_pin "" [get_ports [list  si4463_irq]]
+set_property package_pin "" [get_ports [list  si4463_reset]]
+startgroup
+set_property package_pin P64 [get_ports si4463_irq]
+endgroup
+startgroup
+set_property package_pin P67 [get_ports si4463_reset]
+endgroup
+startgroup
+set_property package_pin P101 [get_ports cpu_irq]
+endgroup
+save_constraints

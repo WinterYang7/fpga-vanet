@@ -1,0 +1,40 @@
+Release 14.7 - ngc2edif P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+Reading design total_link_cs.ngc ...
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus
+   U0/I_NO_D.U_ILA/U_RST/U_HALT_XFER/iDOUT_dly<2 : 0> on block ila_pro_0 is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   U0/I_NO_D.U_ILA/U_RST/U_ARM_XFER/iDOUT_dly<4 : 0> on block ila_pro_0 is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus U0/U_ICON/iCORE_ID_SEL<15 : 0> on block
+   icon_pro is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Data_to_master<10 : 0> on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Sended_count[7]_GND_25_o_add_80_OUT<7 : 2> on block total_link is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_cmd_data[127]_GND_25_o_mux_9_OUT<5 : 0> on block total_link is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Spi_Current_State[5]_Data_to_master[15]_wide_mux_102_OUT<7 : 0> on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_cmd_data[127]_Spi_Current_State[5]_mux_126_OUT<55 : 0> on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_return_len[4]_GND_25_o_mux_8_OUT<3 : 0> on block total_link is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/spi_return_len<3 : 0> on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/spi_cmd_data<55 : 0> on block
+   total_link is not reconstructed, because there are some missing bus signals.
+  finished :Prep
+Writing EDIF netlist file total_link_cs.edif ...
+ngc2edif: Total memory usage is 84512 kilobytes
+

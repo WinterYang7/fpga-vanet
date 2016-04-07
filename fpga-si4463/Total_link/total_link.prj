@@ -1,0 +1,6 @@
+verilog work "../spi_slave.v"
+verilog work "../Wireless_Ctrl.v"
+verilog work "../SRAM_ctrl.v"
+verilog work "../spi_master.v"
+verilog work "../Slave_Ctrl.v"
+verilog work "../total_link.v"

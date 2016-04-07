@@ -1,9 +1,0 @@
-
-
-NET "MISO" LOC = P55;
-NET "clk" LOC = P56;
-NET "MOSI" LOC = P57;
-NET "SCLK" LOC = P75;
-
-
-NET "ledr" LOC = P134;

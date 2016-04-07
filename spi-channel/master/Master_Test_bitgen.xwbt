@@ -1,8 +1,0 @@
-INTSTYLE=ise
-INFILE=C:\Users\TM\Desktop\FPGA\SpiLink\SpiLink\Master_Test.ncd
-OUTFILE=C:\Users\TM\Desktop\FPGA\SpiLink\SpiLink\Master_Test.bit
-FAMILY=Spartan6
-PART=xc6slx9-3tqg144
-WORKINGDIR=C:\Users\TM\Desktop\FPGA\SpiLink\SpiLink
-LICENSE=WebPack
-USER_INFO=__0_0_0

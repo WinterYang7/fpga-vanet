@@ -1,0 +1,88 @@
+#-----------------------------------------------------------
+# PlanAhead v14.7 (64-bit)
+# Build 321239 by xbuild on Fri Sep 27 19:29:51 MDT 2013
+# Start of session at: Wed Apr 06 10:11:33 2016
+# Process ID: 6776
+# Log file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2/planAhead.log
+# Journal file: C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2/planAhead.jou
+#-----------------------------------------------------------
+INFO: [Common 17-78] Attempting to get a license: PlanAhead
+INFO: [Common 17-290] Got license for PlanAhead
+INFO: [Device 21-36] Loading parts and site information from C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/arch.xml
+Parsing RTL primitives file [C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
+Finished parsing RTL primitives file [C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
+start_gui
+source C:/Users/TM/Desktop/FPGA/Total/Total_link/pa.fromHdl.tcl
+# create_project -name Total_link -dir "C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2" -part xc6slx9tqg144-3
+# set_param project.pinAheadLayout yes
+# set srcset [get_property srcset [current_run -impl]]
+# set_property target_constrs_file "total_link.ucf" [current_fileset -constrset]
+Adding file 'C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf' to fileset 'constrs_1'
+# set hdlfile [add_files [list {../spi_slave.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set hdlfile [add_files [list {../Wireless_Ctrl.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set hdlfile [add_files [list {../SRAM_ctrl.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set hdlfile [add_files [list {../spi_master.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set hdlfile [add_files [list {../Slave_Ctrl.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set hdlfile [add_files [list {../total_link.v}]]
+# set_property file_type Verilog $hdlfile
+# set_property library work $hdlfile
+# set_property top total_link $srcset
+# add_files [list {total_link.ucf}] -fileset [get_property constrset [current_run]]
+# open_rtl_design -part xc6slx9tqg144-3
+Using Verific elaboration
+Parsing VHDL file "C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/lib/synplify/synattr.vhd" into library synplify
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/spi_slave.v" into library work
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/Wireless_Ctrl.v" into library work
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/SRAM_ctrl.v" into library work
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/spi_master.v" into library work
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/Slave_Ctrl.v" into library work
+Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/total_link.v" into library work
+Loading clock regions from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx9/ClockRegion.xml
+Loading clock buffers from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx9/ClockBuffers.xml
+Loading package pin functions from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/PinFunctions.xml...
+Loading package from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx9/tqg144/Package.xml
+Loading io standards from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\./parts/xilinx/spartan6/IOStandards.xml
+Loading device configuration modes from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/ConfigModes.xml
+Loading list of drcs for the architecture : C:/Xilinx/14.7/ISE_DS/PlanAhead/data\./parts/xilinx/spartan6/drc.xml
+Parsing UCF File [C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf]
+Finished Parsing UCF File [C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf]
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Phase 0 | Netlist Checksum: 9b4234de
+open_rtl_design: Time (s): elapsed = 00:00:15 . Memory (MB): peak = 701.195 ; gain = 198.105
+update_compile_order -fileset sim_1
+set_property package_pin "" [get_ports [list  {led[0]}]]
+startgroup
+set_property package_pin P126 [get_ports {led[1]}]
+endgroup
+startgroup
+set_property package_pin P134 [get_ports {led[0]}]
+endgroup
+startgroup
+set_property package_pin P120 [get_ports {led[2]}]
+endgroup
+startgroup
+set_property package_pin P116 [get_ports {led[3]}]
+endgroup
+save_constraints
+exit
+ERROR: [PlanAhead 12-106] *** Exception: ui.h.b: Found deleted key in HTclEventBroker. Verify if the classes listed here call cleanup()
+HTclEvent: SIGNAL_BUS_MODIFY   Classes: ui.views.aR 
+HTclEvent: DEBUG_CORE_CONFIG_CHANGE   Classes: ui.views.aR 
+HTclEvent: SIGNAL_MODIFY   Classes: ui.views.aR 
+HTclEvent: DEBUG_PORT_CONFIG_CHANGE   Classes: ui.views.aR 
+ (See C:/Users/TM/Desktop/FPGA/Total/Total_link\planAhead_pid6776.debug)
+ERROR: [Common 17-39] 'stop_gui' failed due to earlier errors.
+INFO: [Common 17-206] Exiting PlanAhead at Wed Apr 06 10:13:13 2016...
+INFO: [Common 17-83] Releasing license: PlanAhead
