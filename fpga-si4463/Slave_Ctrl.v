@@ -21,13 +21,22 @@ module Slave_Ctrl(
 	frame_recved_int,
 	
 	//与CPU连接的中断
-	cpu_recv_int
+	cpu_recv_int,
+	
+	Spi_Current_State,
+	Spi_rrdy,
+	Spi_trdy,
+	Data_from_spi
+	
 	
 );
+output Data_from_spi;
+output Spi_trdy;
+output Spi_rrdy;
 input	clk;
 input frame_recved_int;
 output reg cpu_recv_int;
-	
+output Spi_Current_State;	
 	//与CPU的接口
 input	mosi;
 output	miso;
@@ -55,7 +64,8 @@ reg[7:0]  Data_from_spi_reg;
 wire Spi_rrdy;
 wire Spi_trdy;
 //wire Spi_tmt;
-reg Spi_reset=1;
+wire Spi_reset;
+assign Spi_reset=1;
 wire Spi_sel;
 assign Spi_sel=1;
 
@@ -124,7 +134,7 @@ begin
 		3:
 		begin
 			case(Data_from_spi_reg)
-				8'h66: //CPU发送数据
+				8'b01100110: //CPU发送数据
 				begin
 					Data_to_sram[15:8]=Data_from_spi_reg;  //保存命令和长度，交给Wireless_Ctrl处理发送
 					Sended_count=0;
@@ -132,7 +142,7 @@ begin
 					//tx_flag=1;
 					Spi_Current_State=4;
 				end
-				8'h77: //CPU接收数据
+				8'h01110111: //CPU接收数据
 				begin
 					//rx_flag=1;
 					Spi_Current_State=16; 
@@ -160,7 +170,7 @@ begin
 		6:
 		begin
 			Data_len=Data_from_spi[7:0];
-			Data_from_sram_reg[7:0]=Data_from_spi[7:0]+8'h02;
+			Data_to_sram[7:0]=Data_from_spi[7:0]+8'h02;
 			Spi_Current_State=7;
 		end
 		//将命令和数据长度写入SRAM
@@ -185,7 +195,7 @@ begin
 		begin
 			if(!SRAM_full)
 			begin
-				Data_to_sram={8'h00,Data_len[7:0]+8'h02};
+				Data_to_sram={8'h00,Data_len[7:0]};
 				SRAM_write=1;
 				Spi_Current_State=10;
 			end
@@ -198,7 +208,7 @@ begin
 				Spi_Current_State=11;
 			end
 		end
-		//从SPI读取数据
+		//从SPI读取数据并写入SRAM
 		11:
 		begin
 			if(Spi_rrdy)

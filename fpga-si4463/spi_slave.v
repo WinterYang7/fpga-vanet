@@ -386,7 +386,7 @@ reg     [  7: 0] shift_reg;
         shift_reg <= resetShiftSample ? 0 : shift_clock ? (shiftStateZero ? tx_holding_reg : {shift_reg[6 : 0], MOSI_reg}) : shift_reg;
 		 
 		 //=================update by erlang=============================//
-		recv_count<=resetShiftSample?0:shift_clock?(shiftStateZero?0:recv_count+1):recv_count;
+		recv_count<=resetShiftSample?0:shift_clock?(shiftStateZero?1:recv_count+1):recv_count;
 	  end
     end
 

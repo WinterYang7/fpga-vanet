@@ -10,46 +10,46 @@ Target Device  : xc6slx9
 Target Package : tqg144
 Target Speed   : -3
 Mapper Version : spartan6 -- $Revision: 1.55 $
-Mapped Date    : Thu Apr 07 15:49:03 2016
+Mapped Date    : Thu Apr 14 10:45:52 2016
 
 Design Summary
 --------------
 Number of errors:      0
 Number of warnings:    0
 Slice Logic Utilization:
-  Number of Slice Registers:                   736 out of  11,440    6%
-    Number used as Flip Flops:                 736
+  Number of Slice Registers:                   992 out of  11,440    8%
+    Number used as Flip Flops:                 992
     Number used as Latches:                      0
     Number used as Latch-thrus:                  0
     Number used as AND/OR logics:                0
-  Number of Slice LUTs:                      1,105 out of   5,720   19%
-    Number used as logic:                    1,093 out of   5,720   19%
-      Number using O6 output only:             865
-      Number using O5 output only:              61
-      Number using O5 and O6:                  167
+  Number of Slice LUTs:                      1,408 out of   5,720   24%
+    Number used as logic:                    1,373 out of   5,720   24%
+      Number using O6 output only:           1,059
+      Number using O5 output only:             113
+      Number using O5 and O6:                  201
       Number used as ROM:                        0
-    Number used as Memory:                       8 out of   1,440    1%
+    Number used as Memory:                      12 out of   1,440    1%
       Number used as Dual Port RAM:              0
       Number used as Single Port RAM:            0
-      Number used as Shift Register:             8
+      Number used as Shift Register:            12
         Number using O6 output only:             0
         Number using O5 output only:             0
-        Number using O5 and O6:                  8
-    Number used exclusively as route-thrus:      4
-      Number with same-slice register load:      2
-      Number with same-slice carry load:         2
+        Number using O5 and O6:                 12
+    Number used exclusively as route-thrus:     23
+      Number with same-slice register load:     18
+      Number with same-slice carry load:         5
       Number with other load:                    0
 
 Slice Logic Distribution:
-  Number of occupied Slices:                   376 out of   1,430   26%
-  Number of MUXCYs used:                        96 out of   2,860    3%
-  Number of LUT Flip Flop pairs used:        1,172
-    Number with an unused Flip Flop:           509 out of   1,172   43%
-    Number with an unused LUT:                  67 out of   1,172    5%
-    Number of fully used LUT-FF pairs:         596 out of   1,172   50%
-    Number of unique control sets:              37
+  Number of occupied Slices:                   522 out of   1,430   36%
+  Number of MUXCYs used:                       196 out of   2,860    6%
+  Number of LUT Flip Flop pairs used:        1,543
+    Number with an unused Flip Flop:           677 out of   1,543   43%
+    Number with an unused LUT:                 135 out of   1,543    8%
+    Number of fully used LUT-FF pairs:         731 out of   1,543   47%
+    Number of unique control sets:              57
     Number of slice register sites lost
-      to control set restrictions:              56 out of  11,440    1%
+      to control set restrictions:             112 out of  11,440    1%
 
   A LUT Flip Flop pair for this architecture represents one LUT paired with
   one Flip Flop within a slice.  A control set is a unique combination of
@@ -58,8 +58,8 @@ Slice Logic Distribution:
   over-mapped for a non-slice resource or if Placement fails.
 
 IO Utilization:
-  Number of bonded IOBs:                        54 out of     102   52%
-    Number of LOCed IOBs:                       54 out of      54  100%
+  Number of bonded IOBs:                        62 out of     102   60%
+    Number of LOCed IOBs:                       62 out of      62  100%
 
 Specific Feature Utilization:
   Number of RAMB16BWERs:                         0 out of      32    0%
@@ -86,11 +86,11 @@ Specific Feature Utilization:
   Number of STARTUPs:                            0 out of       1    0%
   Number of SUSPEND_SYNCs:                       0 out of       1    0%
 
-Average Fanout of Non-Clock Nets:                4.06
+Average Fanout of Non-Clock Nets:                4.03
 
-Peak Memory Usage:  374 MB
-Total REAL time to MAP completion:  22 secs 
-Total CPU time to MAP completion:   21 secs 
+Peak Memory Usage:  402 MB
+Total REAL time to MAP completion:  42 secs 
+Total CPU time to MAP completion:   41 secs 
 
 Table of Contents
 -----------------
@@ -130,52 +130,10 @@ INFO:Pack:1650 - Map created a placed design.
 
 Section 4 - Removed Logic Summary
 ---------------------------------
-  20 block(s) removed
    2 block(s) optimized away
-   9 signal(s) removed
 
 Section 5 - Removed Logic
 -------------------------
-
-The trimmed logic report below shows the logic removed from your design due to
-sourceless or loadless signals, and VCC or ground connections.  If the removal
-of a signal or symbol results in the subsequent removal of an additional signal
-or symbol, the message explaining that second removal will be indented.  This
-indentation will be repeated as a chain of related logic is removed.
-
-To quickly locate the original cause for the removal of a chain of logic, look
-above the place where that logic is listed in the trimming report, then locate
-the lines that are least indented (begin at the leftmost edge).
-
-Loadless block "sram/Madd_n0170_Madd10" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>1" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>10" (ROM) removed.
- The signal "sram/Madd_n0170_Madd9" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd9" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>2" (ROM) removed.
- The signal "sram/Madd_n0170_Madd1" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd1" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>3" (ROM) removed.
- The signal "sram/Madd_n0170_Madd2" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd2" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>4" (ROM) removed.
- The signal "sram/Madd_n0170_Madd3" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd3" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>5" (ROM) removed.
- The signal "sram/Madd_n0170_Madd4" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd4" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>6" (ROM) removed.
- The signal "sram/Madd_n0170_Madd5" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd5" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>7" (ROM) removed.
- The signal "sram/Madd_n0170_Madd6" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd6" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>8" (ROM) removed.
- The signal "sram/Madd_n0170_Madd7" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd7" (ROM) removed.
-Loadless block "sram/Madd_n0170_Madd_lut<0>9" (ROM) removed.
- The signal "sram/Madd_n0170_Madd8" is loadless and has been removed.
-  Loadless block "sram/Madd_n0170_Madd8" (ROM) removed.
 
 Optimized Block(s):
 TYPE 		BLOCK
@@ -193,24 +151,32 @@ Section 6 - IOB Properties
 |                                    |                  |           |                      | Term  | Strength | Rate |              |          | Delay    |
 +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | CE_n                               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<0>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<1>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<2>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<3>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<4>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<5>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<6>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<7>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<8>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<9>                            | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<10>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<11>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<12>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<13>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<14>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
-| Dout<15>                           | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<0>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<1>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<2>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<3>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<4>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<5>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<6>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<7>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<8>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<9>                            | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<10>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<11>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<12>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<13>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<14>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Dout<15>                           | IOB              | BIDIR     | LVCMOS25             |       | 12       | SLOW |              |          |          |
 | LB_n                               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
 | OE_n                               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<0>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<1>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<2>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<3>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<4>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<5>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<6>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
+| Spi_Current_State<7>               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
 | UB_n                               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
 | WE_n                               | IOB              | OUTPUT    | LVCMOS25             |       | 12       | SLOW |              |          |          |
 | clk                                | IOB              | INPUT     | LVCMOS25             |       |          |      |              |          |          |

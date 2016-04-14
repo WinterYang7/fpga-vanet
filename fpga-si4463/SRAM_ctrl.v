@@ -45,15 +45,15 @@ module SRAM_ctrl(
 	OE_n,
 	WE_n,
 	LB_n,
-	UB_n
-	//nUsing,
-	//Current_State,
-	//opcode
+	UB_n,
+	nUsing,
+	Current_State,
+	opcode
 	
     );
-//output nUsing;
-//output Current_State;
-//output opcode;
+output nUsing;
+output Current_State;
+output opcode;
 
 input clk;
 input slave_read;
@@ -121,7 +121,7 @@ begin
 	
 	if(!nUsing&&slave_read)
 	begin
-		if(!fifo_i_empty)
+		if(!fifo_o_empty)
 		begin
 			nUsing=1;
 			Current_State=2;
@@ -137,9 +137,9 @@ begin
 		end
 	end
 	
-	if(!nUsing&&master_write)
+	if(!nUsing&&master_read)
 	begin
-		if(!fifo_o_empty)
+		if(!fifo_i_empty)
 		begin
 			nUsing=1;
 			Current_State=4;
@@ -152,7 +152,8 @@ begin
 			opcode=1;
 			data_to_sram=slave_data_to_sram;
 			mem_addr=fifo_i_wr_ptr;
-			fifo_i_wr_ptr=fifo_i_wr_ptr+1'b1;
+			fifo_i_wr_ptr=fifo_i_wr_ptr+1;
+			fifo_i_count=fifo_i_count+1;
 			if(fifo_i_wr_ptr>`MAX_FIFO_I_PTR)
 				fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
 			Current_State=10;	
@@ -162,7 +163,8 @@ begin
 		begin
 			opcode=2;
 			mem_addr=fifo_i_rd_ptr;
-			fifo_o_rd_ptr=fifo_o_rd_ptr+1'b1;
+			fifo_o_rd_ptr=fifo_o_rd_ptr+1;
+			fifo_o_count=fifo_o_count-1;
 			if(fifo_o_rd_ptr>`MAX_FIFO_O_PTR)
 				fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
 			Current_State=11;
@@ -173,7 +175,8 @@ begin
 			opcode=3;
 			data_to_sram=master_data_to_sram;
 			mem_addr=fifo_o_wr_ptr;
-			fifo_o_wr_ptr=fifo_o_wr_ptr+1'b1;
+			fifo_o_wr_ptr=fifo_o_wr_ptr+1;
+			fifo_o_count=fifo_o_count+1;
 			if(fifo_o_wr_ptr > `MAX_FIFO_O_PTR)
 				fifo_o_wr_ptr = `MIN_FIFO_O_PTR;
 			Current_State=10;	
@@ -183,7 +186,8 @@ begin
 		begin
 			opcode=4;
 			mem_addr=fifo_i_rd_ptr;
-			fifo_i_rd_ptr=fifo_i_rd_ptr+1'b1;
+			fifo_i_rd_ptr=fifo_i_rd_ptr+1;
+			fifo_i_count=fifo_i_count-1;
 			if(fifo_i_rd_ptr > `MAX_FIFO_I_PTR)
 				fifo_i_rd_ptr = `MIN_FIFO_I_PTR;
 			Current_State=11;
@@ -258,13 +262,6 @@ begin
 			Current_State=0;
 			nUsing=0;
 		end
-		default:
-		begin
-			Current_State=0;
-			nUsing=0;
-			slave_hint=0;
-			master_hint=0;
-		end
 	endcase
 end
 
@@ -273,17 +270,25 @@ end
 //不用担心正在写入或者正在读取的情况，因为这种情况下，即使提前更改了选项，由于其他操作不能进行，而其他操作能进行时，实际数量已经与其一致了
 always@(posedge clk)
 begin
-	fifo_o_count=(fifo_o_wr_ptr-fifo_o_rd_ptr+`FIFO_O_SIZE)%`FIFO_O_SIZE;
-	fifo_i_count=(fifo_i_wr_ptr-fifo_i_rd_ptr+`FIFO_I_SIZE)%`FIFO_I_SIZE;
+	//fifo_o_count=(fifo_o_wr_ptr-fifo_o_rd_ptr+`FIFO_O_SIZE)%`FIFO_O_SIZE;
+	//fifo_i_count=(fifo_i_wr_ptr-fifo_i_rd_ptr+`FIFO_I_SIZE)%`FIFO_I_SIZE;
 	
-	if((fifo_i_rd_ptr+1)%`FIFO_I_SIZE==fifo_i_wr_ptr)
+	if(fifo_i_count==`FIFO_I_SIZE)
 		fifo_i_full=1;
-	if(fifo_i_rd_ptr==fifo_i_wr_ptr)
+	else
+		fifo_i_full=0;
+	if(fifo_i_count==0)
 		fifo_i_empty=1;
-	if((fifo_o_rd_ptr+1)%`FIFO_O_SIZE==fifo_o_wr_ptr)
+	else
+		fifo_i_empty=0;
+	if(fifo_o_count==`FIFO_O_SIZE)
 		fifo_o_full=1;
-	if(fifo_o_rd_ptr==fifo_o_wr_ptr)
+	else
+		fifo_o_full=0;
+	if(fifo_o_count==0)
 		fifo_o_empty=1;
+	else
+		fifo_o_empty=0;
 end
 
 endmodule

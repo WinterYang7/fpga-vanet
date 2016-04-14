@@ -1,7 +1,7 @@
 
 # PlanAhead Launch Script for Pre-Synthesis Floorplanning, created by Project Navigator
 
-create_project -name Total_link -dir "C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2" -part xc6slx9tqg144-3
+create_project -name Total_link -dir "C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_4" -part xc6slx9tqg144-3
 set_param project.pinAheadLayout yes
 set srcset [get_property srcset [current_run -impl]]
 set_property target_constrs_file "total_link.ucf" [current_fileset -constrset]

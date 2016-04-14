@@ -33,9 +33,12 @@ module Wireless_Ctrl(
 	frame_recved_int,
 	
 	//用于指示当前状态的LED
-	led
+	led,
+	Si4463_Ph_Status_1
 );
 input clk;
+output[7:0] Si4463_Ph_Status_1;
+assign Si4463_Ph_Status_1=Int_Return_Data[47:40];
 output reg[3:0] led=4'b0000;
 	//SRAM接口
 output	SRAM_read;
@@ -170,8 +173,6 @@ reg Ended_flag;
 // 3. 在接收数据后，发送0x77命令，放弃第一个接收到的数据(无效数据),在发送下一个数据前，射频有足够时间能够准备返回来的数据，所以返回的也是有效数据
 always@(posedge clk)  //这里最好监视Main_start和Int_start信号
 begin
-	//led=Spi_Current_State[3:0];
-
 	if(Main_start&&!spi_Using)
 	begin
 		spi_start=1;
@@ -548,7 +549,7 @@ begin
 					else if(Byte_flag)
 					begin
 						Byte_flag=~Byte_flag;
-						Data_to_master={8'h00,Data_from_sram_reg[15:8]};
+						Data_to_master={8'h00,Data_from_sram_reg[7:0]};
 						Spi_Current_State=8;
 					end
 					else
@@ -560,8 +561,8 @@ begin
 				if(SRAM_hint)
 				begin
 					SRAM_read=0;
-					Data_from_sram_reg=Data_from_master;
-					Data_to_master={8'h00,Data_from_sram_reg[7:0]};
+					Data_from_sram_reg=Data_from_sram;
+					Data_to_master={8'h00,Data_from_sram_reg[15:8]};
 					Spi_Current_State=8;
 				end
 			end
@@ -2498,22 +2499,18 @@ begin
 			
 			if(spi_op_done)
 			begin
-				//led[3]=1;
-				//led[2:0]=Main_Return_Data[10:8];
 				if(Main_Return_Data[15:8]==16'h03)
 				begin
 					tx_state=3'b000;
-					enable_irq=1;
 					Main_Current_State=180;
 				end
 			end
 		end
 		
-		///////////////////////////////////启动完成，开始发送数据、、、、、、、、、、、、、、、、
+		
 		//状态转化为RX
 		180:
 		begin
-			//led[2]=1;
 			if(!spi_Using)
 			begin
 				Main_Cmd_Data[7:0]=8'h32;
@@ -2540,16 +2537,20 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				//led[0]=1;
+				enable_irq=1;   //开始允许监听中断信号
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
 		end
 		
+		
+		///////////////////////////////////启动完成，开始发送数据、、、、、、、、、、、、、、、、
+		//////////////////////////////////////////////////////////////////////////////
+		
+		
 		////判断是否有数据及数据帧长度,如果想要读取数据包长度，可以另外设置一条命令，从SPI中读取SRAM
 		130:
 		begin
-			led[1]=1;
 			if(!SRAM_empty&&!spi_Using)
 			begin
 				Main_Cmd=5;
@@ -2559,7 +2560,6 @@ begin
 		end
 		131:
 		begin
-			led[2]=1;
 			Main_start=0;
 			Main_Current_State=132;
 		end
@@ -2569,9 +2569,15 @@ begin
 			begin
 				if(Main_Data_Check[15:8]==8'h66)
 				begin
+					led[2]=~led[2];
 					Data_Len_to_Send=Main_Data_Check[7:0];
-					Main_Current_State=133;
+					if(SRAM_count*2>=Data_Len_to_Send)
+					begin
+						Main_Current_State=133;
+					end
 				end
+				else
+					Main_Current_State=130;
 			end
 		end
 		
@@ -2668,7 +2674,7 @@ begin
 			if(!spi_Using)
 			begin
 				Main_Cmd=2;
-				Main_Data_len=Data_Len_to_Send;
+				Main_Data_len=Data_Len_to_Send+1;  //目前最大为126
 				Main_Return_len=0;
 				Main_start=1;
 				Main_Current_State=140;
@@ -2683,7 +2689,7 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=200;
+				Main_Current_State=142;
 			end
 		end
 		
@@ -2727,6 +2733,7 @@ begin
 		begin
 			if(tx_done)
 			begin
+				//led=led+1;
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
@@ -2741,8 +2748,8 @@ reg [3:0] Irq_Current_State=0;
 reg [3:0] Recv_Current_State=0;
 reg tx_done=0; //置1表示发送完成
 reg rx_start=0;
-reg tx_flag; //是发送完成中断
-reg rx_flag;
+reg tx_flag=0; //是发送完成中断
+reg rx_flag=0;
 reg [7:0] Si4463_Ph_Status=0;
 reg [7:0] frame_len;
 
@@ -2753,12 +2760,17 @@ begin
 		/////等待中断到来
 		0:
 		begin
-			if(enable_irq&&Si4463_int)
+			if(enable_irq&&!Si4463_int)
+			begin
+				rx_flag=0;  ///这里可能出现问题
+				tx_flag=0;
 				Irq_Current_State=1;
+			end
 		end
 		//////读取中断状态，判断中断源
 		1:
 		begin
+			led[1]=1;
 			if(!spi_Using)
 			begin
 				Int_Cmd_Data[7:0]=8'h20;
@@ -2781,13 +2793,14 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				Si4463_Ph_Status=Int_Return_Data[31:24];
-				if((Si4463_Ph_Status&8'h22)==8'h22 || (Si4463_Ph_Status&8'h22)==8'h20) //发送完成中断
+				Si4463_Ph_Status=Int_Return_Data[47:40];
+				if((Si4463_Ph_Status)==8'b00100010 || (Si4463_Ph_Status)==8'b00100000) //发送完成中断
 				begin
+					led[0]=~led[0];
 					tx_flag=1;
 					Irq_Current_State=4;
 				end
-				if((Si4463_Ph_Status&8'h10)==8'h10) //接收中断
+				if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 				begin
 					Irq_Current_State=4;
 					rx_flag=1;
@@ -2823,7 +2836,7 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				if(Si4463_int)
+				if(!Si4463_int)
 					Irq_Current_State=4;
 				else
 					Irq_Current_State=7;
@@ -2836,7 +2849,7 @@ begin
 				rx_start=1;
 				Irq_Current_State=0;
 			end
-			else if(tx_flag)
+			if(tx_flag)
 			begin
 				tx_done=1;
 				Irq_Current_State=8;
@@ -2850,6 +2863,7 @@ begin
 		begin
 			if(tx_state!=`TX)
 			begin
+				tx_flag=0;
 				tx_done=0;
 				Irq_Current_State=0;
 			end
@@ -2868,6 +2882,7 @@ begin
 		begin
 			if(rx_start)
 			begin
+				led[3]=1;
 				Recv_Current_State=1;
 			end
 		end

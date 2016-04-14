@@ -51,9 +51,21 @@ NET "si4463_irq" LOC = P62;
 NET "si4463_reset" LOC = P119;
 NET "cpu_irq" LOC = P101;
 
-# PlanAhead Generated physical constraints 
 
 NET "led[1]" LOC = P126;
 NET "led[0]" LOC = P134;
 NET "led[2]" LOC = P120;
 NET "led[3]" LOC = P116;
+
+
+NET "Spi_Current_State[0]" LOC = P124;
+NET "Spi_Current_State[1]" LOC = P133;
+NET "Spi_Current_State[2]" LOC = P139;
+NET "Spi_Current_State[3]" LOC = P143;
+NET "Spi_Current_State[4]" LOC = P5;
+
+# PlanAhead Generated physical constraints 
+
+NET "Spi_Current_State[5]" LOC = P117;
+NET "Spi_Current_State[6]" LOC = P121;
+NET "Spi_Current_State[7]" LOC = P127;
