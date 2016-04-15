@@ -23,7 +23,7 @@ module Slave_Ctrl(
 	//与CPU连接的中断
 	cpu_recv_int,
 	
-	Spi_Current_State,
+	Spi_Current_State_1,
 	Spi_rrdy,
 	Spi_trdy,
 	Data_from_spi
@@ -36,7 +36,8 @@ output Spi_rrdy;
 input	clk;
 input frame_recved_int;
 output reg cpu_recv_int;
-output Spi_Current_State;	
+output reg  [7:0] Spi_Current_State_1=0;	
+//assign Spi_Current_State_1={3'b000,Spi_Current_State};
 	//与CPU的接口
 input	mosi;
 output	miso;
@@ -54,40 +55,31 @@ input	SRAM_full;
 input	SRAM_empty;
 input[10:0]	SRAM_count;
 
-/////SPI_slave连线
-reg Spi_read_n=1;
-reg Spi_write_n=1;
-reg[2:0] Spi_mem_addr=0;
-reg[15:0] Data_to_spi;
-wire [15:0] Data_from_spi;
-reg[7:0]  Data_from_spi_reg;
-wire Spi_rrdy;
-wire Spi_trdy;
-//wire Spi_tmt;
-wire Spi_reset;
-assign Spi_reset=1;
-wire Spi_sel;
-assign Spi_sel=1;
+//与spi的连线
+wire slave_reset_n;
+assign slave_reset_n=0;
+wire slave_ss_n;
+assign slave_ss_n=0;
 
-spi_slave spi(
-	               
-	.MOSI(mosi),
-	.SCLK(sclk),
-	.clk(clk),
-	.data_from_cpu(Data_to_spi),
-	.mem_addr(Spi_mem_addr),
-	.read_n(Spi_read_n),
-	.reset_n(Spi_reset),
-	.spi_select(Spi_sel),
-	.write_n(Spi_write_n),
+wire slave_irq;
+reg[7:0] slave_data_to_spi;
+wire[7:0] slave_data_from_spi;
+reg[7:0] slave_data_from_spi_reg;
+reg slave_write;
 
-	.MISO(miso),
-	.data_to_cpu(Data_from_spi),
-	.dataavailable(Spi_rrdy),
-	//.endofpacket,
-	//.irq,
-	.readyfordata(Spi_trdy)
-);
+	spi_slave slave(
+	.RESET_in(slave_reset_n),
+    .CLK_in(clk),
+    .SPI_CLK(sclk),
+    .SPI_SS(slave_ss_n),
+    .SPI_MOSI(mosi),
+    .SPI_MISO(miso),
+    .SPI_DONE(slave_irq),
+    .DataToTx(slave_data_to_spi),
+    .DataToTxLoad(slave_write),
+    .DataRxd(slave_data_from_spi)
+    //.index1		: out natural range 0 to 7
+    );
 
 ///////监听SPI，根据情况进行选择，循环监听命令
 //为了更好地适应性，决定采用与射频模块类似的模式
@@ -111,66 +103,54 @@ reg Byte_flag=0;
 
 always@(posedge clk)
 begin
+	Spi_Current_State_1[7]=Spi_rrdy;
 	case (Spi_Current_State)
 		0:
 		begin
-			if(Spi_rrdy)
+			if(slave_irq)
 			begin
-				Spi_read_n=0;
-				Spi_mem_addr=3'b000;
-				Spi_Current_State=1;
+				Spi_Current_State_1[6:0]=1;
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=3;
 			end
-		end
-		1:
-		begin
-			Spi_read_n=1;
-			Spi_Current_State=2;
-		end
-		2:
-		begin
-			Data_from_spi_reg=Data_from_spi[7:0];
-			Spi_Current_State=3;
 		end
 		3:
 		begin
-			case(Data_from_spi_reg)
+			case(slave_data_from_spi_reg)
 				8'b01100110: //CPU发送数据
 				begin
-					Data_to_sram[15:8]=Data_from_spi_reg;  //保存命令和长度，交给Wireless_Ctrl处理发送
+					Data_to_sram[15:8]=slave_data_from_spi_reg;  //保存命令和长度，交给Wireless_Ctrl处理发送
 					Sended_count=0;
 					Byte_flag=0;
 					//tx_flag=1;
 					Spi_Current_State=4;
 				end
+				/*
 				8'h01110111: //CPU接收数据
 				begin
 					//rx_flag=1;
 					Spi_Current_State=16; 
-				end
+				end*/
 				default:
 				begin
+					Spi_Current_State_1[6:0]=0;
 					Spi_Current_State=0;
 				end
 			endcase
 		end
 		4:
 		begin
-			if(Spi_rrdy)
+			if(slave_irq)
 			begin
-				Spi_read_n=0;
-				Spi_mem_addr=3'b000;
-				Spi_Current_State=5;
+				Spi_Current_State_1[6:0]=Spi_Current_State_1[6:0]+1;
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=6;
 			end
-		end
-		5:
-		begin
-			Spi_read_n=1;
-			Spi_Current_State=6;
 		end
 		6:
 		begin
-			Data_len=Data_from_spi[7:0];
-			Data_to_sram[7:0]=Data_from_spi[7:0]+8'h02;
+			Data_len=slave_data_from_spi_reg;
+			Data_to_sram[7:0]=slave_data_from_spi_reg+8'h02;
 			Spi_Current_State=7;
 		end
 		//将命令和数据长度写入SRAM
@@ -178,6 +158,7 @@ begin
 		begin
 			if(!SRAM_full)
 			begin
+				//Spi_Current_State_1[6:0]=0;
 				SRAM_write=1;
 				Spi_Current_State=8;
 			end
@@ -186,6 +167,7 @@ begin
 		begin
 			if(SRAM_hint)
 			begin
+				//Spi_Current_State_1=Spi_Current_State_1+1;
 				SRAM_write=0;
 				Spi_Current_State=9;
 			end
@@ -204,6 +186,7 @@ begin
 		begin
 			if(SRAM_hint)
 			begin
+				//Spi_Current_State_1=Spi_Current_State_1+1;
 				SRAM_write=0;
 				Spi_Current_State=11;
 			end
@@ -211,23 +194,18 @@ begin
 		//从SPI读取数据并写入SRAM
 		11:
 		begin
-			if(Spi_rrdy)
+			if(slave_irq)
 			begin
-				Spi_read_n=0;
-				Spi_mem_addr=3'b000;
-				Spi_Current_State=12;
+				Spi_Current_State_1[6:0]=Spi_Current_State_1[6:0]+1;
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=13;
 			end
-		end
-		12:
-		begin
-			Spi_read_n=1;
-			Spi_Current_State=13;
 		end
 		13:
 		begin
 			if(!Byte_flag)
 			begin
-				Data_to_sram[15:8]=Data_from_spi[7:0];
+				Data_to_sram[15:8]=slave_data_from_spi_reg;
 				Byte_flag=~Byte_flag;
 				Sended_count=Sended_count+1'b1;
 				Spi_Current_State=11;
@@ -240,7 +218,7 @@ begin
 			end
 			else
 			begin
-				Data_to_sram[7:0]=Data_from_spi[7:0];
+				Data_to_sram[7:0]=slave_data_from_spi_reg;
 				Byte_flag=~Byte_flag;
 				Sended_count=Sended_count+1'b1;
 				Spi_Current_State=14;
@@ -259,6 +237,7 @@ begin
 		begin
 			if(SRAM_hint)
 			begin
+				
 				SRAM_write=0;
 				if(Sended_count<Data_len)
 				begin
@@ -266,12 +245,14 @@ begin
 				end
 				else
 				begin
+					Spi_Current_State_1[6:0]=0;
 					Spi_Current_State=0;
 				end
 			end
 		end
 		
 		
+		/*
 		////////用于向CPU发送数据/////////////////
 		///从SRAM中取出数据
 		16:
@@ -393,7 +374,7 @@ begin
 		30:
 		begin
 			Spi_Current_State=23;
-		end
+		end*/
 		default:
 		begin
 			Spi_Current_State=0;
@@ -418,7 +399,7 @@ begin
 	else
 	begin
 		delay_count<=delay_count+1'b1;
-		if(delay_count==delay_mtime*50)
+		if(delay_count==delay_mtime*20000)
 			delay_int<=1;
 	end
 end

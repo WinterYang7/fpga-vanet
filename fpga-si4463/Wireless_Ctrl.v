@@ -38,7 +38,7 @@ module Wireless_Ctrl(
 );
 input clk;
 output[7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1=Int_Return_Data[47:40];
+assign Si4463_Ph_Status_1=SRAM_count[7:0];
 output reg[3:0] led=4'b0000;
 	//SRAM接口
 output	SRAM_read;
@@ -678,7 +678,7 @@ reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 
 always@(posedge clk)
 begin
-		
+		led=SRAM_count[3:0];
 		case(Main_Current_State) 
 		250:
 		begin
@@ -2569,7 +2569,7 @@ begin
 			begin
 				if(Main_Data_Check[15:8]==8'h66)
 				begin
-					led[2]=~led[2];
+					//led=SRAM_count[3:0];
 					Data_Len_to_Send=Main_Data_Check[7:0];
 					if(SRAM_count*2>=Data_Len_to_Send)
 					begin
@@ -2733,7 +2733,7 @@ begin
 		begin
 			if(tx_done)
 			begin
-				//led=led+1;
+			
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
@@ -2770,7 +2770,7 @@ begin
 		//////读取中断状态，判断中断源
 		1:
 		begin
-			led[1]=1;
+		
 			if(!spi_Using)
 			begin
 				Int_Cmd_Data[7:0]=8'h20;
@@ -2796,7 +2796,7 @@ begin
 				Si4463_Ph_Status=Int_Return_Data[47:40];
 				if((Si4463_Ph_Status)==8'b00100010 || (Si4463_Ph_Status)==8'b00100000) //发送完成中断
 				begin
-					led[0]=~led[0];
+					
 					tx_flag=1;
 					Irq_Current_State=4;
 				end
@@ -2882,7 +2882,7 @@ begin
 		begin
 			if(rx_start)
 			begin
-				led[3]=1;
+			
 				Recv_Current_State=1;
 			end
 		end

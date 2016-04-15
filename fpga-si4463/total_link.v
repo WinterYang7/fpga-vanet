@@ -33,6 +33,7 @@ module total_link(
 input	clk;
 output[3:0] led;
 output[7:0] Spi_Current_State;
+//assign Spi_Current_State={7'b0000000,slave_write_sram};
 //assign Spi_Current_State=sram_data_to_master[4:0];
 	
 	//SPI_slave引脚
@@ -156,9 +157,9 @@ Slave_Ctrl slave(
 	.frame_recved_int(signal_for_recved_irq),
 	
 	//与CPU连接的中断
-	.cpu_recv_int(cpu_irq)
+	.cpu_recv_int(cpu_irq),
 	
-	//.Spi_Current_State(Spi_Current_State)
+	.Spi_Current_State_1(Spi_Current_State)
 );
 
 Wireless_Ctrl wireless(
@@ -194,8 +195,8 @@ Wireless_Ctrl wireless(
 	.frame_recved_int(signal_for_recved_irq),
 	
 	//指示当前状态
-	.led(led),
-	.Si4463_Ph_Status_1(Spi_Current_State)
+	.led(led)
+	//.Si4463_Ph_Status_1(Spi_Current_State)
 );
 
 spi_master spi(

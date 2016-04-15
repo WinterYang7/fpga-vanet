@@ -162,7 +162,7 @@ begin
 		2: //SPI_slaveÄ£¿é¶ÁÇëÇó
 		begin
 			opcode=2;
-			mem_addr=fifo_i_rd_ptr;
+			mem_addr=fifo_o_rd_ptr;
 			fifo_o_rd_ptr=fifo_o_rd_ptr+1;
 			fifo_o_count=fifo_o_count-1;
 			if(fifo_o_rd_ptr>`MAX_FIFO_O_PTR)
