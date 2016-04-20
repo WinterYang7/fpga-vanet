@@ -47,10 +47,13 @@ module SRAM_ctrl(
 	LB_n,
 	UB_n,
 	nUsing,
+	count,
 	Current_State,
 	opcode
 	
     );
+	 output[7:0] count;
+	 assign count={4'b000,slave_write,slave_read,master_write,master_read};
 output nUsing;
 output Current_State;
 output opcode;
@@ -270,8 +273,6 @@ end
 //不用担心正在写入或者正在读取的情况，因为这种情况下，即使提前更改了选项，由于其他操作不能进行，而其他操作能进行时，实际数量已经与其一致了
 always@(posedge clk)
 begin
-	//fifo_o_count=(fifo_o_wr_ptr-fifo_o_rd_ptr+`FIFO_O_SIZE)%`FIFO_O_SIZE;
-	//fifo_i_count=(fifo_i_wr_ptr-fifo_i_rd_ptr+`FIFO_I_SIZE)%`FIFO_I_SIZE;
 	
 	if(fifo_i_count==`FIFO_I_SIZE)
 		fifo_i_full=1;

@@ -4,13 +4,13 @@ Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total CPU time to Xst completion: 0.13 secs
  
 --> Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total CPU time to Xst completion: 0.13 secs
  
 --> Reading design: total_link.prj
 
@@ -123,34 +123,33 @@ Parsing architecture <Behavioral> of entity <spi_slave>.
 *                            HDL Elaboration                            *
 =========================================================================
 WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 99: Port nUsing is not connected to this instance
-WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 138: Port Spi_rrdy is not connected to this instance
-WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 165: Port Si4463_Ph_Status_1 is not connected to this instance
+WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 140: Port Spi_Current_State_1 is not connected to this instance
 
 Elaborating module <total_link>.
 
 Elaborating module <SRAM_ctrl>.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 155: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 156: Result of 12-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 166: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 167: Result of 32-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 178: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 179: Result of 12-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 189: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 190: Result of 32-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 158: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 159: Result of 12-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 169: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 170: Result of 32-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 181: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 182: Result of 12-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 192: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 193: Result of 32-bit expression is truncated to fit in 11-bit target.
 
 Elaborating module <Slave_Ctrl>.
 Going to vhdl side to elaborate module spi_slave
 
 Elaborating entity <spi_slave> (architecture <Behavioral>) from library <work>.
 Back to verilog to continue elaboration
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 145: Result of 8-bit expression is truncated to fit in 7-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 199: Result of 8-bit expression is truncated to fit in 7-bit target.
-WARNING:HDLCompiler:634 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 65: Net <slave_data_to_spi[7]> does not have a driver.
-WARNING:HDLCompiler:634 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 68: Net <slave_write> does not have a driver.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 277: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 313: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 335: Result of 9-bit expression is truncated to fit in 8-bit target.
 
 Elaborating module <Wireless_Ctrl>.
-WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 668: Using initial value of GPS_sync_time since it is never assigned
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 2677: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 741: Using initial value of GPS_sync_time since it is never assigned
+WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 105: Assignment to delay_int_2 ignored, since the identifier is never used
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 2378: Result of 9-bit expression is truncated to fit in 8-bit target.
 
 Elaborating module <spi_master>.
 WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 198: Assignment to endofpacket ignored, since the identifier is never used
@@ -167,13 +166,14 @@ WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 366
 
 Synthesizing Unit <total_link>.
     Related source file is "C:\Users\TM\Desktop\FPGA\Total\total_link.v".
+INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 99: Output port <count> of the instance <sram> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 99: Output port <Current_State> of the instance <sram> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 99: Output port <opcode> of the instance <sram> is unconnected or connected to loadless signal.
 INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 99: Output port <nUsing> of the instance <sram> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 138: Output port <Spi_rrdy> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 138: Output port <Spi_trdy> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 138: Output port <Data_from_spi> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 165: Output port <Si4463_Ph_Status_1> of the instance <wireless> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 140: Output port <Spi_Current_State_1> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 140: Output port <Spi_rrdy> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 140: Output port <Spi_trdy> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 140: Output port <Data_from_spi> of the instance <slave> is unconnected or connected to loadless signal.
     Summary:
 	no macro.
 Unit <total_link> synthesized.
@@ -204,34 +204,34 @@ Synthesizing Unit <SRAM_ctrl>.
     Found 1-bit register for signal <fifo_i_empty>.
     Found 1-bit register for signal <fifo_o_empty>.
     Found 1-bit register for signal <nUsing>.
-    Found 18-bit adder for signal <fifo_i_wr_ptr[17]_GND_2_o_add_10_OUT> created at line 155.
-    Found 11-bit adder for signal <fifo_i_count[10]_GND_2_o_add_11_OUT> created at line 156.
-    Found 18-bit adder for signal <fifo_o_rd_ptr[17]_GND_2_o_add_14_OUT> created at line 166.
-    Found 18-bit adder for signal <fifo_o_wr_ptr[17]_GND_2_o_add_18_OUT> created at line 178.
-    Found 11-bit adder for signal <fifo_o_count[10]_GND_2_o_add_19_OUT> created at line 179.
-    Found 18-bit adder for signal <fifo_i_rd_ptr[17]_GND_2_o_add_22_OUT> created at line 189.
-    Found 11-bit subtractor for signal <GND_2_o_GND_2_o_sub_16_OUT<10:0>> created at line 167.
-    Found 11-bit subtractor for signal <GND_2_o_GND_2_o_sub_24_OUT<10:0>> created at line 190.
-    Found 1-bit tristate buffer for signal <Dout<15>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<14>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<13>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<12>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<11>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<10>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<9>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<8>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<7>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<6>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<5>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<4>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<3>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<2>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<1>> created at line 109
-    Found 1-bit tristate buffer for signal <Dout<0>> created at line 109
-    Found 18-bit comparator greater for signal <GND_2_o_fifo_i_wr_ptr[17]_LessThan_13_o> created at line 157
-    Found 18-bit comparator greater for signal <GND_2_o_fifo_o_rd_ptr[17]_LessThan_17_o> created at line 168
-    Found 18-bit comparator greater for signal <GND_2_o_fifo_o_wr_ptr[17]_LessThan_21_o> created at line 180
-    Found 18-bit comparator greater for signal <GND_2_o_fifo_i_rd_ptr[17]_LessThan_25_o> created at line 191
+    Found 18-bit adder for signal <fifo_i_wr_ptr[17]_GND_2_o_add_11_OUT> created at line 158.
+    Found 11-bit adder for signal <fifo_i_count[10]_GND_2_o_add_12_OUT> created at line 159.
+    Found 18-bit adder for signal <fifo_o_rd_ptr[17]_GND_2_o_add_15_OUT> created at line 169.
+    Found 18-bit adder for signal <fifo_o_wr_ptr[17]_GND_2_o_add_19_OUT> created at line 181.
+    Found 11-bit adder for signal <fifo_o_count[10]_GND_2_o_add_20_OUT> created at line 182.
+    Found 18-bit adder for signal <fifo_i_rd_ptr[17]_GND_2_o_add_23_OUT> created at line 192.
+    Found 11-bit subtractor for signal <GND_2_o_GND_2_o_sub_17_OUT<10:0>> created at line 170.
+    Found 11-bit subtractor for signal <GND_2_o_GND_2_o_sub_25_OUT<10:0>> created at line 193.
+    Found 1-bit tristate buffer for signal <Dout<15>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<14>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<13>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<12>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<11>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<10>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<9>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<8>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<7>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<6>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<5>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<4>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<3>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<2>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<1>> created at line 112
+    Found 1-bit tristate buffer for signal <Dout<0>> created at line 112
+    Found 18-bit comparator greater for signal <GND_2_o_fifo_i_wr_ptr[17]_LessThan_14_o> created at line 160
+    Found 18-bit comparator greater for signal <GND_2_o_fifo_o_rd_ptr[17]_LessThan_18_o> created at line 171
+    Found 18-bit comparator greater for signal <GND_2_o_fifo_o_wr_ptr[17]_LessThan_22_o> created at line 183
+    Found 18-bit comparator greater for signal <GND_2_o_fifo_i_rd_ptr[17]_LessThan_26_o> created at line 194
     WARNING:Xst:2404 -  FFs/Latches <fifo_i_full<0:0>> (without init value) have a constant value of 0 in block <SRAM_ctrl>.
     WARNING:Xst:2404 -  FFs/Latches <fifo_o_full<0:0>> (without init value) have a constant value of 0 in block <SRAM_ctrl>.
     Summary:
@@ -244,25 +244,18 @@ Unit <SRAM_ctrl> synthesized.
 
 Synthesizing Unit <Slave_Ctrl>.
     Related source file is "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v".
-WARNING:Xst:647 - Input <Data_from_sram> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-WARNING:Xst:647 - Input <SRAM_count> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-WARNING:Xst:647 - Input <SRAM_empty> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <frame_recved_int> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" line 70: Output port <index1> of the instance <slave> is unconnected or connected to loadless signal.
-WARNING:Xst:653 - Signal <slave_data_to_spi> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <Data_from_spi> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <Spi_trdy> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <Spi_rrdy> is used but never assigned. This sourceless signal will be automatically connected to value GND.
-WARNING:Xst:653 - Signal <SRAM_read> is used but never assigned. This sourceless signal will be automatically connected to value GND.
-WARNING:Xst:653 - Signal <slave_write> is used but never assigned. This sourceless signal will be automatically connected to value GND.
-    Found 1-bit register for signal <Spi_Current_State_1<6>>.
-    Found 1-bit register for signal <Spi_Current_State_1<5>>.
-    Found 1-bit register for signal <Spi_Current_State_1<4>>.
-    Found 1-bit register for signal <Spi_Current_State_1<3>>.
-    Found 1-bit register for signal <Spi_Current_State_1<2>>.
-    Found 1-bit register for signal <Spi_Current_State_1<1>>.
-    Found 1-bit register for signal <Spi_Current_State_1<0>>.
-    Found 8-bit register for signal <slave_data_from_spi_reg>.
-    Found 5-bit register for signal <Spi_Current_State>.
+    Found 1-bit register for signal <slave_write>.
+    Found 8-bit register for signal <Sended_count>.
+    Found 1-bit register for signal <irq_noted>.
+    Found 1-bit register for signal <spi_send_end>.
+    Found 8-bit register for signal <slave_data_to_spi>.
+    Found 1-bit register for signal <spi_read_sram>.
+    Found 1-bit register for signal <SRAM_write>.
     Found 1-bit register for signal <Data_to_sram<15>>.
     Found 1-bit register for signal <Data_to_sram<14>>.
     Found 1-bit register for signal <Data_to_sram<13>>.
@@ -279,53 +272,49 @@ WARNING:Xst:653 - Signal <slave_write> is used but never assigned. This sourcele
     Found 1-bit register for signal <Data_to_sram<2>>.
     Found 1-bit register for signal <Data_to_sram<1>>.
     Found 1-bit register for signal <Data_to_sram<0>>.
-    Found 8-bit register for signal <Sended_count>.
     Found 1-bit register for signal <Byte_flag>.
+    Found 8-bit register for signal <slave_data_from_spi_reg>.
     Found 8-bit register for signal <Data_len>.
-    Found 1-bit register for signal <SRAM_write>.
-    Found 32-bit register for signal <delay_count>.
-    Found 1-bit register for signal <delay_int>.
-    Found 3-bit register for signal <Int_Current_State>.
     Found 1-bit register for signal <cpu_recv_int>.
-    Found 1-bit register for signal <delay_start>.
-    Found 8-bit register for signal <delay_mtime>.
-    Found finite state machine <FSM_1> for signal <Int_Current_State>.
+    Found 3-bit register for signal <Irq_Current_State>.
+    Found 16-bit register for signal <Data_from_sram_reg>.
+    Found 1-bit register for signal <SRAM_read>.
+    Found 8-bit register for signal <packet_len>.
+    Found 5-bit register for signal <Spi_Current_State>.
+    Found finite state machine <FSM_0> for signal <Irq_Current_State>.
     -----------------------------------------------------------------------
-    | States             | 4                                              |
-    | Transitions        | 6                                              |
-    | Inputs             | 2                                              |
-    | Outputs            | 4                                              |
+    | States             | 6                                              |
+    | Transitions        | 15                                             |
+    | Inputs             | 7                                              |
+    | Outputs            | 5                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 000                                            |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_0> for signal <Spi_Current_State>.
+    Found finite state machine <FSM_1> for signal <Spi_Current_State>.
     -----------------------------------------------------------------------
-    | States             | 12                                             |
-    | Transitions        | 25                                             |
-    | Inputs             | 7                                              |
-    | Outputs            | 16                                             |
+    | States             | 20                                             |
+    | Transitions        | 41                                             |
+    | Inputs             | 10                                             |
+    | Outputs            | 10                                             |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00000                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 7-bit adder for signal <Spi_Current_State_1[6]_GND_19_o_add_6_OUT> created at line 145.
-    Found 8-bit adder for signal <slave_data_from_spi_reg[7]_GND_19_o_add_9_OUT> created at line 153.
-    Found 8-bit adder for signal <Sended_count[7]_GND_19_o_add_18_OUT> created at line 210.
-    Found 32-bit adder for signal <delay_count[31]_GND_19_o_add_70_OUT> created at line 401.
-    Found 8x15-bit multiplier for signal <delay_mtime[7]_PWR_4_o_MuLt_71_OUT> created at line 402.
-    Found 8-bit comparator greater for signal <n0051> created at line 212
-    Found 8-bit comparator greater for signal <Sended_count[7]_Data_len[7]_LessThan_27_o> created at line 242
-    Found 32-bit comparator equal for signal <delay_count[31]_GND_19_o_equal_73_o> created at line 402
-    WARNING:Xst:2404 -  FFs/Latches <Spi_Current_State_1<7><0:0>> (without init value) have a constant value of 0 in block <Slave_Ctrl>.
+    Found 9-bit subtractor for signal <GND_19_o_GND_19_o_sub_72_OUT> created at line 384.
+    Found 9-bit adder for signal <n0254[8:0]> created at line 184.
+    Found 8-bit adder for signal <Sended_count[7]_GND_19_o_add_20_OUT> created at line 216.
+    Found 8-bit comparator greater for signal <n0042> created at line 218
+    Found 8-bit comparator greater for signal <Sended_count[7]_Data_len[7]_LessThan_29_o> created at line 248
+    Found 8-bit comparator greater for signal <Sended_count[7]_packet_len[7]_LessThan_46_o> created at line 336
+    Found 32-bit comparator greater for signal <n0123> created at line 384
     Summary:
-	inferred   1 Multiplier(s).
-	inferred   4 Adder/Subtractor(s).
-	inferred  92 D-type flip-flop(s).
-	inferred   3 Comparator(s).
-	inferred  72 Multiplexer(s).
+	inferred   3 Adder/Subtractor(s).
+	inferred  80 D-type flip-flop(s).
+	inferred   4 Comparator(s).
+	inferred  57 Multiplexer(s).
 	inferred   2 Finite State Machine(s).
 Unit <Slave_Ctrl> synthesized.
 
@@ -344,45 +333,40 @@ Synthesizing Unit <spi_slave>.
     Summary:
 	inferred   1 Adder/Subtractor(s).
 	inferred  25 D-type flip-flop(s).
-	inferred   6 Multiplexer(s).
+	inferred   8 Multiplexer(s).
 Unit <spi_slave> synthesized.
 
 Synthesizing Unit <Wireless_Ctrl>.
     Related source file is "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v".
-WARNING:Xst:647 - Input <SRAM_full> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
 WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl', is tied to its initial value (1).
-    Found 1-bit register for signal <delay_int>.
-    Found 1-bit register for signal <spi_start>.
+    Found 1-bit register for signal <spi_op_fifo_flag>.
     Found 3-bit register for signal <spi_cmd>.
     Found 8-bit register for signal <spi_data_len>.
     Found 5-bit register for signal <spi_return_len>.
     Found 128-bit register for signal <spi_cmd_data>.
     Found 6-bit register for signal <Spi_Current_State>.
+    Found 1-bit register for signal <spi_start>.
     Found 1-bit register for signal <spi_Using>.
     Found 1-bit register for signal <spi_op_done>.
     Found 1-bit register for signal <GetCTS_flag>.
     Found 1-bit register for signal <Byte_flag>.
-    Found 1-bit register for signal <spi_op_fifo_flag>.
     Found 1-bit register for signal <Ended_flag>.
+    Found 1-bit register for signal <delay_int>.
     Found 16-bit register for signal <Data_to_master>.
     Found 3-bit register for signal <master_mem_addr>.
     Found 1-bit register for signal <master_write_n>.
     Found 1-bit register for signal <SRAM_read>.
-    Found 16-bit register for signal <Main_Data_Check>.
+    Found 32-bit register for signal <Main_Data_Check>.
     Found 1-bit register for signal <SRAM_write>.
     Found 16-bit register for signal <Data_to_sram>.
+    Found 1-bit register for signal <frame_len_flag>.
     Found 8-bit register for signal <Sended_count>.
     Found 16-bit register for signal <Data_from_sram_reg>.
     Found 80-bit register for signal <Main_Return_Data>.
     Found 80-bit register for signal <Int_Return_Data>.
     Found 1-bit register for signal <master_read_n>.
     Found 16-bit register for signal <master_control_reg>.
-    Found 4-bit register for signal <led>.
-    Found 1-bit register for signal <Si4463_reset>.
-    Found 1-bit register for signal <delay_start>.
-    Found 8-bit register for signal <delay_mtime>.
     Found 8-bit register for signal <Main_Current_State>.
-    Found 1-bit register for signal <Main_start>.
     Found 1-bit register for signal <Main_Cmd_Data<127>>.
     Found 1-bit register for signal <Main_Cmd_Data<126>>.
     Found 1-bit register for signal <Main_Cmd_Data<125>>.
@@ -514,6 +498,11 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     Found 8-bit register for signal <Main_Data_len>.
     Found 5-bit register for signal <Main_Return_len>.
     Found 3-bit register for signal <Main_Cmd>.
+    Found 1-bit register for signal <Main_start>.
+    Found 1-bit register for signal <reset_n>.
+    Found 1-bit register for signal <Si4463_reset>.
+    Found 1-bit register for signal <delay_start>.
+    Found 8-bit register for signal <delay_mtime>.
     Found 1-bit register for signal <enable_irq>.
     Found 3-bit register for signal <tx_state>.
     Found 8-bit register for signal <Data_Len_to_Send>.
@@ -528,15 +517,39 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     Found 4-bit register for signal <Int_Return_len>.
     Found 1-bit register for signal <rx_flag>.
     Found 4-bit register for signal <Recv_Current_State>.
+    Found 8-bit register for signal <Si4463_Ph_Status_1>.
     Found 1-bit register for signal <frame_recved_int>.
-    Found 8-bit register for signal <frame_len>.
     Found 32-bit register for signal <delay_count>.
+    Found finite state machine <FSM_2> for signal <Spi_Current_State>.
+    -----------------------------------------------------------------------
+    | States             | 43                                             |
+    | Transitions        | 3741                                           |
+    | Inputs             | 35                                             |
+    | Outputs            | 1                                              |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | reset_n (negative)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 000000                                         |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found finite state machine <FSM_3> for signal <Main_Current_State>.
+    -----------------------------------------------------------------------
+    | States             | 158                                            |
+    | Transitions        | 224                                            |
+    | Inputs             | 9                                              |
+    | Outputs            | 151                                            |
+    | Clock              | clk (rising_edge)                              |
+    | Power Up State     | 00000000                                       |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
     Found finite state machine <FSM_4> for signal <Irq_Current_State>.
     -----------------------------------------------------------------------
     | States             | 9                                              |
     | Transitions        | 18                                             |
     | Inputs             | 6                                              |
-    | Outputs            | 7                                              |
+    | Outputs            | 8                                              |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 0000                                           |
     | Encoding           | auto                                           |
@@ -544,45 +557,31 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     -----------------------------------------------------------------------
     Found finite state machine <FSM_5> for signal <Recv_Current_State>.
     -----------------------------------------------------------------------
-    | States             | 10                                             |
-    | Transitions        | 18                                             |
-    | Inputs             | 4                                              |
-    | Outputs            | 5                                              |
+    | States             | 7                                              |
+    | Transitions        | 11                                             |
+    | Inputs             | 3                                              |
+    | Outputs            | 10                                             |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 0000                                           |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_3> for signal <Main_Current_State>.
-    -----------------------------------------------------------------------
-    | States             | 158                                            |
-    | Transitions        | 223                                            |
-    | Inputs             | 9                                              |
-    | Outputs            | 147                                            |
-    | Clock              | clk (rising_edge)                              |
-    | Power Up State     | 11111010                                       |
-    | Encoding           | auto                                           |
-    | Implementation     | LUT                                            |
-    -----------------------------------------------------------------------
-    Found 32-bit adder for signal <delay_count[31]_GND_26_o_add_2_OUT> created at line 88.
-    Found 8-bit adder for signal <Sended_count[7]_GND_26_o_add_83_OUT> created at line 582.
-    Found 8-bit adder for signal <Data_Len_to_Send[7]_GND_26_o_add_227_OUT> created at line 2677.
-    Found 8x15-bit multiplier for signal <delay_mtime[7]_PWR_10_o_MuLt_3_OUT> created at line 89.
-    Found 32-bit comparator equal for signal <delay_count[31]_GND_26_o_equal_5_o> created at line 89
-    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_37_o> created at line 336
-    Found 8-bit comparator greater for signal <Sended_count[7]_GND_26_o_LessThan_61_o> created at line 499
-    Found 8-bit comparator greater for signal <Sended_count[7]_Int_Data_len[7]_LessThan_85_o> created at line 583
-    Found 8-bit comparator greater for signal <Sended_count[7]_Int_Data_len[7]_LessThan_94_o> created at line 618
-    Found 12-bit comparator greater for signal <n0344> created at line 2574
-    Found 8-bit comparator greater for signal <PWR_10_o_frame_len[7]_LessThan_299_o> created at line 2916
-    HDL ADVISOR - Describing an operational reset or an explicit power-up state for register <Spi_Current_State> would allow inference of a finite state machine and as consequence better performance and smaller area.
+    Found 32-bit adder for signal <delay_count[31]_GND_25_o_add_1_OUT> created at line 93.
+    Found 8-bit adder for signal <Sended_count[7]_GND_25_o_add_87_OUT> created at line 637.
+    Found 8-bit adder for signal <Data_Len_to_Send[7]_GND_25_o_add_248_OUT> created at line 2378.
+    Found 8x15-bit multiplier for signal <delay_mtime[7]_PWR_11_o_MuLt_2_OUT> created at line 94.
+    Found 32-bit comparator equal for signal <delay_count[31]_GND_25_o_equal_4_o> created at line 94
+    Found 8-bit comparator greater for signal <Sended_count[7]_GND_25_o_LessThan_65_o> created at line 544
+    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_89_o> created at line 638
+    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_102_o> created at line 675
+    Found 12-bit comparator greater for signal <n0403> created at line 2273
     Summary:
 	inferred   1 Multiplier(s).
 	inferred   3 Adder/Subtractor(s).
-	inferred 670 D-type flip-flop(s).
-	inferred   7 Comparator(s).
-	inferred 249 Multiplexer(s).
-	inferred   3 Finite State Machine(s).
+	inferred 684 D-type flip-flop(s).
+	inferred   5 Comparator(s).
+	inferred 277 Multiplexer(s).
+	inferred   4 Finite State Machine(s).
 Unit <Wireless_Ctrl> synthesized.
 
 Synthesizing Unit <spi_master>.
@@ -617,10 +616,10 @@ Synthesizing Unit <spi_master>.
     Found 16-bit register for signal <data_to_cpu>.
     Found 5-bit register for signal <state>.
     Found 9-bit adder for signal <n0216[8:0]> created at line 268.
-    Found 5-bit adder for signal <state[4]_GND_27_o_add_43_OUT> created at line 325.
+    Found 5-bit adder for signal <state[4]_GND_28_o_add_43_OUT> created at line 325.
     Found 16-bit 7-to-1 multiplexer for signal <p1_data_to_cpu> created at line 116.
-    Found 16-bit comparator equal for signal <GND_27_o_endofpacketvalue_reg[15]_equal_52_o> created at line 375
-    Found 16-bit comparator equal for signal <GND_27_o_endofpacketvalue_reg[15]_equal_53_o> created at line 375
+    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_52_o> created at line 375
+    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_53_o> created at line 375
     Summary:
 	inferred   2 Adder/Subtractor(s).
 	inferred 121 D-type flip-flop(s).
@@ -632,52 +631,52 @@ Unit <spi_master> synthesized.
 HDL Synthesis Report
 
 Macro Statistics
-# Multipliers                                          : 2
- 15x8-bit multiplier                                   : 2
-# Adders/Subtractors                                   : 16
+# Multipliers                                          : 1
+ 15x8-bit multiplier                                   : 1
+# Adders/Subtractors                                   : 15
  11-bit addsub                                         : 2
  18-bit adder                                          : 4
  3-bit subtractor                                      : 1
- 32-bit adder                                          : 2
+ 32-bit adder                                          : 1
  5-bit adder                                           : 1
- 7-bit adder                                           : 1
- 8-bit adder                                           : 4
- 9-bit adder                                           : 1
-# Registers                                            : 244
- 1-bit register                                        : 185
+ 8-bit adder                                           : 3
+ 9-bit adder                                           : 2
+ 9-bit subtractor                                      : 1
+# Registers                                            : 263
+ 1-bit register                                        : 206
  11-bit register                                       : 2
  128-bit register                                      : 1
- 16-bit register                                       : 14
+ 16-bit register                                       : 13
  18-bit register                                       : 5
  3-bit register                                        : 7
  32-bit register                                       : 3
- 4-bit register                                        : 3
+ 4-bit register                                        : 2
  5-bit register                                        : 3
  6-bit register                                        : 1
- 7-bit register                                        : 1
- 8-bit register                                        : 17
+ 8-bit register                                        : 18
  80-bit register                                       : 2
-# Comparators                                          : 16
+# Comparators                                          : 15
  12-bit comparator greater                             : 1
  16-bit comparator equal                               : 2
  18-bit comparator greater                             : 4
- 32-bit comparator equal                               : 2
- 8-bit comparator greater                              : 7
-# Multiplexers                                         : 369
- 1-bit 2-to-1 multiplexer                              : 227
+ 32-bit comparator equal                               : 1
+ 32-bit comparator greater                             : 1
+ 8-bit comparator greater                              : 6
+# Multiplexers                                         : 384
+ 1-bit 2-to-1 multiplexer                              : 253
  128-bit 2-to-1 multiplexer                            : 5
- 16-bit 2-to-1 multiplexer                             : 23
+ 16-bit 2-to-1 multiplexer                             : 10
  16-bit 7-to-1 multiplexer                             : 1
  18-bit 2-to-1 multiplexer                             : 5
- 3-bit 2-to-1 multiplexer                              : 25
- 32-bit 2-to-1 multiplexer                             : 4
- 4-bit 2-to-1 multiplexer                              : 30
+ 3-bit 2-to-1 multiplexer                              : 21
+ 32-bit 2-to-1 multiplexer                             : 5
+ 4-bit 2-to-1 multiplexer                              : 26
  5-bit 2-to-1 multiplexer                              : 3
- 6-bit 2-to-1 multiplexer                              : 17
- 8-bit 2-to-1 multiplexer                              : 29
+ 6-bit 2-to-1 multiplexer                              : 20
+ 8-bit 2-to-1 multiplexer                              : 35
 # Tristates                                            : 16
  1-bit tristate buffer                                 : 16
-# FSMs                                                 : 5
+# FSMs                                                 : 6
 # Xors                                                 : 2
  32-bit xor2                                           : 2
 
@@ -687,31 +686,19 @@ Macro Statistics
 *                       Advanced HDL Synthesis                          *
 =========================================================================
 
-INFO:Xst:2261 - The FF/Latch <delay_mtime_1> in Unit <slave> is equivalent to the following 6 FFs/Latches, which will be removed : <delay_mtime_2> <delay_mtime_3> <delay_mtime_4> <delay_mtime_5> <delay_mtime_6> <delay_mtime_7> 
 INFO:Xst:2261 - The FF/Latch <delay_mtime_0> in Unit <wireless> is equivalent to the following 3 FFs/Latches, which will be removed : <delay_mtime_5> <delay_mtime_6> <delay_mtime_7> 
 INFO:Xst:2261 - The FF/Latch <Main_Return_len_2> in Unit <wireless> is equivalent to the following FF/Latch, which will be removed : <Main_Return_len_4> 
-WARNING:Xst:1426 - The value init of the FF/Latch delay_mtime_0 hinder the constant cleaning in the block slave.
-   You should achieve better results by setting this init to 1.
-WARNING:Xst:1293 - FF/Latch <tx_state_2> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Main_Return_len_2> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <delay_mtime_0> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <delay_mtime_1> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <TxData_0> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <SS_latched> (without init value) has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <UB_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <CE_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1293 - FF/Latch <LB_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <CE_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <UB_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <SS_latched> (without init value) has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <delay_mtime_0> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Main_Return_len_2> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <tx_state_2> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <SS_old> (without init value) has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_1> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_2> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_3> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_4> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_5> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_6> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_7> has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:2677 - Node <Data_from_sram_reg_8> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Data_from_sram_reg_9> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Data_from_sram_reg_10> of sequential type is unconnected in block <wireless>.
@@ -785,6 +772,26 @@ WARNING:Xst:2677 - Node <Main_Return_Data_76> of sequential type is unconnected 
 WARNING:Xst:2677 - Node <Main_Return_Data_77> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Main_Return_Data_78> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Main_Return_Data_79> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_16> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_18> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_19> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_22> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_23> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_24> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_26> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_27> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_30> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_31> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_32> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_34> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_35> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_38> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_39> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_40> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_42> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_43> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_46> of sequential type is unconnected in block <wireless>.
+WARNING:Xst:2677 - Node <Int_Return_Data_47> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Int_Return_Data_48> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Int_Return_Data_49> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Int_Return_Data_50> of sequential type is unconnected in block <wireless>.
@@ -826,10 +833,6 @@ The following registers are absorbed into counter <fifo_o_count>: 1 register on 
 The following registers are absorbed into counter <fifo_i_rd_ptr>: 1 register on signal <fifo_i_rd_ptr>.
 The following registers are absorbed into counter <fifo_i_wr_ptr>: 1 register on signal <fifo_i_wr_ptr>.
 Unit <SRAM_ctrl> synthesized (advanced).
-
-Synthesizing (advanced) Unit <Slave_Ctrl>.
-The following registers are absorbed into counter <delay_count>: 1 register on signal <delay_count>.
-Unit <Slave_Ctrl> synthesized (advanced).
 
 Synthesizing (advanced) Unit <Wireless_Ctrl>.
 The following registers are absorbed into counter <delay_count>: 1 register on signal <delay_count>.
@@ -911,6 +914,26 @@ WARNING:Xst:2677 - Node <Main_Return_Data_76> of sequential type is unconnected 
 WARNING:Xst:2677 - Node <Main_Return_Data_77> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Main_Return_Data_78> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Main_Return_Data_79> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_16> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_18> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_19> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_22> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_23> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_24> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_26> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_27> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_30> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_31> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_32> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_34> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_35> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_38> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_39> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_40> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_42> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_43> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_46> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Int_Return_Data_47> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_48> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_49> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_50> of sequential type is unconnected in block <Wireless_Ctrl>.
@@ -943,44 +966,62 @@ WARNING:Xst:2677 - Node <Int_Return_Data_76> of sequential type is unconnected i
 WARNING:Xst:2677 - Node <Int_Return_Data_77> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_78> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_79> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_8> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_9> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_10> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_11> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_12> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_13> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_14> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_15> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_16> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_17> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_18> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_19> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_20> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_21> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_22> of sequential type is unconnected in block <Wireless_Ctrl>.
+WARNING:Xst:2677 - Node <Main_Data_Check_23> of sequential type is unconnected in block <Wireless_Ctrl>.
 
 =========================================================================
 Advanced HDL Synthesis Report
 
 Macro Statistics
-# Multipliers                                          : 2
- 15x8-bit multiplier                                   : 2
+# Multipliers                                          : 1
+ 15x8-bit multiplier                                   : 1
 # Adders/Subtractors                                   : 11
  18-bit adder                                          : 4
  3-bit subtractor                                      : 1
- 7-bit adder                                           : 1
- 8-bit adder                                           : 5
-# Counters                                             : 7
+ 8-bit adder                                           : 4
+ 9-bit adder                                           : 1
+ 9-bit subtractor                                      : 1
+# Counters                                             : 6
  11-bit updown counter                                 : 2
  18-bit up counter                                     : 2
- 32-bit up counter                                     : 2
+ 32-bit up counter                                     : 1
  5-bit up counter                                      : 1
-# Registers                                            : 869
- Flip-Flops                                            : 869
-# Comparators                                          : 16
+# Registers                                            : 867
+ Flip-Flops                                            : 867
+# Comparators                                          : 15
  12-bit comparator greater                             : 1
  16-bit comparator equal                               : 2
  18-bit comparator greater                             : 4
- 32-bit comparator equal                               : 2
- 8-bit comparator greater                              : 7
-# Multiplexers                                         : 429
- 1-bit 2-to-1 multiplexer                              : 293
+ 32-bit comparator equal                               : 1
+ 32-bit comparator greater                             : 1
+ 8-bit comparator greater                              : 6
+# Multiplexers                                         : 447
+ 1-bit 2-to-1 multiplexer                              : 325
  128-bit 2-to-1 multiplexer                            : 5
- 16-bit 2-to-1 multiplexer                             : 21
+ 16-bit 2-to-1 multiplexer                             : 9
  16-bit 7-to-1 multiplexer                             : 1
  18-bit 2-to-1 multiplexer                             : 4
- 3-bit 2-to-1 multiplexer                              : 25
+ 3-bit 2-to-1 multiplexer                              : 21
  32-bit 2-to-1 multiplexer                             : 4
- 4-bit 2-to-1 multiplexer                              : 30
+ 4-bit 2-to-1 multiplexer                              : 26
  5-bit 2-to-1 multiplexer                              : 2
- 6-bit 2-to-1 multiplexer                              : 17
- 8-bit 2-to-1 multiplexer                              : 27
-# FSMs                                                 : 5
+ 6-bit 2-to-1 multiplexer                              : 19
+ 8-bit 2-to-1 multiplexer                              : 31
+# FSMs                                                 : 6
 # Xors                                                 : 2
  32-bit xor2                                           : 2
 
@@ -992,23 +1033,6 @@ Macro Statistics
 WARNING:Xst:1293 - FF/Latch <CE_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <LB_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <UB_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1426 - The value init of the FF/Latch delay_mtime_0 hinder the constant cleaning in the block Slave_Ctrl.
-   You should achieve better results by setting this init to 1.
-WARNING:Xst:1293 - FF/Latch <delay_mtime_1> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_2> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_3> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_4> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_5> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_6> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_7> has a constant value of 0 in block <Slave_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <TxData_0> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_1> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_2> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_3> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_4> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_5> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_6> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <TxData_7> has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
@@ -1021,33 +1045,43 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Return_len_2> 
 WARNING:Xst:1710 - FF/Latch <SS_latched> (without init value) has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <SS_old> (without init value) has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <slave/FSM_1> on signal <Int_Current_State[1:2]> with gray encoding.
+Optimizing FSM <slave/FSM_1> on signal <Spi_Current_State[1:5]> with user encoding.
 -------------------
  State | Encoding
 -------------------
- 000   | 00
- 001   | 01
- 010   | 11
- 011   | 10
+ 00000 | 00000
+ 00011 | 00011
+ 00100 | 00100
+ 10000 | 10000
+ 00110 | 00110
+ 00111 | 00111
+ 01000 | 01000
+ 01001 | 01001
+ 01010 | 01010
+ 01011 | 01011
+ 01101 | 01101
+ 01110 | 01110
+ 01111 | 01111
+ 10001 | 10001
+ 10010 | 10010
+ 10011 | 10011
+ 10100 | 10100
+ 10101 | 10101
+ 10110 | 10110
+ 10111 | 10111
 -------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <slave/FSM_0> on signal <Spi_Current_State[1:12]> with one-hot encoding.
------------------------
+Optimizing FSM <slave/FSM_0> on signal <Irq_Current_State[1:3]> with user encoding.
+-------------------
  State | Encoding
------------------------
- 00000 | 000000000001
- 00011 | 000000000010
- 00100 | 000000000100
- 00110 | 000000001000
- 00111 | 000000010000
- 01000 | 000000100000
- 01001 | 000001000000
- 01010 | 000010000000
- 01011 | 000100000000
- 01101 | 001000000000
- 01110 | 010000000000
- 01111 | 100000000000
------------------------
+-------------------
+ 000   | 000
+ 001   | 001
+ 010   | 010
+ 011   | 011
+ 100   | 100
+ 101   | 101
+-------------------
 Analyzing FSM <MFsm> for best encoding.
 Optimizing FSM <wireless/FSM_4> on signal <Irq_Current_State[1:4]> with user encoding.
 -------------------
@@ -1068,8 +1102,8 @@ Optimizing FSM <wireless/FSM_3> on signal <Main_Current_State[1:158]> with one-h
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  State    | Encoding
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- 11111010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
- 00000001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010
+ 00000000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+ 11111001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010
  00000010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100
  00000110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000
  00000111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000
@@ -1083,117 +1117,117 @@ Optimizing FSM <wireless/FSM_3> on signal <Main_Current_State[1:158]> with one-h
  00001111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000
  00010000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000
  00010001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000
- 00010011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000
- 00010100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000
- 00010101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000
- 00010110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000
- 00010111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000
- 00011000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000
- 00011001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000
- 00011010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000
- 00011011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000
- 00011100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000
- 00011101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000
- 00011110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000
- 00011111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000
- 00100000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000
- 00100001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000
- 00100010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000
- 00100011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000
- 00100100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000
- 00100101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000
- 00100110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000
- 00100111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000
- 00101000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000
- 00101001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000
- 00101010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000
- 00101011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000
- 00101100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000
- 00101101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000
- 00101110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000
- 00101111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000
- 00110000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000
- 00110001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000
- 00110010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000
- 00110011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000
- 00110100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000
- 00110101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000
- 00110110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000
- 00110111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000
- 00111000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000
- 00111001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000
- 00111010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000
- 00111011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000
- 00111100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000
- 00111101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000
- 00111110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000
- 00111111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000
- 01000000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000
- 01000001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000
- 01000010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000
- 01000011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000
- 01000100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000
- 01000101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000
- 01000110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000
- 01000111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000
- 01001000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000
- 01001001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000
- 01001010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000
- 01001011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000
- 01001100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000
- 01001101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000
- 01001110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000
- 01001111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010101 | 00000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010110 | 00000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01010111 | 00000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011000 | 00000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011001 | 00000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011010 | 00000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011011 | 00000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011100 | 00000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011101 | 00000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011110 | 00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01011111 | 00000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100000 | 00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100001 | 00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100010 | 00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100011 | 00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100100 | 00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100101 | 00000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100110 | 00000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01100111 | 00000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101000 | 00000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101001 | 00000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101010 | 00000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101011 | 00000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101100 | 00000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101101 | 00000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101110 | 00000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01101111 | 00000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110000 | 00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110001 | 00000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110010 | 00000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110011 | 00000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110100 | 00000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110101 | 00000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110110 | 00000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01110111 | 00000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111000 | 00000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111001 | 00000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111010 | 00000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111011 | 00000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111100 | 00000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111101 | 00000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111110 | 00000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 01111111 | 00000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 10000000 | 00000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 10000001 | 00000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 00010010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000
+ 00010011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000
+ 00010100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000
+ 00010101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000
+ 00010110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000
+ 00010111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000
+ 00011000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000
+ 00011001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000
+ 00011010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000
+ 00011011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000
+ 00011100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000
+ 00011101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000
+ 00011110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000
+ 00011111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000
+ 00100000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000
+ 00100001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000
+ 00100010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000
+ 00100011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000
+ 00100100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000
+ 00100101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000
+ 00100110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000
+ 00100111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000
+ 00101000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000
+ 00101001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000
+ 00101010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000
+ 00101011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000
+ 00101100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000
+ 00101101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000
+ 00101110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000
+ 00101111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000
+ 00110000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000
+ 00110001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000
+ 00110010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000
+ 00110011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000
+ 00110100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000
+ 00110101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000
+ 00110110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000
+ 00110111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000
+ 00111000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000
+ 00111001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000
+ 00111010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000
+ 00111011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000
+ 00111100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000
+ 00111101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000
+ 00111110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000
+ 00111111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000
+ 01000000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000
+ 01000001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000
+ 01000010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000
+ 01000011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000
+ 01000100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000
+ 01000101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000
+ 01000110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000
+ 01000111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000
+ 01001000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000
+ 01001001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000
+ 01001010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000
+ 01001011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000
+ 01001100 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000
+ 01001101 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000
+ 01001110 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01001111 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010000 | 00000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010001 | 00000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010010 | 00000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010011 | 00000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010100 | 00000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010101 | 00000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010110 | 00000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01010111 | 00000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011000 | 00000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011001 | 00000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011010 | 00000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011011 | 00000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011100 | 00000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011101 | 00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011110 | 00000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01011111 | 00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100000 | 00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100001 | 00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100010 | 00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100011 | 00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100100 | 00000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100101 | 00000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100110 | 00000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01100111 | 00000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101000 | 00000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101001 | 00000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101010 | 00000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101011 | 00000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101100 | 00000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101101 | 00000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101110 | 00000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01101111 | 00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110000 | 00000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110001 | 00000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110010 | 00000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110011 | 00000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110100 | 00000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110101 | 00000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110110 | 00000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01110111 | 00000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111000 | 00000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111001 | 00000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111010 | 00000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111011 | 00000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111100 | 00000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111101 | 00000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111110 | 00000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 01111111 | 00000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 10000000 | 00000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  10100000 | 00000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  10000011 | 00000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  10000100 | 00000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -1222,31 +1256,102 @@ Optimizing FSM <wireless/FSM_3> on signal <Main_Current_State[1:158]> with one-h
  11001001 | 00000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  11001010 | 00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  10001011 | 00001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 00000000 | 00010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 11111010 | 00010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  11110111 | 00100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
  11111000 | 01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
- 11111001 | 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+ 00000001 | 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <wireless/FSM_5> on signal <Recv_Current_State[1:4]> with user encoding.
+Optimizing FSM <wireless/FSM_5> on signal <Recv_Current_State[1:7]> with one-hot encoding.
 -------------------
  State | Encoding
 -------------------
- 0000  | 0000
- 0001  | 0001
- 0010  | 0010
- 0011  | 0011
- 0100  | 0100
- 0101  | 0101
- 0110  | 0110
- 0111  | 0111
- 1000  | 1000
- 1001  | 1001
+ 0000  | 0000001
+ 0001  | 0000010
+ 0010  | 0000100
+ 0011  | 0001000
+ 0100  | 0010000
+ 0101  | 0100000
+ 0110  | 1000000
 -------------------
+Analyzing FSM <MFsm> for best encoding.
+Optimizing FSM <wireless/FSM_2> on signal <Spi_Current_State[1:43]> with one-hot encoding.
+-------------------------------------------------------
+ State  | Encoding
+-------------------------------------------------------
+ 000000 | 0000000000000000000000000000000000000000001
+ 000001 | 0000000000000000000000000000000000000000010
+ 100100 | 0000000000000000000000000000000000000000100
+ 000010 | 0000000000000000000000000000000000000001000
+ 000011 | 0000000000000000000000000000000000000010000
+ 000100 | 0000000000000000000000000000000000000100000
+ 000101 | 0000000000000000000000000000000000001000000
+ 000110 | 0000000000000000000000000000000000010000000
+ 010000 | 0000000000000000000000000000000000100000000
+ 000111 | 0000000000000000000000000000000001000000000
+ 001000 | 0000000000000000000000000000000010000000000
+ 011100 | 0000000000000000000000000000000100000000000
+ 011110 | 0000000000000000000000000000001000000000000
+ 001001 | 0000000000000000000000000000010000000000000
+ 001010 | 0000000000000000000000000000100000000000000
+ 001011 | 0000000000000000000000000001000000000000000
+ 001100 | 0000000000000000000000000010000000000000000
+ 001101 | 0000000000000000000000000100000000000000000
+ 001110 | 0000000000000000000000001000000000000000000
+ 001111 | 0000000000000000000000010000000000000000000
+ 010001 | 0000000000000000000000100000000000000000000
+ 010010 | 0000000000000000000001000000000000000000000
+ 111111 | 0000000000000000000010000000000000000000000
+ 010100 | 0000000000000000000100000000000000000000000
+ 010101 | 0000000000000000001000000000000000000000000
+ 010110 | 0000000000000000010000000000000000000000000
+ 010111 | 0000000000000000100000000000000000000000000
+ 011000 | 0000000000000001000000000000000000000000000
+ 011001 | 0000000000000010000000000000000000000000000
+ 011010 | 0000000000000100000000000000000000000000000
+ 011011 | 0000000000001000000000000000000000000000000
+ 011111 | 0000000000010000000000000000000000000000000
+ 011101 | 0000000000100000000000000000000000000000000
+ 100001 | 0000000001000000000000000000000000000000000
+ 100000 | 0000000010000000000000000000000000000000000
+ 100010 | 0000000100000000000000000000000000000000000
+ 100011 | 0000001000000000000000000000000000000000000
+ 100101 | 0000010000000000000000000000000000000000000
+ 100110 | 0000100000000000000000000000000000000000000
+ 100111 | 0001000000000000000000000000000000000000000
+ 010011 | 0010000000000000000000000000000000000000000
+ 111101 | 0100000000000000000000000000000000000000000
+ 111110 | 1000000000000000000000000000000000000000000
+-------------------------------------------------------
 WARNING:Xst:1293 - FF/Latch <master_mem_addr_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <spi_return_len_4> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_114> <Main_Cmd_Data_113> <Main_Cmd_Data_112> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_127> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_125> <Main_Cmd_Data_109> <Main_Cmd_Data_106> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_79> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_77> 
+WARNING:Xst:3002 - This design contains one or more registers/latches that are directly
+   incompatible with the Spartan6 architecture. The two primary causes of this is
+   either a register or latch described with both an asynchronous set and
+   asynchronous reset, or a register or latch described with an asynchronous
+   set or reset which however has an initialization value of the opposite 
+   polarity (i.e. asynchronous reset with an initialization value of 1).
+    While this circuit can be built, it creates a sub-optimal implementation
+   in terms of area, power and performance. For a more optimal implementation
+   Xilinx highly recommends one of the following:
+
+          1) Remove either the set or reset from all registers and latches
+             if not needed for required functionality
+          2) Modify the code in order to produce a synchronous set
+             and/or reset (both is preferred)
+          3) Ensure all registers have the same initialization value as the
+             described asynchronous set or reset polarity
+          4) Use the -async_to_sync option to transform the asynchronous
+             set/reset to synchronous operation
+             (timing simulation highly recommended when using this option)
+
+  Please refer to http://www.xilinx.com search string "Spartan6 asynchronous set/reset" for more details.
+
+  List of register instances with asynchronous set or reset and opposite initialization value:
+    spi_op_fifo_flag in unit <Wireless_Ctrl>
+
 
 Optimizing unit <total_link> ...
 WARNING:Xst:1293 - FF/Latch <sram/fifo_o_rd_ptr_17> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
@@ -1275,40 +1380,50 @@ Optimizing unit <Slave_Ctrl> ...
 Optimizing unit <spi_slave> ...
 
 Optimizing unit <Wireless_Ctrl> ...
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_6> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_7> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_31> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:2677 - Node <Int_Return_Data_17> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_25> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_33> of sequential type is unconnected in block <Wireless_Ctrl>.
 WARNING:Xst:2677 - Node <Int_Return_Data_41> of sequential type is unconnected in block <Wireless_Ctrl>.
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_127> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_125> <Main_Cmd_Data_109> <Main_Cmd_Data_106> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_117> <Main_Cmd_Data_118> 
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_1> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_6> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_7> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
-WARNING:Xst:1710 - FF/Latch <Int_Data_len_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_118> <Main_Cmd_Data_117> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_113> <Main_Cmd_Data_114> <Main_Cmd_Data_112> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
+WARNING:Xst:1710 - FF/Latch <Int_Data_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_4> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_5> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_6> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_7> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_2> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1293 - FF/Latch <spi_return_len_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Data_len_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_1> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_6> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_7> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_118> <Main_Cmd_Data_117> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_113> <Main_Cmd_Data_114> <Main_Cmd_Data_112> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
+WARNING:Xst:1293 - FF/Latch <spi_return_len_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_3> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_4> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_5> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_6> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_7> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_2> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <spi_return_len_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_127> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_125> <Main_Cmd_Data_109> <Main_Cmd_Data_106> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_117> <Main_Cmd_Data_118> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
 
 Optimizing unit <spi_master> ...
 WARNING:Xst:1293 - FF/Latch <spi/spi_slave_select_holding_reg_0> has a constant value of 1 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
@@ -1335,22 +1450,6 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/spi_slave_selec
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/spi_slave_select_reg_5> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/spi_slave_select_reg_6> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/spi_slave_select_reg_7> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_15> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_14> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_13> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_12> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_11> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_10> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_9> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_8> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_7> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_6> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_5> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_4> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_3> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_2> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_1> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/slave_data_from_sram_0> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_15> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_14> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_13> of sequential type is unconnected in block <total_link>.
@@ -1358,6 +1457,7 @@ WARNING:Xst:2677 - Node <wireless/Data_to_master_12> of sequential type is uncon
 WARNING:Xst:2677 - Node <wireless/Data_to_master_11> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_9> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_8> of sequential type is unconnected in block <total_link>.
+WARNING:Xst:2677 - Node <wireless/frame_recved_int> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_15> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_14> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_13> of sequential type is unconnected in block <total_link>.
@@ -1400,88 +1500,56 @@ WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_11> of sequential type
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_10> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_9> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_8> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_10> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_9> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_8> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_7> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_6> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_5> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_4> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_3> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_2> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_1> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_count_0> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <sram/fifo_o_empty> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:1293 - FF/Latch <sram/fifo_o_rd_ptr_12> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_11> has a constant value of 1 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_10> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_9> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_8> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_7> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_6> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_5> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_4> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_3> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_2> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_1> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_o_rd_ptr_0> has a constant value of 1 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_7> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_6> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <spi/slowcount_4> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_5> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_4> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_17> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_16> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_15> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_14> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_13> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_12> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_17> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_16> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_15> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_14> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_13> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_12> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_17> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_16> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_15> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_14> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_6> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_7> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_13> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_14> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_15> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_16> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <sram/mem_addr_17> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_12> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_13> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_14> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_15> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_16> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_rd_ptr_17> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_12> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_13> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_14> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_15> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_16> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <sram/fifo_i_wr_ptr_17> has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_1> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/Int_Cmd_0> 
+INFO:Xst:2261 - The FF/Latch <wireless/Irq_Current_State_FSM_FFd1> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/tx_done> 
 INFO:Xst:2261 - The FF/Latch <sram/nUsing> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <sram/Current_State_3> 
 INFO:Xst:2261 - The FF/Latch <wireless/spi_cmd_data_123> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/spi_cmd_data_121> 
 INFO:Xst:2261 - The FF/Latch <wireless/spi_cmd_data_127> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/spi_cmd_data_125> 
-INFO:Xst:2261 - The FF/Latch <wireless/spi_start> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/spi_Using> 
-INFO:Xst:2261 - The FF/Latch <slave/delay_start> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <slave/cpu_recv_int> 
-INFO:Xst:2261 - The FF/Latch <wireless/Int_Return_len_1> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/Int_Data_len_0> 
-INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_15> in Unit <total_link> is equivalent to the following 4 FFs/Latches, which will be removed : <wireless/Int_Cmd_Data_14> <wireless/Int_Cmd_Data_13> <wireless/Int_Cmd_Data_12> <wireless/Int_Cmd_Data_11> 
-INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_4> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/Int_Cmd_Data_2> 
+INFO:Xst:2261 - The FF/Latch <slave/Spi_Current_State_FSM_FFd1> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <slave/irq_noted> 
+INFO:Xst:2261 - The FF/Latch <wireless/Int_Return_len_1> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/Int_Data_len_1> 
+INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_15> in Unit <total_link> is equivalent to the following 6 FFs/Latches, which will be removed : <wireless/Int_Cmd_Data_14> <wireless/Int_Cmd_Data_13> <wireless/Int_Cmd_Data_12> <wireless/Int_Cmd_Data_11> <wireless/Int_Cmd_Data_9> <wireless/Int_Cmd_Data_8> 
+INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_4> in Unit <total_link> is equivalent to the following 2 FFs/Latches, which will be removed : <wireless/Int_Cmd_Data_2> <wireless/Int_Cmd_Data_0> 
 INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_30> in Unit <total_link> is equivalent to the following 13 FFs/Latches, which will be removed : <wireless/Int_Cmd_Data_29> <wireless/Int_Cmd_Data_28> <wireless/Int_Cmd_Data_27> <wireless/Int_Cmd_Data_26> <wireless/Int_Cmd_Data_25> <wireless/Int_Cmd_Data_24> <wireless/Int_Cmd_Data_22> <wireless/Int_Cmd_Data_21> <wireless/Int_Cmd_Data_20> <wireless/Int_Cmd_Data_19> <wireless/Int_Cmd_Data_18> <wireless/Int_Cmd_Data_17> <wireless/Int_Cmd_Data_16> 
-INFO:Xst:2261 - The FF/Latch <wireless/Int_Cmd_Data_9> in Unit <total_link> is equivalent to the following FF/Latch, which will be removed : <wireless/Int_Cmd_Data_8> 
 INFO:Xst:3203 - The FF/Latch <sram/WE_n> in Unit <total_link> is the opposite to the following FF/Latch, which will be removed : <sram/link> 
 INFO:Xst:3203 - The FF/Latch <sram/fifo_o_wr_ptr_12> in Unit <total_link> is the opposite to the following FF/Latch, which will be removed : <sram/fifo_o_wr_ptr_11> 
+INFO:Xst:3203 - The FF/Latch <wireless/Spi_Current_State_FSM_FFd43> in Unit <total_link> is the opposite to the following 2 FFs/Latches, which will be removed : <wireless/spi_start> <wireless/spi_Using> 
+INFO:Xst:3203 - The FF/Latch <sram/fifo_o_rd_ptr_12> in Unit <total_link> is the opposite to the following FF/Latch, which will be removed : <sram/fifo_o_rd_ptr_11> 
 
 Mapping all equations...
 Building and optimizing final netlist ...
-Found area constraint ratio of 100 (+ 5) on block total_link, actual ratio is 32.
+Found area constraint ratio of 100 (+ 5) on block total_link, actual ratio is 33.
+WARNING:Xst:1426 - The value init of the FF/Latch wireless/spi_op_fifo_flag_LD hinder the constant cleaning in the block total_link.
+   You should achieve better results by setting this init to 1.
 FlipFlop wireless/Int_start has been replicated 4 time(s)
 FlipFlop wireless/Main_start has been replicated 4 time(s)
-FlipFlop wireless/Spi_Current_State_1 has been replicated 2 time(s)
-FlipFlop wireless/Spi_Current_State_2 has been replicated 1 time(s)
-FlipFlop wireless/Spi_Current_State_3 has been replicated 2 time(s)
-FlipFlop wireless/Spi_Current_State_4 has been replicated 2 time(s)
-FlipFlop wireless/Spi_Current_State_5 has been replicated 1 time(s)
-FlipFlop wireless/spi_start has been replicated 4 time(s)
+FlipFlop wireless/Spi_Current_State_FSM_FFd43 has been replicated 4 time(s)
 
 Final Macro Processing ...
 
 Processing Unit <total_link> :
-	Found 4-bit shift register for signal <wireless/Int_Return_Data_47>.
-	Found 4-bit shift register for signal <wireless/Int_Return_Data_46>.
 	Found 4-bit shift register for signal <wireless/Int_Return_Data_45>.
 	Found 4-bit shift register for signal <wireless/Int_Return_Data_44>.
-	Found 4-bit shift register for signal <wireless/Int_Return_Data_43>.
-	Found 4-bit shift register for signal <wireless/Int_Return_Data_42>.
-	Found 4-bit shift register for signal <wireless/Int_Return_Data_40>.
 	Found 2-bit shift register for signal <wireless/Int_Return_Data_15>.
 	Found 2-bit shift register for signal <wireless/Int_Return_Data_14>.
 	Found 2-bit shift register for signal <wireless/Int_Return_Data_13>.
@@ -1504,11 +1572,11 @@ Unit <total_link> processed.
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 897
- Flip-Flops                                            : 897
-# Shift Registers                                      : 23
+# Registers                                            : 921
+ Flip-Flops                                            : 921
+# Shift Registers                                      : 18
  2-bit shift register                                  : 16
- 4-bit shift register                                  : 7
+ 4-bit shift register                                  : 2
 
 =========================================================================
 
@@ -1531,26 +1599,29 @@ Top Level Output File Name         : total_link.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 1853
+# BELS                             : 1866
 #      GND                         : 1
-#      INV                         : 13
-#      LUT1                        : 117
-#      LUT2                        : 130
-#      LUT3                        : 169
-#      LUT4                        : 149
-#      LUT5                        : 376
-#      LUT6                        : 589
-#      MUXCY                       : 157
-#      MUXF7                       : 12
+#      INV                         : 16
+#      LUT1                        : 97
+#      LUT2                        : 127
+#      LUT3                        : 176
+#      LUT4                        : 132
+#      LUT5                        : 421
+#      LUT6                        : 595
+#      MUXCY                       : 154
+#      MUXF7                       : 14
 #      VCC                         : 1
-#      XORCY                       : 139
-# FlipFlops/Latches                : 919
-#      FD                          : 445
-#      FDE                         : 384
-#      FDR                         : 66
+#      XORCY                       : 132
+# FlipFlops/Latches                : 934
+#      FD                          : 244
+#      FDC                         : 150
+#      FDE                         : 476
+#      FDP                         : 6
+#      FDR                         : 33
 #      FDRE                        : 24
-# Shift Registers                  : 23
-#      SRLC16E                     : 23
+#      LD                          : 1
+# Shift Registers                  : 18
+#      SRLC16E                     : 18
 # Clock Buffers                    : 1
 #      BUFGP                       : 1
 # IO Buffers                       : 61
@@ -1567,18 +1638,18 @@ Selected Device : 6slx9tqg144-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:             919  out of  11440     8%  
- Number of Slice LUTs:                 1566  out of   5720    27%  
-    Number used as Logic:              1543  out of   5720    26%  
-    Number used as Memory:               23  out of   1440     1%  
-       Number used as SRL:               23
+ Number of Slice Registers:             934  out of  11440     8%  
+ Number of Slice LUTs:                 1582  out of   5720    27%  
+    Number used as Logic:              1564  out of   5720    27%  
+    Number used as Memory:               18  out of   1440     1%  
+       Number used as SRL:               18
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   1761
-   Number with an unused Flip Flop:     842  out of   1761    47%  
-   Number with an unused LUT:           195  out of   1761    11%  
-   Number of fully used LUT-FF pairs:   724  out of   1761    41%  
-   Number of unique control sets:        48
+ Number of LUT Flip Flop pairs used:   1784
+   Number with an unused Flip Flop:     850  out of   1784    47%  
+   Number with an unused LUT:           202  out of   1784    11%  
+   Number of fully used LUT-FF pairs:   732  out of   1784    41%  
+   Number of unique control sets:        60
 
 IO Utilization: 
  Number of IOs:                          62
@@ -1606,11 +1677,13 @@ NOTE: THESE TIMING NUMBERS ARE ONLY A SYNTHESIS ESTIMATE.
 
 Clock Information:
 ------------------
------------------------------------+------------------------+-------+
-Clock Signal                       | Clock buffer(FF name)  | Load  |
------------------------------------+------------------------+-------+
-clk                                | BUFGP                  | 943   |
------------------------------------+------------------------+-------+
+-----------------------------------+-----------------------------------+-------+
+Clock Signal                       | Clock buffer(FF name)             | Load  |
+-----------------------------------+-----------------------------------+-------+
+clk                                | BUFGP                             | 952   |
+wireless/reset_n                   | NONE(wireless/spi_op_fifo_flag_LD)| 1     |
+-----------------------------------+-----------------------------------+-------+
+INFO:Xst:2169 - HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
 
 Asynchronous Control Signals Information:
 ----------------------------------------
@@ -1620,9 +1693,9 @@ Timing Summary:
 ---------------
 Speed Grade: -3
 
-   Minimum period: 8.159ns (Maximum Frequency: 122.569MHz)
-   Minimum input arrival time before clock: 4.515ns
-   Maximum output required time after clock: 5.281ns
+   Minimum period: 7.606ns (Maximum Frequency: 131.470MHz)
+   Minimum input arrival time before clock: 4.493ns
+   Maximum output required time after clock: 5.196ns
    Maximum combinational path delay: No path found
 
 Timing Details:
@@ -1631,37 +1704,38 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clk'
-  Clock period: 8.159ns (frequency: 122.569MHz)
-  Total number of paths / destination ports: 76562 / 1450
+  Clock period: 7.606ns (frequency: 131.470MHz)
+  Total number of paths / destination ports: 55193 / 1664
 -------------------------------------------------------------------------
-Delay:               8.159ns (Levels of Logic = 7)
-  Source:            wireless/spi_start_1 (FF)
-  Destination:       wireless/spi_cmd_data_127 (FF)
+Delay:               7.606ns (Levels of Logic = 8)
+  Source:            wireless/Main_Data_len_2 (FF)
+  Destination:       wireless/fsmfake2_4 (FF)
   Source Clock:      clk rising
   Destination Clock: clk rising
 
-  Data Path: wireless/spi_start_1 to wireless/spi_cmd_data_127
+  Data Path: wireless/Main_Data_len_2 to wireless/fsmfake2_4
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q               4   0.447   1.048  wireless/spi_start_1 (wireless/spi_start_1)
-     LUT6:I0->O           14   0.203   1.186  wireless/Mmux__n134121 (wireless/_n1341<1>)
-     LUT3:I0->O            8   0.205   0.803  wireless/_n41892<0>1 (wireless/_n41892<0>)
-     LUT5:I4->O            1   0.205   0.580  wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_21_OUT11_1 (wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_21_OUT11)
-     LUT5:I4->O            5   0.205   0.715  wireless/_n1767<0>11 (wireless/_n1767<0>1)
-     LUT5:I4->O            7   0.205   0.774  wireless/Mmux_spi_cmd_data[127]_Spi_Current_State[5]_mux_129_OUT1061_SW1 (N347)
-     LUT6:I5->O           19   0.205   1.072  wireless/Mmux_spi_cmd_data[127]_Spi_Current_State[5]_mux_129_OUT1061 (wireless/Mmux_spi_cmd_data[127]_Spi_Current_State[5]_mux_129_OUT1061)
-     LUT5:I4->O            1   0.205   0.000  wireless/Mmux_spi_cmd_data[127]_Spi_Current_State[5]_mux_129_OUT971 (wireless/spi_cmd_data[127]_Spi_Current_State[5]_mux_129_OUT<71>)
-     FD:D                      0.102          wireless/spi_cmd_data_71
+     FDE:C->Q              1   0.447   0.944  wireless/Main_Data_len_2 (wireless/Main_Data_len_2)
+     LUT6:I0->O            3   0.203   0.879  wireless/Mmux_spi_data_len[7]_Int_Data_len[7]_mux_17_OUT31 (wireless/spi_data_len[7]_Int_Data_len[7]_mux_17_OUT<2>)
+     LUT6:I3->O            1   0.205   0.579  wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o3 (wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o1)
+     MUXF7:S->O            3   0.148   0.651  wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o1 (wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o2)
+     LUT5:I4->O            4   0.205   0.684  wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o21 (wireless/Sended_count[7]_spi_data_len[7]_LessThan_102_o)
+     LUT6:I5->O            1   0.205   0.580  wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT57_SW0_SW0 (N393)
+     LUT5:I4->O            1   0.205   0.580  wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT57_SW1 (N403)
+     LUT5:I4->O            1   0.205   0.580  wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT571 (wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT56)
+     LUT6:I5->O            1   0.205   0.000  wireless/Mmux_Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT512 (wireless/Spi_Current_State[5]_Spi_Current_State[5]_mux_133_OUT<4>)
+     FDC:D                     0.102          wireless/fsmfake2_4
     ----------------------------------------
-    Total                      8.159ns (1.982ns logic, 6.177ns route)
-                                       (24.3% logic, 75.7% route)
+    Total                      7.606ns (2.130ns logic, 5.476ns route)
+                                       (28.0% logic, 72.0% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clk'
   Total number of paths / destination ports: 24 / 23
 -------------------------------------------------------------------------
-Offset:              4.515ns (Levels of Logic = 4)
+Offset:              4.493ns (Levels of Logic = 4)
   Source:            si4463_irq (PAD)
   Destination:       wireless/tx_flag (FF)
   Destination Clock: clk rising
@@ -1670,20 +1744,20 @@ Offset:              4.515ns (Levels of Logic = 4)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             5   1.222   0.943  si4463_irq_IBUF (si4463_irq_IBUF)
-     LUT3:I0->O            1   0.205   0.827  wireless/_n41714_inv3 (wireless/_n41714_inv3)
-     LUT6:I2->O            1   0.203   0.808  wireless/_n41714_inv4 (wireless/_n41714_inv)
+     IBUF:I->O             3   1.222   0.755  si4463_irq_IBUF (si4463_irq_IBUF)
+     LUT5:I3->O            3   0.203   0.995  wireless/Irq_Current_State_FSM_FFd4-In11 (wireless/Irq_Current_State_FSM_FFd4-In1)
+     LUT6:I1->O            1   0.203   0.808  wireless/_n42598_inv1 (wireless/_n42598_inv)
      LUT3:I0->O            1   0.205   0.000  wireless/tx_flag_rstpot (wireless/tx_flag_rstpot)
      FD:D                      0.102          wireless/tx_flag
     ----------------------------------------
-    Total                      4.515ns (1.937ns logic, 2.578ns route)
-                                       (42.9% logic, 57.1% route)
+    Total                      4.493ns (1.935ns logic, 2.558ns route)
+                                       (43.1% logic, 56.9% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
   Total number of paths / destination ports: 65 / 47
 -------------------------------------------------------------------------
-Offset:              5.281ns (Levels of Logic = 2)
+Offset:              5.196ns (Levels of Logic = 2)
   Source:            spi/transmitting (FF)
   Destination:       si4463_ss_n (PAD)
   Source Clock:      clk rising
@@ -1692,12 +1766,12 @@ Offset:              5.281ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q              38   0.447   1.481  spi/transmitting (spi/transmitting)
+     FD:C->Q              32   0.447   1.396  spi/transmitting (spi/transmitting)
      LUT3:I1->O            1   0.203   0.579  spi/Mmux_n018211 (si4463_ss_n_OBUF)
      OBUF:I->O                 2.571          si4463_ss_n_OBUF (si4463_ss_n)
     ----------------------------------------
-    Total                      5.281ns (3.221ns logic, 2.060ns route)
-                                       (61.0% logic, 39.0% route)
+    Total                      5.196ns (3.221ns logic, 1.975ns route)
+                                       (62.0% logic, 38.0% route)
 
 =========================================================================
 
@@ -1705,24 +1779,25 @@ Cross Clock Domains Report:
 --------------------------
 
 Clock to Setup on destination clock clk
----------------+---------+---------+---------+---------+
-               | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
-Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
----------------+---------+---------+---------+---------+
-clk            |    8.159|         |         |         |
----------------+---------+---------+---------+---------+
+----------------+---------+---------+---------+---------+
+                | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
+Source Clock    |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
+----------------+---------+---------+---------+---------+
+clk             |    7.606|         |         |         |
+wireless/reset_n|    6.295|         |         |         |
+----------------+---------+---------+---------+---------+
 
 =========================================================================
 
 
-Total REAL time to Xst completion: 67.00 secs
-Total CPU time to Xst completion: 67.50 secs
+Total REAL time to Xst completion: 75.00 secs
+Total CPU time to Xst completion: 75.16 secs
  
 --> 
 
-Total memory usage is 363928 kilobytes
+Total memory usage is 372568 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  482 (   0 filtered)
-Number of infos    :   36 (   0 filtered)
+Number of warnings :  476 (   0 filtered)
+Number of infos    :   38 (   0 filtered)
 

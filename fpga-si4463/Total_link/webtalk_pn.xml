@@ -3,10 +3,10 @@
 <!--The data in this file is primarily intended for consumption by Xilinx tools.
 The structure and the elements are likely to change over the next few releases.
 This means code written to parse this file will need to be revisited each subsequent release.-->
-<application name="pn" timeStamp="Fri Apr 15 10:26:55 2016">
+<application name="pn" timeStamp="Wed Apr 20 15:33:41 2016">
 <section name="Project Information" visible="false">
 <property name="ProjectID" value="96057523A95D420E9A8396FE60908903" type="project"/>
-<property name="ProjectIteration" value="149" type="project"/>
+<property name="ProjectIteration" value="207" type="project"/>
 <property name="ProjectFile" value="C:/Users/TM/Desktop/FPGA/Total/Total_link/Total_link.xise" type="project"/>
 <property name="ProjectCreationTimestamp" value="2016-04-05T16:39:42" type="project"/>
 </section>
@@ -17,6 +17,7 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="PROP_LastAppliedStrategy" value="Xilinx Default (unlocked)" type="design"/>
 <property name="PROP_ManualCompileOrderImp" value="false" type="design"/>
 <property name="PROP_PropSpecInProjFile" value="Store non-default values only" type="design"/>
+<property name="PROP_SelectedInstanceHierarchicalPath" value="/total_link" type="process"/>
 <property name="PROP_Simulator" value="ISim (VHDL/Verilog)" type="design"/>
 <property name="PROP_SynthTopFile" value="changed" type="process"/>
 <property name="PROP_Top_Level_Module_Type" value="HDL" type="design"/>
@@ -24,10 +25,11 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="PROP_UserConstraintEditorPreference" value="Text Editor" type="process"/>
 <property name="PROP_intProjectCreationTimestamp" value="2016-04-05T16:39:42" type="design"/>
 <property name="PROP_intWbtProjectID" value="96057523A95D420E9A8396FE60908903" type="design"/>
-<property name="PROP_intWbtProjectIteration" value="149" type="process"/>
+<property name="PROP_intWbtProjectIteration" value="207" type="process"/>
 <property name="PROP_intWorkingDirLocWRTProjDir" value="Same" type="design"/>
 <property name="PROP_intWorkingDirUsed" value="No" type="design"/>
 <property name="PROP_lockPinsUcfFile" value="changed" type="process"/>
+<property name="PROP_selectedSimRootSourceNode_behav" value="work.total_link" type="process"/>
 <property name="PROP_AutoTop" value="true" type="design"/>
 <property name="PROP_DevFamily" value="Spartan6" type="design"/>
 <property name="PROP_DevDevice" value="xc6slx9" type="design"/>

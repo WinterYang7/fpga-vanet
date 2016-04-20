@@ -9,41 +9,88 @@ INFO: [Device 21-36] Loading parts and site information from C:/Xilinx/14.7/ISE_
 Parsing RTL primitives file [C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
 Finished parsing RTL primitives file [C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/prims/rtl_prims.xml]
 start_gui
-source C:/Users/TM/Desktop/FPGA/Total/Total_link/pa.fromHdl.tcl
-# create_project -name Total_link -dir "C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_2" -part xc6slx9tqg144-3
-# set_param project.pinAheadLayout yes
-# set srcset [get_property srcset [current_run -impl]]
+source C:/Users/TM/Desktop/FPGA/Total/Total_link/pa.fromNetlist.tcl
+# create_project -name Total_link -dir "C:/Users/TM/Desktop/FPGA/Total/Total_link/planAhead_run_3" -part xc6slx9tqg144-3
+# set_property design_mode GateLvl [get_property srcset [current_run -impl]]
+# set_property edif_top_file "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ngc" [ get_property srcset [ current_run ] ]
+# add_files -norecurse { {C:/Users/TM/Desktop/FPGA/Total/Total_link} }
 # set_property target_constrs_file "total_link.ucf" [current_fileset -constrset]
 Adding file 'C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf' to fileset 'constrs_1'
-# set hdlfile [add_files [list {../spi_slave.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set hdlfile [add_files [list {../Wireless_Ctrl.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set hdlfile [add_files [list {../SRAM_ctrl.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set hdlfile [add_files [list {../spi_master.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set hdlfile [add_files [list {../Slave_Ctrl.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set hdlfile [add_files [list {../total_link.v}]]
-# set_property file_type Verilog $hdlfile
-# set_property library work $hdlfile
-# set_property top total_link $srcset
 # add_files [list {total_link.ucf}] -fileset [get_property constrset [current_run]]
-# open_rtl_design -part xc6slx9tqg144-3
-Using Verific elaboration
-Parsing VHDL file "C:/Xilinx/14.7/ISE_DS/PlanAhead/data/parts/xilinx/rtl/lib/synplify/synattr.vhd" into library synplify
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/spi_slave.v" into library work
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/Wireless_Ctrl.v" into library work
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/SRAM_ctrl.v" into library work
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/spi_master.v" into library work
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/Slave_Ctrl.v" into library work
-Analyzing Verilog file "C:/Users/TM/Desktop/FPGA/Total/total_link.v" into library work
+# link_design
+Design is defaulting to srcset: sources_1
+Design is defaulting to constrset: constrs_1
+Design is defaulting to project part: xc6slx9tqg144-3
+Release 14.7 - ngc2edif P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+Reading design total_link.ngc ...
+WARNING:NetListWriters:298 - No output is written to total_link.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus wireless/Data_to_master[10 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   sram/fifo_o_rd_ptr[17]_GND_2_o_mux_18_OUT[12 : 0] on block total_link is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   sram/fifo_o_wr_ptr[17]_GND_2_o_mux_22_OUT[12 : 0] on block total_link is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus sram/fifo_o_rd_ptr[12 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus sram/fifo_o_wr_ptr[12 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/_n2327[7 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Spi_Current_State[5]_GND_25_o_wide_mux_107_OUT[10 : 1] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_cmd_data[127]_Spi_Current_State[5]_mux_141_OUT[127 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/_n2185[31 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_cmd_data[127]_GND_25_o_mux_20_OUT[118 : 0] on block total_link
+   is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_return_len[4]_GND_25_o_mux_19_OUT[3 : 0] on block total_link is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State[7]_Main_Cmd_Data[127]_wide_mux_261_OUT[63 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Sended_count[7]_GND_25_o_add_88_OUT[5 : 2] on block total_link is
+   not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State[7]_Main_Return_len[4]_wide_mux_263_OUT[3 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Main_Return_len[3 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Main_Data_Check[31 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Int_Cmd_Data[30 : 4] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/spi_cmd_data[127 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/spi_return_len[3 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State_Main_Current_State[7]_Main_Cmd_Data[127]_wide_mux
+   _261_OUT[35 : 13] on block total_link is not reconstructed, because there are
+   some missing bus signals.
+  finished :Prep
+Writing EDIF netlist file total_link.edif ...
+ngc2edif: Total memory usage is 86432 kilobytes
+
+Parsing EDIF File [./planAhead_run_3/Total_link.data/cache/total_link_ngc_zx.edif]
+Finished Parsing EDIF File [./planAhead_run_3/Total_link.data/cache/total_link_ngc_zx.edif]
+INFO: [Netlist 29-17] Analyzing 17 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+WARNING: [Netlist 29-43] Netlist 'total_link' is not ideal for floorplanning, since the cellview 'total_link' defined in file 'total_link.ngc' contains large number of primitives.  Please consider enabling hierarchy in synthesis if you want to do floorplanning.
 Loading clock regions from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx9/ClockRegion.xml
 Loading clock buffers from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/spartan6lx/xc6slx9/ClockBuffers.xml
 Loading package pin functions from C:/Xilinx/14.7/ISE_DS/PlanAhead/data\parts/xilinx/spartan6/PinFunctions.xml...
@@ -54,26 +101,17 @@ Loading list of drcs for the architecture : C:/Xilinx/14.7/ISE_DS/PlanAhead/data
 Parsing UCF File [C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf]
 Finished Parsing UCF File [C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ucf]
 INFO: [Project 1-111] Unisim Transformation Summary:
-No Unisim elements were transformed.
+  A total of 17 instances were transformed.
+  BUFGP => BUFGP (IBUF, BUFG): 1 instances
+  IOBUF => IOBUF (OBUFT, IBUF): 16 instances
 
-Phase 0 | Netlist Checksum: 9b4234de
-open_rtl_design: Time (s): elapsed = 00:00:15 . Memory (MB): peak = 701.195 ; gain = 198.105
-update_compile_order -fileset sim_1
-set_property package_pin "" [get_ports [list  {led[0]}]]
+Phase 0 | Netlist Checksum: a4a09a64
+link_design: Time (s): elapsed = 00:00:14 . Memory (MB): peak = 673.223 ; gain = 153.727
 startgroup
-set_property package_pin P126 [get_ports {led[1]}]
-endgroup
-startgroup
-set_property package_pin P134 [get_ports {led[0]}]
-endgroup
-startgroup
-set_property package_pin P120 [get_ports {led[2]}]
-endgroup
-startgroup
-set_property package_pin P116 [get_ports {led[3]}]
+set_property package_pin P101 [get_ports cpu_irq]
 endgroup
 save_constraints
 exit
 ERROR: [Common 17-39] 'stop_gui' failed due to earlier errors.
-INFO: [Common 17-206] Exiting PlanAhead at Wed Apr 06 10:13:13 2016...
+INFO: [Common 17-206] Exiting PlanAhead at Wed Apr 20 09:41:52 2016...
 INFO: [Common 17-83] Releasing license: PlanAhead

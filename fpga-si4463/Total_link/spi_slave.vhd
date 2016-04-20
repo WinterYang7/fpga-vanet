@@ -73,12 +73,12 @@ begin
             else
                index <= index-1;
             end if;
-            
+            TxData <= TxData(6 downto 0) & '0';
          elsif(SCLK_old = '1' and SCLK_latched = '0') then
             if( index = 7 ) then
                SPI_DONE <= '1';
             end if; 
-            TxData <= TxData(6 downto 0) & '0';
+            
          end if;
       end if;
      end if;

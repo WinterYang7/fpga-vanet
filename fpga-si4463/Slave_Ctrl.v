@@ -36,8 +36,8 @@ output Spi_rrdy;
 input	clk;
 input frame_recved_int;
 output reg cpu_recv_int;
-output reg  [7:0] Spi_Current_State_1=0;	
-//assign Spi_Current_State_1={3'b000,Spi_Current_State};
+output  [7:0] Spi_Current_State_1;	
+assign Spi_Current_State_1={3'b000,Spi_Current_State};
 	//与CPU的接口
 input	mosi;
 output	miso;
@@ -98,18 +98,22 @@ reg[4:0] Spi_Current_State=0;
 reg[7:0] Data_len=0;
 reg[7:0] Sended_count=0;
 reg Byte_flag=0;
+reg irq_noted=0;
 //reg tx_flag=0;
 //reg rx_flag=0;
 
+//中断决策
+reg[7:0] packet_len=0;
+reg spi_send_end=0; //发送给CPU的数据已经发送完，说明准备接收下一个中断
+reg spi_read_sram=0; //spi读取SRAM的使能信号
+
 always@(posedge clk)
 begin
-	Spi_Current_State_1[7]=Spi_rrdy;
 	case (Spi_Current_State)
 		0:
 		begin
 			if(slave_irq)
 			begin
-				Spi_Current_State_1[6:0]=1;
 				slave_data_from_spi_reg=slave_data_from_spi;
 				Spi_Current_State=3;
 			end
@@ -117,7 +121,7 @@ begin
 		3:
 		begin
 			case(slave_data_from_spi_reg)
-				8'b01100110: //CPU发送数据
+				8'b01100110: //CPU发送数据0x66
 				begin
 					Data_to_sram[15:8]=slave_data_from_spi_reg;  //保存命令和长度，交给Wireless_Ctrl处理发送
 					Sended_count=0;
@@ -125,15 +129,18 @@ begin
 					//tx_flag=1;
 					Spi_Current_State=4;
 				end
-				/*
-				8'h01110111: //CPU接收数据
+				8'b01110111: //CPU接收数据0x77
 				begin
 					//rx_flag=1;
+					irq_noted=1;
+					Sended_count=0;
+					spi_send_end=0;
+					slave_write=1;
+					slave_data_to_spi=packet_len;
 					Spi_Current_State=16; 
-				end*/
+				end
 				default:
 				begin
-					Spi_Current_State_1[6:0]=0;
 					Spi_Current_State=0;
 				end
 			endcase
@@ -142,7 +149,6 @@ begin
 		begin
 			if(slave_irq)
 			begin
-				Spi_Current_State_1[6:0]=Spi_Current_State_1[6:0]+1;
 				slave_data_from_spi_reg=slave_data_from_spi;
 				Spi_Current_State=6;
 			end
@@ -150,15 +156,14 @@ begin
 		6:
 		begin
 			Data_len=slave_data_from_spi_reg;
-			Data_to_sram[7:0]=slave_data_from_spi_reg+8'h02;
+			Data_to_sram[7:0]=8'h00;
 			Spi_Current_State=7;
 		end
-		//将命令和数据长度写入SRAM
+		//将命令写入SRAM 0x66 0x00
 		7:
 		begin
 			if(!SRAM_full)
 			begin
-				//Spi_Current_State_1[6:0]=0;
 				SRAM_write=1;
 				Spi_Current_State=8;
 			end
@@ -167,7 +172,6 @@ begin
 		begin
 			if(SRAM_hint)
 			begin
-				//Spi_Current_State_1=Spi_Current_State_1+1;
 				SRAM_write=0;
 				Spi_Current_State=9;
 			end
@@ -177,7 +181,7 @@ begin
 		begin
 			if(!SRAM_full)
 			begin
-				Data_to_sram={8'h00,Data_len[7:0]};
+				Data_to_sram={8'h00,Data_len[7:0]+1};
 				SRAM_write=1;
 				Spi_Current_State=10;
 			end
@@ -186,17 +190,19 @@ begin
 		begin
 			if(SRAM_hint)
 			begin
-				//Spi_Current_State_1=Spi_Current_State_1+1;
 				SRAM_write=0;
+				Data_to_sram[15:8]=Data_len; //将数据长度添加到数据帧头部
+				Byte_flag=~Byte_flag;
 				Spi_Current_State=11;
+				
 			end
 		end
+		
 		//从SPI读取数据并写入SRAM
 		11:
 		begin
 			if(slave_irq)
 			begin
-				Spi_Current_State_1[6:0]=Spi_Current_State_1[6:0]+1;
 				slave_data_from_spi_reg=slave_data_from_spi;
 				Spi_Current_State=13;
 			end
@@ -245,136 +251,97 @@ begin
 				end
 				else
 				begin
-					Spi_Current_State_1[6:0]=0;
 					Spi_Current_State=0;
 				end
 			end
 		end
 		
 		
-		/*
+		
+		
 		////////用于向CPU发送数据/////////////////
 		///从SRAM中取出数据
 		16:
 		begin
-			if(!SRAM_empty)
+			slave_write=0;
+			if(slave_irq)
 			begin
-				SRAM_read=1;
+				slave_write=1;
+				slave_data_to_spi=Data_from_sram_reg[7:0];
 				Spi_Current_State=17;
 			end
 		end
-
 		17:
 		begin
-			if(SRAM_hint)
+			slave_write=0;
+			Sended_count=Sended_count+1;
+			if(Sended_count<packet_len)
+				Spi_Current_State=18;
+			else
 			begin
-				SRAM_read=0;
-				Data_from_sram_reg=Data_from_sram;
-				Data_len=Data_from_sram_reg[15:8];
-				if(Spi_trdy)
-				begin
-					Spi_write_n=0;
-					Spi_mem_addr=3'b001;
-					Data_to_spi={8'h00,Data_len};
-					Sended_count=0;
-					Spi_Current_State=18;
-					Byte_flag=0;
-				end
+				irq_noted=0;
+				spi_send_end=1;
+				Spi_Current_State=0;
 			end
 		end
+		//读取数据并发送
 		18:
 		begin
-			Spi_write_n=1;
+			spi_read_sram=1;
 			Spi_Current_State=19;
 		end
 		19:
 		begin
-			Spi_Current_State=20;
+			if(SRAM_hint)
+			begin
+				spi_read_sram=0;
+				Spi_Current_State=20;
+			end
 		end
-		//发送第一个数据
 		20:
 		begin
-			if(Spi_trdy)
+			if(slave_irq)
 			begin
-				Data_to_spi={8'h00,Data_from_sram_reg[7:0]};
-
+				slave_write=1;
+				slave_data_to_spi=Data_from_sram_reg[15:8];
 				Spi_Current_State=21;
-				Spi_write_n=0;
-				Spi_mem_addr=3'b001;
 			end
 		end
 		21:
 		begin
-			Spi_write_n=1;
-			Spi_Current_State=22;
+			slave_write=0;
+			Sended_count=Sended_count+1;
+			if(Sended_count<packet_len)
+				Spi_Current_State=22;
+			else
+			begin
+				irq_noted=0;
+				spi_send_end=1;
+				Spi_Current_State=0;
+			end
 		end
 		22:
 		begin
-			Sended_count=Sended_count+1'b1;
-			Spi_Current_State=23;
+			if(slave_irq)
+			begin
+				slave_write=1;
+				slave_data_to_spi=Data_from_sram_reg[7:0];
+				Spi_Current_State=23;
+			end
 		end
-		//取出数据并开始发送
 		23:
 		begin
-			if(Sended_count<Data_len)
-			begin
-				if(!SRAM_empty)
-				begin
-					SRAM_read=1;
-					Spi_Current_State=24;
-				end
-			end
+			slave_write=0;
+			Sended_count=Sended_count+1;
+			if(Sended_count<packet_len)
+				Spi_Current_State=18;
 			else
 			begin
+				irq_noted=0;
+				spi_send_end=1;
 				Spi_Current_State=0;
 			end
 		end
-		24:
-		begin
-			if(SRAM_hint)
-			begin
-				Data_from_sram_reg=Data_from_sram;
-				Spi_Current_State=25;
-			end
-		end
-		25:
-		begin
-			Data_to_spi={8'h00,Data_from_sram_reg[15:8]};
-			Spi_write_n=0;
-			Spi_mem_addr=3'b001;
-			Spi_Current_State=26;
-		end
-		26:
-		begin
-			Spi_write_n=1;
-			Spi_Current_State=27;
-		end
-		27:
-		begin
-			Sended_count=Sended_count+1'b1;
-			if(Sended_count<Data_len)
-			begin
-				Spi_Current_State=28;
-			end
-			else
-				Spi_Current_State=0;
-		end
-		28:
-		begin
-			Data_to_spi={8'h00,Data_from_sram_reg[7:0]};
-			Spi_write_n=0;
-			Spi_mem_addr=3'b001;
-			Spi_Current_State=29;
-		end
-		29:
-		begin
-			Spi_write_n=1;
-			Spi_Current_State=30;
-		end
-		30:
-		begin
-			Spi_Current_State=23;
-		end*/
 		default:
 		begin
 			Spi_Current_State=0;
@@ -383,64 +350,80 @@ begin
 
 end
 
-/////延时函数///////////////
-reg delay_start=0;
-reg[31:0] delay_count=0;
-reg[7:0] delay_mtime=0;
-reg delay_int=0;
+
+////中断函数//////不需要等待，用户读取之后，自动清除中断，但是这里有一个问题，，这里的中断也存在一个问题
+reg[2:0] Irq_Current_State=0;
+
 
 always@(posedge clk)
 begin
-	if(!delay_start)
-	begin
-		delay_count<=0;
-		delay_int<=0;
-	end
-	else
-	begin
-		delay_count<=delay_count+1'b1;
-		if(delay_count==delay_mtime*20000)
-			delay_int<=1;
-	end
-end
-
-////中断函数//////
-reg[2:0] Int_Current_State=0;
-
-always@(posedge clk)
-begin
-	case (Int_Current_State)
+	case (Irq_Current_State)
 		0:
 		begin
-			if(frame_recved_int)
+			if(!SRAM_empty)
 			begin
-				Int_Current_State=1;
+				SRAM_read=1;
+				Irq_Current_State=1;
 			end
 		end
 		1:
 		begin
-			cpu_recv_int=1;
-			delay_start=1;
-			delay_mtime=1;
-			Int_Current_State=2;
+			if(SRAM_hint)
+			begin
+				SRAM_read=0;
+				Data_from_sram_reg=Data_from_sram;
+				packet_len=Data_from_sram_reg[15:8];
+				if(packet_len==0)
+					Irq_Current_State=0;
+				else
+					Irq_Current_State=2;
+			end
 		end
 		2:
 		begin
-			if(delay_int)
+			if(SRAM_count*2>=packet_len-1)
 			begin
-				delay_start=0;
-				cpu_recv_int=0;
-				Int_Current_State=3;
+				cpu_recv_int=1;
+				Irq_Current_State=3;
 			end
 		end
 		3:
 		begin
-			Int_Current_State=0;
+			if(irq_noted)
+			begin
+				cpu_recv_int=0;
+				Irq_Current_State=4;
+			end
+		end
+		4:
+		begin
+			if(!spi_send_end)
+			begin
+				if(spi_read_sram)
+				begin
+					if(!SRAM_empty)
+					begin
+						SRAM_read=1;
+						Irq_Current_State=5;
+					end
+				end
+			end
+			else
+					Irq_Current_State=0;
+		end
+		5:
+		begin
+			if(SRAM_hint)
+			begin
+				Data_from_sram_reg=Data_from_sram;
+				SRAM_read=0;
+				Irq_Current_State=4;
+			end
 		end
 		default:
 		begin
 			cpu_recv_int=0;
-			Int_Current_State=0;
+			Irq_Current_State=0;
 		end
 	endcase
 end

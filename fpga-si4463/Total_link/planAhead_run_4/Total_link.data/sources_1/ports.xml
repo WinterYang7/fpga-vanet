@@ -57,15 +57,15 @@
 		</Bus>
 		<Port Id="clk" Dir="IN"/>
 		<Port Id="cpu_mosi" Dir="IN"/>
-		<Port Id="cpu_miso" Dir="OUT"/>
 		<Port Id="cpu_sclk" Dir="IN"/>
+		<Port Id="si4463_miso" Dir="IN"/>
+		<Port Id="si4463_irq" Dir="IN"/>
+		<Port Id="cpu_miso" Dir="OUT"/>
 		<Port Id="cpu_irq" Dir="OUT"/>
 		<Port Id="si4463_mosi" Dir="OUT"/>
-		<Port Id="si4463_miso" Dir="IN"/>
 		<Port Id="si4463_sclk" Dir="OUT"/>
 		<Port Id="si4463_ss_n" Dir="OUT"/>
 		<Port Id="si4463_reset" Dir="OUT"/>
-		<Port Id="si4463_irq" Dir="IN"/>
 		<Port Id="CE_n" Dir="OUT"/>
 		<Port Id="OE_n" Dir="OUT"/>
 		<Port Id="WE_n" Dir="OUT"/>

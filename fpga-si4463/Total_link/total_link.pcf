@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map P.20131013 on Fri Apr 15 10:26:52 2016
+// Written by: Map P.20131013 on Wed Apr 20 15:33:38 2016
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -35,7 +35,7 @@ COMP "sram_mem_addr<6>" LOCATE = SITE "P22" LEVEL 1;
 COMP "sram_mem_addr<7>" LOCATE = SITE "P33" LEVEL 1;
 COMP "sram_mem_addr<8>" LOCATE = SITE "P95" LEVEL 1;
 COMP "sram_mem_addr<9>" LOCATE = SITE "P93" LEVEL 1;
-COMP "cpu_irq" LOCATE = SITE "P101" LEVEL 1;
+COMP "cpu_irq" LOCATE = SITE "P61" LEVEL 1;
 COMP "sram_mem_addr<10>" LOCATE = SITE "P88" LEVEL 1;
 COMP "sram_mem_addr<11>" LOCATE = SITE "P84" LEVEL 1;
 COMP "sram_mem_addr<12>" LOCATE = SITE "P92" LEVEL 1;

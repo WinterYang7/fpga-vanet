@@ -37,9 +37,13 @@ module Wireless_Ctrl(
 	Si4463_Ph_Status_1
 );
 input clk;
-output[7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1=SRAM_count[7:0];
-output reg[3:0] led=4'b0000;
+output reg [7:0] Si4463_Ph_Status_1;
+
+output [3:0] led;
+assign	led[0]=SRAM_write;
+assign	led[1]=SRAM_read;
+assign led[2]=1;
+assign led[3]=1;
 	//SRAM接口
 output	SRAM_read;
 output	SRAM_write;
@@ -68,9 +72,10 @@ output	master_spi_sel;
 output master_write_n;
 
 
+reg reset_n=1;
 
 
-/////延时函数///////////////
+/////延时函数1///////////////
 reg delay_start=0;
 reg[31:0] delay_count=0;
 reg[7:0] delay_mtime=8'h00;
@@ -91,6 +96,27 @@ begin
 	end
 end
 
+/////延时函数2///////////////
+reg delay_start_2=0;
+reg[31:0] delay_count_2=0;
+reg[7:0] delay_mtime_2=8'h00;
+reg delay_int_2=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_2)
+	begin
+		delay_count_2<=0;
+		delay_int_2<=1'b0;
+	end
+	else
+	begin
+		delay_count_2<=delay_count_2+1'b1;
+		if(delay_count_2==delay_mtime_2*20000) //20000可以算1ms
+			delay_int_2<=1'b1;
+	end
+end
+
 
 //////接口
 /*
@@ -104,6 +130,7 @@ end
 				3 int接收数据帧
 				4 int 获取中断状态
 				5 main程序从SRAM中读取数据，唯一的用途是获取需要发送的数据
+				
 	spi_Using  bool值，代表spi模块是否正在被使用
 	spi_start  bool值，设置为1，代表准备开始发送或接收数据
 */
@@ -119,7 +146,7 @@ reg [2:0] Main_Cmd;   //主函数中的命令
 reg [2:0] Int_Cmd;	//中断函数中的命令
 reg Main_start;  //Main表示想要开始发送数据，需要提前检查Spi_Using
 reg Int_start;   //Int表示想要开始发送数据，需要提前检查Spi_Using
-reg[15:0] Main_Data_Check=0;
+reg[31:0] Main_Data_Check=0;
 
 
 reg [127:0] spi_cmd_data;
@@ -167,11 +194,30 @@ assign master_spi_sel=1;
 
 reg [5:0] Spi_Current_State;
 reg Ended_flag;
+reg frame_len_flag; //标志着接收包时第一个字节，即包的长度
 //分别在两个地方保证接收到的数据就是需要的数据
 // 1. CTS,由于CTS后面跟着需要的数据，所以后面的数据可以确认为需要的数据
 // 2. 只是发送命令时，返回的数据无所谓了 
 // 3. 在接收数据后，发送0x77命令，放弃第一个接收到的数据(无效数据),在发送下一个数据前，射频有足够时间能够准备返回来的数据，所以返回的也是有效数据
-always@(posedge clk)  //这里最好监视Main_start和Int_start信号
+always@(negedge reset_n or posedge clk)  //这里最好监视Main_start和Int_start信号
+begin
+
+if(!reset_n)
+	begin
+		spi_start=0;
+		spi_cmd=0;
+		spi_data_len=0;
+		spi_return_len=0;
+		spi_cmd_data=0;
+		Spi_Current_State=0;
+		spi_Using=0;
+		spi_op_done=0;
+		GetCTS_flag=0;
+		Byte_flag=0;
+		spi_op_fifo_flag=1;
+		Ended_flag=0;
+	end
+else
 begin
 	if(Main_start&&!spi_Using)
 	begin
@@ -230,7 +276,6 @@ begin
 					spi_start=0;
 					Spi_Current_State=0;
 					spi_Using=0;
-					spi_start=0;
 					spi_op_done=0;
 				end
 			endcase
@@ -475,7 +520,7 @@ begin
 			end
 			25:
 			begin
-				if(master_rrdy)
+				if(master_rrdy&&master_tmt)
 				begin
 					master_mem_addr=3'b000;
 					master_read_n=0;
@@ -571,37 +616,48 @@ begin
 			////////////////////////从射频模块接收数据并存放在SRAM中//////////////////
 			30://从射频模块接收数据存放在FIFO_o
 			begin
-				Sended_count=0;
+				frame_len_flag=1;
 				Spi_Current_State=33; 
 			end
-			31: //由可能需要告知射频模块需要接收的数据个数,不过不是非常必要
+			31:
 			begin
 				if(!Byte_flag)
 				begin
 					Data_to_sram[15:8]=Data_from_master[7:0];
-					Sended_count=Sended_count+1'b1;
-					if(Sended_count<Int_Data_len)
+					if(frame_len_flag) //接收到的第一个字节为长度（不包括自身）
 					begin
 						Byte_flag=~Byte_flag;
+						frame_len_flag=0;
+						Sended_count=0;
+						spi_data_len=Data_from_master[7:0];
 						Spi_Current_State=22;
 					end
 					else
 					begin
-						if(!SRAM_empty)
+						Sended_count=Sended_count+1'b1;
+						if(Sended_count<spi_data_len)
 						begin
-							Data_to_sram[7:0]=8'h00;
-							SRAM_write=1;
-							Spi_Current_State=32;
+							Byte_flag=~Byte_flag;
+							Spi_Current_State=22;
 						end
-						else
-							Spi_Current_State=31;
+						else //if(Sended_count<spi_data_len)
+						begin
+							if(!SRAM_full)
+							begin
+								Data_to_sram[7:0]=8'h00;
+								SRAM_write=1;
+								Spi_Current_State=32;
+							end
+							else
+								Spi_Current_State=31;
+						end
 					end
 				end
-				else
+				else //if(!Byte_flag)
 				begin
-					if(!SRAM_empty)
+					Data_to_sram[7:0]=Data_from_master[7:0];
+					if(!SRAM_full)
 					begin
-						Data_to_sram[7:0]=Data_from_master[7:0];
 						Sended_count=Sended_count+1'b1;
 						Byte_flag=~Byte_flag;
 						SRAM_write=1;
@@ -614,12 +670,15 @@ begin
 			32:
 			begin
 				if(SRAM_hint)
+				begin
 					SRAM_write=0;
-				if(Sended_count<Int_Data_len)
-					Spi_Current_State=22;
-				else
-					Spi_Current_State=12;	
+					if(Sended_count<spi_data_len)
+						Spi_Current_State=22;
+					else
+						Spi_Current_State=12;
+				end
 			end
+			
 			33: //发送接收数据命令，发送完之后，可能需要等待一段时间来给射频准备数据，不过测试之后再说
 			begin //单数发送数据命令不需要，因为射频可以立即准备好
 				master_mem_addr=3'b001;
@@ -652,21 +711,35 @@ begin
 				if(SRAM_hint)
 				begin
 					SRAM_read=0;
-					Main_Data_Check=Data_from_sram;
+					Main_Data_Check[31:16]=Data_from_sram; //读取命令0x66 0x00
+					Spi_Current_State=38;
+				end
+			end
+			38:
+			begin
+				SRAM_read=1;
+				Spi_Current_State=39;
+			end
+			39:
+			begin
+				if(SRAM_hint)
+				begin
+					SRAM_read=0;
+					Main_Data_Check[15:0]=Data_from_sram; //读取数据长度
 					spi_Using=0;
 					spi_start=0;
 					spi_op_done=1;
 					Spi_Current_State=0;
 				end
 			end
-		
 			
 		endcase
 	end
 end
+end
 
 reg GPS_sync_time=1'b1;  ////需要接GPS同步时钟
-reg [7:0] Main_Current_State=8'hFA;
+reg [7:0] Main_Current_State=8'h00;
 reg Si4463_reset=1'b1; //当程序启动或者wireless_ctrl置位时，设置为0
 wire Si4463_int;
 reg [2:0] tx_state=3'b000;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
@@ -678,13 +751,13 @@ reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 
 always@(posedge clk)
 begin
-		led=SRAM_count[3:0];
 		case(Main_Current_State) 
-		250:
+		0:
 		begin
 			Si4463_reset=1;
 			delay_start=1;
 			delay_mtime=10;
+			reset_n=0;
 			if(delay_int)
 			begin
 				delay_start=0;
@@ -693,6 +766,7 @@ begin
 		end
 		249:
 		begin
+			reset_n=1;
 			Si4463_reset=0;
 			Main_Current_State=248;
 		end
@@ -707,12 +781,12 @@ begin
 			if(delay_int)
 			begin
 				delay_start=0;
-				Main_Current_State=0;
+				Main_Current_State=250;
 			end
 		end
 		
 	////////////reset()函数，启动射频模块
-		0:
+		250:
 		begin
 			Main_Cmd_Data[7:0]=8'h02;
 			Main_Cmd_Data[15:8]=8'h01;
@@ -829,23 +903,20 @@ begin
 		
 	////////setRFParameters(),设置射频模块参数(初始化射频模块上的各种寄存器)
 	
-	/*
-// Command:                  RF_POWER_UP
-// Description:              Command to power-up the device and select the operational mode and functionality.
-*/
+			//===setRFParameters(void)====
 		12:
 		begin
 			Main_Cmd_Data[7:0]=8'h02;
 			Main_Cmd_Data[15:8]=8'h01;
 			Main_Cmd_Data[23:16]=8'h00;
 			Main_Cmd_Data[31:24]=8'h01;
-			Main_Cmd_Data[39:32]=8'hC9;
-			Main_Cmd_Data[47:40]=8'hC3;
+			Main_Cmd_Data[39:32]=8'hc9;
+			Main_Cmd_Data[47:40]=8'hc3;
 			Main_Cmd_Data[55:48]=8'h80;
-			Main_Data_len=7;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=7;
+			Main_Return_len=0;
 			Main_Current_State=13;
 		end
 		13:
@@ -860,24 +931,20 @@ begin
 				Main_Current_State=15;
 			end
 		end
-	/*
-// Command:                  RF_GPIO_PIN_CFG
-// Description:              Configures the GPIO pins.
-*/	
 		15:
 		begin
 			Main_Cmd_Data[7:0]=8'h13;
-			Main_Cmd_Data[15:8]=8'h1B;
+			Main_Cmd_Data[15:8]=8'h1b;
 			Main_Cmd_Data[23:16]=8'h23;
 			Main_Cmd_Data[31:24]=8'h21;
 			Main_Cmd_Data[39:32]=8'h20;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h00;
-			Main_Data_len=8;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
 			Main_Current_State=16;
 		end
 		16:
@@ -889,21 +956,10 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=19;
+				Main_Current_State=18;
 			end
 		end
-		
-	/*
-// Set properties:           RF_GLOBAL_XO_TUNE_2
-// Number of properties:     2
-// Group ID:                 0x00
-// Start ID:                 0x00
-// Default values:           0x40, 0x00,
-// Descriptions:
-//   GLOBAL_XO_TUNE - Configure the internal capacitor frequency tuning bank for the crystal oscillator.
-//   GLOBAL_CLK_CFG - Clock configuration options.
-*/	
-		19:
+		18:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h00;
@@ -911,69 +967,50 @@ begin
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h52;
 			Main_Cmd_Data[47:40]=8'h00;
-			Main_Data_len=6;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=6;
+			Main_Return_len=0;
+			Main_Current_State=19;
+		end
+		19:
+		begin
+			Main_start=0;
 			Main_Current_State=20;
 		end
 		20:
 		begin
-			Main_start=0;
-			Main_Current_State=21;
-		end
-		21:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=22;
+				Main_Current_State=21;
 			end
 		end
-/*
-// Set properties:           RF_GLOBAL_CONFIG_1
-// Number of properties:     1
-// Group ID:                 0x00
-// Start ID:                 0x03
-// Default values:           0x20,
-// Descriptions:
-//   GLOBAL_CONFIG - Global configuration settings.
-*/		
-		22:
+		21:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h00;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h03;
 			Main_Cmd_Data[39:32]=8'h60;
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=22;
+		end
+		22:
+		begin
+			Main_start=0;
 			Main_Current_State=23;
 		end
 		23:
 		begin
-			Main_start=0;
-			Main_Current_State=24;
-		end
-		24:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=25;
+				Main_Current_State=24;
 			end
 		end
-/*
-// Set properties:           RF_INT_CTL_ENABLE_2
-// Number of properties:     2
-// Group ID:                 0x01
-// Start ID:                 0x00
-// Default values:           0x04, 0x00,
-// Descriptions:
-//   INT_CTL_ENABLE - This property provides for global enabling of the three interrupt groups (Chip, Modem and Packet Handler) in order to generate HW interrupts at the NIRQ pin.
-//   INT_CTL_PH_ENABLE - Enable individual interrupt sources within the Packet Handler Interrupt Group to generate a HW interrupt on the NIRQ output pin.
-*/		
-		25:
+		24:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h01;
@@ -981,37 +1018,25 @@ begin
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h01;
 			Main_Cmd_Data[47:40]=8'h30;
-			Main_Data_len=6;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=6;
+			Main_Return_len=0;
+			Main_Current_State=25;
+		end
+		25:
+		begin
+			Main_start=0;
 			Main_Current_State=26;
 		end
 		26:
 		begin
-			Main_start=0;
-			Main_Current_State=27;
-		end
-		27:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=28;
+				Main_Current_State=27;
 			end
 		end
-/*
-// Set properties:           RF_FRR_CTL_A_MODE_4
-// Number of properties:     4
-// Group ID:                 0x02
-// Start ID:                 0x00
-// Default values:           0x01, 0x02, 0x09, 0x00,
-// Descriptions:
-//   FRR_CTL_A_MODE - Fast Response Register A Configuration.
-//   FRR_CTL_B_MODE - Fast Response Register B Configuration.
-//   FRR_CTL_C_MODE - Fast Response Register C Configuration.
-//   FRR_CTL_D_MODE - Fast Response Register D Configuration.
-*/		
-		28:
+		27:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h02;
@@ -1021,42 +1046,25 @@ begin
 			Main_Cmd_Data[47:40]=8'h06;
 			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h00;
-			Main_Data_len=8;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=28;
+		end
+		28:
+		begin
+			Main_start=0;
 			Main_Current_State=29;
 		end
 		29:
 		begin
-			Main_start=0;
-			Main_Current_State=30;
-		end
-		30:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=31;
+				Main_Current_State=30;
 			end
 		end
-/*
-// Set properties:           RF_PREAMBLE_TX_LENGTH_9
-// Number of properties:     9
-// Group ID:                 0x10
-// Start ID:                 0x00
-// Default values:           0x08, 0x14, 0x00, 0x0F, 0x21, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   PREAMBLE_TX_LENGTH - Configure length of TX Preamble.
-//   PREAMBLE_CONFIG_STD_1 - Configuration of reception of a packet with a Standard Preamble pattern.
-//   PREAMBLE_CONFIG_NSTD - Configuration of transmission/reception of a packet with a Non-Standard Preamble pattern.
-//   PREAMBLE_CONFIG_STD_2 - Configuration of timeout periods during reception of a packet with Standard Preamble pattern.
-//   PREAMBLE_CONFIG - General configuration bits for the Preamble field.
-//   PREAMBLE_PATTERN_31_24 - Configuration of the bit values describing a Non-Standard Preamble pattern.
-//   PREAMBLE_PATTERN_23_16 - Configuration of the bit values describing a Non-Standard Preamble pattern.
-//   PREAMBLE_PATTERN_15_8 - Configuration of the bit values describing a Non-Standard Preamble pattern.
-//   PREAMBLE_PATTERN_7_0 - Configuration of the bit values describing a Non-Standard Preamble pattern.
-*/		
-		31:
+		30:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h10;
@@ -1065,89 +1073,60 @@ begin
 			Main_Cmd_Data[39:32]=8'h08;
 			Main_Cmd_Data[47:40]=8'h14;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h0F;
+			Main_Cmd_Data[63:56]=8'h0f;
 			Main_Cmd_Data[71:64]=8'h31;
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h00;
 			Main_Cmd_Data[95:88]=8'h00;
 			Main_Cmd_Data[103:96]=8'h00;
-			Main_Data_len=13;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=13;
+			Main_Return_len=0;
+			Main_Current_State=31;
+		end
+		31:
+		begin
+			Main_start=0;
 			Main_Current_State=32;
 		end
 		32:
 		begin
-			Main_start=0;
-			Main_Current_State=33;
-		end
-		33:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=34;
+				Main_Current_State=33;
 			end
 		end
-		
-/*
-// Set properties:           RF_SYNC_CONFIG_5
-// Number of properties:     5
-// Group ID:                 0x11
-// Start ID:                 0x00
-// Default values:           0x01, 0x2D, 0xD4, 0x2D, 0xD4,
-// Descriptions:
-//   SYNC_CONFIG - Sync Word configuration bits.
-//   SYNC_BITS_31_24 - Sync word.
-//   SYNC_BITS_23_16 - Sync word.
-//   SYNC_BITS_15_8 - Sync word.
-//   SYNC_BITS_7_0 - Sync word.
-*/		
-		34:
+		33:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h11;
 			Main_Cmd_Data[23:16]=8'h05;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h01;
-			Main_Cmd_Data[47:40]=8'hB4;
-			Main_Cmd_Data[55:48]=8'h2B;
+			Main_Cmd_Data[47:40]=8'hb4;
+			Main_Cmd_Data[55:48]=8'h2b;
 			Main_Cmd_Data[63:56]=8'h00;
 			Main_Cmd_Data[71:64]=8'h00;
-			Main_Data_len=9;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=9;
+			Main_Return_len=0;
+			Main_Current_State=34;
+		end
+		34:
+		begin
+			Main_start=0;
 			Main_Current_State=35;
 		end
 		35:
 		begin
-			Main_start=0;
-			Main_Current_State=36;
-		end
-		36:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=37;
+				Main_Current_State=36;
 			end
 		end
-/*
-// Set properties:           RF_PKT_CRC_CONFIG_7
-// Number of properties:     7
-// Group ID:                 0x12
-// Start ID:                 0x00
-// Default values:           0x00, 0x01, 0x08, 0xFF, 0xFF, 0x00, 0x00,
-// Descriptions:
-//   PKT_CRC_CONFIG - Select a CRC polynomial and seed.
-//   PKT_WHT_POLY_15_8 - 16-bit polynomial value for the PN Generator (e.g., for Data Whitening)
-//   PKT_WHT_POLY_7_0 - 16-bit polynomial value for the PN Generator (e.g., for Data Whitening)
-//   PKT_WHT_SEED_15_8 - 16-bit seed value for the PN Generator (e.g., for Data Whitening)
-//   PKT_WHT_SEED_7_0 - 16-bit seed value for the PN Generator (e.g., for Data Whitening)
-//   PKT_WHT_BIT_NUM - Selects which bit of the LFSR (used to generate the PN / data whitening sequence) is used as the output bit for data scrambling.
-//   PKT_CONFIG1 - General configuration bits for transmission or reception of a packet.
-*/		
-		37:
+		36:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1156,53 +1135,33 @@ begin
 			Main_Cmd_Data[39:32]=8'h84;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h30;
-			Main_Cmd_Data[63:56]=8'hFF;
-			Main_Cmd_Data[71:64]=8'hFF;
+			Main_Cmd_Data[63:56]=8'hff;
+			Main_Cmd_Data[71:64]=8'hff;
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h02;
-			Main_Data_len=11;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=11;
+			Main_Return_len=0;
+			Main_Current_State=37;
+		end
+		37:
+		begin
+			Main_start=0;
 			Main_Current_State=38;
 		end
 		38:
 		begin
-			Main_start=0;
-			Main_Current_State=39;
+			if(spi_op_done)
+			begin
+				Main_Current_State=39;
+			end
 		end
 		39:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=40;
-			end
-		end
-/*
-// Set properties:           RF_PKT_LEN_12
-// Number of properties:     12
-// Group ID:                 0x12
-// Start ID:                 0x08
-// Default values:           0x00, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   PKT_LEN - Configuration bits for reception of a variable length packet.
-//   PKT_LEN_FIELD_SOURCE - Field number containing the received packet length byte(s).
-//   PKT_LEN_ADJUST - Provides for adjustment/offset of the received packet length value (in order to accommodate a variety of methods of defining total packet length).
-//   PKT_TX_THRESHOLD - TX FIFO almost empty threshold.
-//   PKT_RX_THRESHOLD - RX FIFO Almost Full threshold.
-//   PKT_FIELD_1_LENGTH_12_8 - Unsigned 13-bit Field 1 length value.
-//   PKT_FIELD_1_LENGTH_7_0 - Unsigned 13-bit Field 1 length value.
-//   PKT_FIELD_1_CONFIG - General data processing and packet configuration bits for Field 1.
-//   PKT_FIELD_1_CRC_CONFIG - Configuration of CRC control bits across Field 1.
-//   PKT_FIELD_2_LENGTH_12_8 - Unsigned 13-bit Field 2 length value.
-//   PKT_FIELD_2_LENGTH_7_0 - Unsigned 13-bit Field 2 length value.
-//   PKT_FIELD_2_CONFIG - General data processing and packet configuration bits for Field 2.
-*/	
-		40:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h08;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
@@ -1216,49 +1175,29 @@ begin
 			Main_Cmd_Data[111:104]=8'h00;
 			Main_Cmd_Data[119:112]=8'h00;
 			Main_Cmd_Data[127:120]=8'h00;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=40;
+		end
+		40:
+		begin
+			Main_start=0;
 			Main_Current_State=41;
 		end
 		41:
 		begin
-			Main_start=0;
-			Main_Current_State=42;
+			if(spi_op_done)
+			begin
+				Main_Current_State=42;
+			end
 		end
 		42:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=43;
-			end
-		end
-/*
-// Set properties:           RF_PKT_FIELD_2_CRC_CONFIG_12
-// Number of properties:     12
-// Group ID:                 0x12
-// Start ID:                 0x14
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   PKT_FIELD_2_CRC_CONFIG - Configuration of CRC control bits across Field 2.
-//   PKT_FIELD_3_LENGTH_12_8 - Unsigned 13-bit Field 3 length value.
-//   PKT_FIELD_3_LENGTH_7_0 - Unsigned 13-bit Field 3 length value.
-//   PKT_FIELD_3_CONFIG - General data processing and packet configuration bits for Field 3.
-//   PKT_FIELD_3_CRC_CONFIG - Configuration of CRC control bits across Field 3.
-//   PKT_FIELD_4_LENGTH_12_8 - Unsigned 13-bit Field 4 length value.
-//   PKT_FIELD_4_LENGTH_7_0 - Unsigned 13-bit Field 4 length value.
-//   PKT_FIELD_4_CONFIG - General data processing and packet configuration bits for Field 4.
-//   PKT_FIELD_4_CRC_CONFIG - Configuration of CRC control bits across Field 4.
-//   PKT_FIELD_5_LENGTH_12_8 - Unsigned 13-bit Field 5 length value.
-//   PKT_FIELD_5_LENGTH_7_0 - Unsigned 13-bit Field 5 length value.
-//   PKT_FIELD_5_CONFIG - General data processing and packet configuration bits for Field 5.
-*/		
-		43:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h14;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
@@ -1272,49 +1211,29 @@ begin
 			Main_Cmd_Data[111:104]=8'h00;
 			Main_Cmd_Data[119:112]=8'h00;
 			Main_Cmd_Data[127:120]=8'h00;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=43;
+		end
+		43:
+		begin
+			Main_start=0;
 			Main_Current_State=44;
 		end
 		44:
 		begin
-			Main_start=0;
-			Main_Current_State=45;
+			if(spi_op_done)
+			begin
+				Main_Current_State=45;
+			end
 		end
 		45:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=46;
-			end
-		end
-/*
-// Set properties:           RF_PKT_FIELD_5_CRC_CONFIG_12
-// Number of properties:     12
-// Group ID:                 0x12
-// Start ID:                 0x20
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   PKT_FIELD_5_CRC_CONFIG - Configuration of CRC control bits across Field 5.
-//   PKT_RX_FIELD_1_LENGTH_12_8 - Unsigned 13-bit RX Field 1 length value.
-//   PKT_RX_FIELD_1_LENGTH_7_0 - Unsigned 13-bit RX Field 1 length value.
-//   PKT_RX_FIELD_1_CONFIG - General data processing and packet configuration bits for RX Field 1.
-//   PKT_RX_FIELD_1_CRC_CONFIG - Configuration of CRC control bits across RX Field 1.
-//   PKT_RX_FIELD_2_LENGTH_12_8 - Unsigned 13-bit RX Field 2 length value.
-//   PKT_RX_FIELD_2_LENGTH_7_0 - Unsigned 13-bit RX Field 2 length value.
-//   PKT_RX_FIELD_2_CONFIG - General data processing and packet configuration bits for RX Field 2.
-//   PKT_RX_FIELD_2_CRC_CONFIG - Configuration of CRC control bits across RX Field 2.
-//   PKT_RX_FIELD_3_LENGTH_12_8 - Unsigned 13-bit RX Field 3 length value.
-//   PKT_RX_FIELD_3_LENGTH_7_0 - Unsigned 13-bit RX Field 3 length value.
-//   PKT_RX_FIELD_3_CONFIG - General data processing and packet configuration bits for RX Field 3.
-*/		
-		46:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h20;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
@@ -1328,48 +1247,30 @@ begin
 			Main_Cmd_Data[111:104]=8'h00;
 			Main_Cmd_Data[119:112]=8'h00;
 			Main_Cmd_Data[127:120]=8'h00;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=46;
+		end
+		46:
+		begin
+			Main_start=0;
 			Main_Current_State=47;
 		end
 		47:
 		begin
-			Main_start=0;
-			Main_Current_State=48;
-		end
-		48:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=49;
+				Main_Current_State=48;
 			end
 		end
-		
-/*
-// Set properties:           RF_PKT_RX_FIELD_3_CRC_CONFIG_9
-// Number of properties:     9
-// Group ID:                 0x12
-// Start ID:                 0x2C
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   PKT_RX_FIELD_3_CRC_CONFIG - Configuration of CRC control bits across RX Field 3.
-//   PKT_RX_FIELD_4_LENGTH_12_8 - Unsigned 13-bit RX Field 4 length value.
-//   PKT_RX_FIELD_4_LENGTH_7_0 - Unsigned 13-bit RX Field 4 length value.
-//   PKT_RX_FIELD_4_CONFIG - General data processing and packet configuration bits for RX Field 4.
-//   PKT_RX_FIELD_4_CRC_CONFIG - Configuration of CRC control bits across RX Field 4.
-//   PKT_RX_FIELD_5_LENGTH_12_8 - Unsigned 13-bit RX Field 5 length value.
-//   PKT_RX_FIELD_5_LENGTH_7_0 - Unsigned 13-bit RX Field 5 length value.
-//   PKT_RX_FIELD_5_CONFIG - General data processing and packet configuration bits for RX Field 5.
-//   PKT_RX_FIELD_5_CRC_CONFIG - Configuration of CRC control bits across RX Field 5.
-*/		
-		49:
+		48:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h2C;
+			Main_Cmd_Data[31:24]=8'h2c;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h00;
@@ -1379,135 +1280,86 @@ begin
 			Main_Cmd_Data[87:80]=8'h00;
 			Main_Cmd_Data[95:88]=8'h00;
 			Main_Cmd_Data[103:96]=8'h00;
-			Main_Data_len=13;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=13;
+			Main_Return_len=0;
+			Main_Current_State=49;
+		end
+		49:
+		begin
+			Main_start=0;
 			Main_Current_State=50;
 		end
 		50:
 		begin
-			Main_start=0;
-			Main_Current_State=51;
+			if(spi_op_done)
+			begin
+				Main_Current_State=51;
+			end
 		end
 		51:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=52;
-			end
-		end
-		
-/*
-// Set properties:           RF_MODEM_MOD_TYPE_12
-// Number of properties:     12
-// Group ID:                 0x20
-// Start ID:                 0x00
-// Default values:           0x02, 0x80, 0x07, 0x0F, 0x42, 0x40, 0x01, 0xC9, 0xC3, 0x80, 0x00, 0x06,
-// Descriptions:
-//   MODEM_MOD_TYPE - Selects the type of modulation. In TX mode, additionally selects the source of the modulation.
-//   MODEM_MAP_CONTROL - Controls polarity and mapping of transmit and receive bits.
-//   MODEM_DSM_CTRL - Miscellaneous control bits for the Delta-Sigma Modulator (DSM) in the PLL Synthesizer.
-//   MODEM_DATA_RATE_2 - Unsigned 24-bit value used to determine the TX data rate
-//   MODEM_DATA_RATE_1 - Unsigned 24-bit value used to determine the TX data rate
-//   MODEM_DATA_RATE_0 - Unsigned 24-bit value used to determine the TX data rate
-//   MODEM_TX_NCO_MODE_3 - TX Gaussian filter oversampling ratio and Byte 3 of unsigned 26-bit TX Numerically Controlled Oscillator (NCO) modulus.
-//   MODEM_TX_NCO_MODE_2 - TX Gaussian filter oversampling ratio and Byte 3 of unsigned 26-bit TX Numerically Controlled Oscillator (NCO) modulus.
-//   MODEM_TX_NCO_MODE_1 - TX Gaussian filter oversampling ratio and Byte 3 of unsigned 26-bit TX Numerically Controlled Oscillator (NCO) modulus.
-//   MODEM_TX_NCO_MODE_0 - TX Gaussian filter oversampling ratio and Byte 3 of unsigned 26-bit TX Numerically Controlled Oscillator (NCO) modulus.
-//   MODEM_FREQ_DEV_2 - 17-bit unsigned TX frequency deviation word.
-//   MODEM_FREQ_DEV_1 - 17-bit unsigned TX frequency deviation word.
-*/		
-		52:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h03;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h07;
-			Main_Cmd_Data[63:56]=8'h3D;
+			Main_Cmd_Data[63:56]=8'h3d;
 			Main_Cmd_Data[71:64]=8'h09;
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h01;
-			Main_Cmd_Data[95:88]=8'hC9;
-			Main_Cmd_Data[103:96]=8'hC3;
+			Main_Cmd_Data[95:88]=8'hc9;
+			Main_Cmd_Data[103:96]=8'hc3;
 			Main_Cmd_Data[111:104]=8'h80;
 			Main_Cmd_Data[119:112]=8'h00;
 			Main_Cmd_Data[127:120]=8'h05;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=52;
+		end
+		52:
+		begin
+			Main_start=0;
 			Main_Current_State=53;
 		end
 		53:
 		begin
-			Main_start=0;
-			Main_Current_State=54;
-		end
-		54:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=55;
+				Main_Current_State=54;
 			end
 		end
-		
-/*
-// Set properties:           RF_MODEM_FREQ_DEV_0_1
-// Number of properties:     1
-// Group ID:                 0x20
-// Start ID:                 0x0C
-// Default values:           0xD3,
-// Descriptions:
-//   MODEM_FREQ_DEV_0 - 17-bit unsigned TX frequency deviation word.
-*/		
-		55:
+		54:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h0C;
+			Main_Cmd_Data[31:24]=8'h0c;
 			Main_Cmd_Data[39:32]=8'h76;
-			
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=55;
+		end
+		55:
+		begin
+			Main_start=0;
 			Main_Current_State=56;
 		end
 		56:
 		begin
-			Main_start=0;
-			Main_Current_State=57;
-		end
-		57:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=58;
+				Main_Current_State=57;
 			end
 		end
-		
-	/*
-// Set properties:           RF_MODEM_TX_RAMP_DELAY_8
-// Number of properties:     8
-// Group ID:                 0x20
-// Start ID:                 0x18
-// Default values:           0x01, 0x00, 0x08, 0x03, 0xC0, 0x00, 0x10, 0x20,
-// Descriptions:
-//   MODEM_TX_RAMP_DELAY - TX ramp-down delay setting.
-//   MODEM_MDM_CTRL - MDM control.
-//   MODEM_IF_CONTROL - Selects Fixed-IF, Scaled-IF, or Zero-IF mode of RX Modem operation.
-//   MODEM_IF_FREQ_2 - the IF frequency setting (an 18-bit signed number).
-//   MODEM_IF_FREQ_1 - the IF frequency setting (an 18-bit signed number).
-//   MODEM_IF_FREQ_0 - the IF frequency setting (an 18-bit signed number).
-//   MODEM_DECIMATION_CFG1 - Specifies three decimator ratios for the Cascaded Integrator Comb (CIC) filter.
-//   MODEM_DECIMATION_CFG0 - Specifies miscellaneous parameters and decimator ratios for the Cascaded Integrator Comb (CIC) filter.
-*/	
-		58:
+		57:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
@@ -1521,172 +1373,114 @@ begin
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h00;
 			Main_Cmd_Data[95:88]=8'h30;
-			Main_Data_len=12;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=12;
+			Main_Return_len=0;
+			Main_Current_State=58;
+		end
+		58:
+		begin
+			Main_start=0;
 			Main_Current_State=59;
 		end
 		59:
 		begin
-			Main_start=0;
-			Main_Current_State=60;
-		end
-		60:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=61;
+				Main_Current_State=60;
 			end
 		end
-/*
-// Set properties:           RF_MODEM_BCR_OSR_1_9
-// Number of properties:     9
-// Group ID:                 0x20
-// Start ID:                 0x22
-// Default values:           0x00, 0x4B, 0x06, 0xD3, 0xA0, 0x06, 0xD3, 0x02, 0xC0,
-// Descriptions:
-//   MODEM_BCR_OSR_1 - RX BCR/Slicer oversampling rate (12-bit unsigned number).
-//   MODEM_BCR_OSR_0 - RX BCR/Slicer oversampling rate (12-bit unsigned number).
-//   MODEM_BCR_NCO_OFFSET_2 - RX BCR NCO offset value (an unsigned 22-bit number).
-//   MODEM_BCR_NCO_OFFSET_1 - RX BCR NCO offset value (an unsigned 22-bit number).
-//   MODEM_BCR_NCO_OFFSET_0 - RX BCR NCO offset value (an unsigned 22-bit number).
-//   MODEM_BCR_GAIN_1 - The unsigned 11-bit RX BCR loop gain value.
-//   MODEM_BCR_GAIN_0 - The unsigned 11-bit RX BCR loop gain value.
-//   MODEM_BCR_GEAR - RX BCR loop gear control.
-//   MODEM_BCR_MISC1 - Miscellaneous control bits for the RX BCR loop.
-*/		
-		61:
+		60:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h09;
 			Main_Cmd_Data[31:24]=8'h22;
 			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h4B;
+			Main_Cmd_Data[47:40]=8'h4b;
 			Main_Cmd_Data[55:48]=8'h06;
-			Main_Cmd_Data[63:56]=8'hD3;
-			Main_Cmd_Data[71:64]=8'hA0;
+			Main_Cmd_Data[63:56]=8'hd3;
+			Main_Cmd_Data[71:64]=8'ha0;
 			Main_Cmd_Data[79:72]=8'h07;
-			Main_Cmd_Data[87:80]=8'hFF;
+			Main_Cmd_Data[87:80]=8'hff;
 			Main_Cmd_Data[95:88]=8'h02;
 			Main_Cmd_Data[103:96]=8'h00;
-			Main_Data_len=13;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=13;
+			Main_Return_len=0;
+			Main_Current_State=61;
+		end
+		61:
+		begin
+			Main_start=0;
 			Main_Current_State=62;
 		end
 		62:
 		begin
-			Main_start=0;
-			Main_Current_State=63;
-		end
-		63:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=64;
+				Main_Current_State=63;
 			end
 		end
-	/*
-// Set properties:           RF_MODEM_AFC_GEAR_7
-// Number of properties:     7
-// Group ID:                 0x20
-// Start ID:                 0x2C
-// Default values:           0x00, 0x23, 0x83, 0x69, 0x00, 0x40, 0xA0,
-// Descriptions:
-//   MODEM_AFC_GEAR - RX AFC loop gear control.
-//   MODEM_AFC_WAIT - RX AFC loop wait time control.
-//   MODEM_AFC_GAIN_1 - Sets the gain of the PLL-based AFC acquisition loop, and provides miscellaneous control bits for AFC functionality.
-//   MODEM_AFC_GAIN_0 - Sets the gain of the PLL-based AFC acquisition loop, and provides miscellaneous control bits for AFC functionality.
-//   MODEM_AFC_LIMITER_1 - Set the AFC limiter value.
-//   MODEM_AFC_LIMITER_0 - Set the AFC limiter value.
-//   MODEM_AFC_MISC - Specifies miscellaneous AFC control bits.
-*/	
-		64:
+		63:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h07;
-			Main_Cmd_Data[31:24]=8'h2C;
+			Main_Cmd_Data[31:24]=8'h2c;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h23;
-			Main_Cmd_Data[55:48]=8'h8F;
-			Main_Cmd_Data[63:56]=8'hFF;
+			Main_Cmd_Data[55:48]=8'h8f;
+			Main_Cmd_Data[63:56]=8'hff;
 			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'hB7;
-			Main_Cmd_Data[87:80]=8'hE0;
-			Main_Data_len=11;
-			Main_Return_len=0;
+			Main_Cmd_Data[79:72]=8'hb7;
+			Main_Cmd_Data[87:80]=8'he0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=11;
+			Main_Return_len=0;
+			Main_Current_State=64;
+		end
+		64:
+		begin
+			Main_start=0;
 			Main_Current_State=65;
 		end
 		65:
 		begin
-			Main_start=0;
-			Main_Current_State=66;
-		end
-		66:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=67;
+				Main_Current_State=66;
 			end
 		end
-	/*
-// Set properties:           RF_MODEM_AGC_CONTROL_1
-// Number of properties:     1
-// Group ID:                 0x20
-// Start ID:                 0x35
-// Default values:           0xE0,
-// Descriptions:
-//   MODEM_AGC_CONTROL - Miscellaneous control bits for the Automatic Gain Control (AGC) function in the RX Chain.
-*/	
-		67:
+		66:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h35;
-			Main_Cmd_Data[39:32]=8'hE2;
-			Main_Data_len=5;
-			Main_Return_len=0;
+			Main_Cmd_Data[39:32]=8'he2;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=67;
+		end
+		67:
+		begin
+			Main_start=0;
 			Main_Current_State=68;
 		end
 		68:
 		begin
-			Main_start=0;
-			Main_Current_State=69;
-		end
-		69:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=70;
+				Main_Current_State=69;
 			end
 		end
-/*
-// Set properties:           RF_MODEM_AGC_WINDOW_SIZE_9
-// Number of properties:     9
-// Group ID:                 0x20
-// Start ID:                 0x38
-// Default values:           0x11, 0x10, 0x10, 0x0B, 0x1C, 0x40, 0x00, 0x00, 0x2B,
-// Descriptions:
-//   MODEM_AGC_WINDOW_SIZE - Specifies the size of the measurement and settling windows for the AGC algorithm.
-//   MODEM_AGC_RFPD_DECAY - Sets the decay time of the RF peak detectors.
-//   MODEM_AGC_IFPD_DECAY - Sets the decay time of the IF peak detectors.
-//   MODEM_FSK4_GAIN1 - Specifies the gain factor of the secondary branch in 4(G)FSK ISI-suppression.
-//   MODEM_FSK4_GAIN0 - Specifies the gain factor of the primary branch in 4(G)FSK ISI-suppression.
-//   MODEM_FSK4_TH1 - 16 bit 4(G)FSK slicer threshold.
-//   MODEM_FSK4_TH0 - 16 bit 4(G)FSK slicer threshold.
-//   MODEM_FSK4_MAP - 4(G)FSK symbol mapping code.
-//   MODEM_OOK_PDTC - Configures the attack and decay times of the OOK Peak Detector.
-*/		
-		70:
+		69:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
@@ -1696,405 +1490,274 @@ begin
 			Main_Cmd_Data[47:40]=8'h08;
 			Main_Cmd_Data[55:48]=8'h08;
 			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h1A;
+			Main_Cmd_Data[71:64]=8'h1a;
 			Main_Cmd_Data[79:72]=8'h06;
 			Main_Cmd_Data[87:80]=8'h66;
 			Main_Cmd_Data[95:88]=8'h00;
 			Main_Cmd_Data[103:96]=8'h28;
-			Main_Data_len=13;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=13;
+			Main_Return_len=0;
+			Main_Current_State=70;
+		end
+		70:
+		begin
+			Main_start=0;
 			Main_Current_State=71;
 		end
 		71:
 		begin
-			Main_start=0;
-			Main_Current_State=72;
-		end
-		72:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=73;
+				Main_Current_State=72;
 			end
 		end
-/*
-// Set properties:           RF_MODEM_OOK_CNT1_9
-// Number of properties:     9
-// Group ID:                 0x20
-// Start ID:                 0x42
-// Default values:           0xA4, 0x03, 0x56, 0x02, 0x00, 0xA3, 0x02, 0x80, 0xFF,
-// Descriptions:
-//   MODEM_OOK_CNT1 - OOK control.
-//   MODEM_OOK_MISC - Selects the detector(s) used for demodulation of an OOK signal, or for demodulation of a (G)FSK signal when using the asynchronous demodulator.
-//   MODEM_RAW_SEARCH - Defines and controls the search period length for the Moving Average and Min-Max detectors.
-//   MODEM_RAW_CONTROL - Defines gain and enable controls for raw / nonstandard mode.
-//   MODEM_RAW_EYE_1 - 11 bit eye-open detector threshold.
-//   MODEM_RAW_EYE_0 - 11 bit eye-open detector threshold.
-//   MODEM_ANT_DIV_MODE - Antenna diversity mode settings.
-//   MODEM_ANT_DIV_CONTROL - Specifies controls for the Antenna Diversity algorithm.
-//   MODEM_RSSI_THRESH - Configures the RSSI threshold.
-*/		
-		73:
+		72:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h09;
 			Main_Cmd_Data[31:24]=8'h42;
-			Main_Cmd_Data[39:32]=8'hA4;
+			Main_Cmd_Data[39:32]=8'ha4;
 			Main_Cmd_Data[47:40]=8'h03;
-			Main_Cmd_Data[55:48]=8'hD6;
+			Main_Cmd_Data[55:48]=8'hd6;
 			Main_Cmd_Data[63:56]=8'h03;
 			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h1A;
+			Main_Cmd_Data[79:72]=8'h1a;
 			Main_Cmd_Data[87:80]=8'h01;
 			Main_Cmd_Data[95:88]=8'h80;
 			Main_Cmd_Data[103:96]=8'h55;
-			Main_Data_len=13;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=13;
+			Main_Return_len=0;
+			Main_Current_State=73;
+		end
+		73:
+		begin
+			Main_start=0;
 			Main_Current_State=74;
 		end
 		74:
 		begin
-			Main_start=0;
-			Main_Current_State=75;
-		end
-		75:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=76;
+				Main_Current_State=75;
 			end
 		end
-	/*
-// Set properties:           RF_MODEM_RSSI_CONTROL_1
-// Number of properties:     1
-// Group ID:                 0x20
-// Start ID:                 0x4C
-// Default values:           0x01,
-// Descriptions:
-//   MODEM_RSSI_CONTROL - Control of the averaging modes and latching time for reporting RSSI value(s).
-*/	
-		76:
+		75:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h4C;
+			Main_Cmd_Data[31:24]=8'h4c;
 			Main_Cmd_Data[39:32]=8'h00;
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=76;
+		end
+		76:
+		begin
+			Main_start=0;
 			Main_Current_State=77;
 		end
 		77:
 		begin
-			Main_start=0;
-			Main_Current_State=78;
-		end
-		78:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=79;
+				Main_Current_State=78;
 			end
 		end
-	/*
-// Set properties:           RF_MODEM_RSSI_COMP_1
-// Number of properties:     1
-// Group ID:                 0x20
-// Start ID:                 0x4E
-// Default values:           0x32,
-// Descriptions:
-//   MODEM_RSSI_COMP - RSSI compensation value.
-*/	
-		79:
+		78:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h4E;
+			Main_Cmd_Data[31:24]=8'h4e;
 			Main_Cmd_Data[39:32]=8'h40;
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=79;
+		end
+		79:
+		begin
+			Main_start=0;
 			Main_Current_State=80;
 		end
 		80:
 		begin
-			Main_start=0;
-			Main_Current_State=81;
-		end
-		81:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=82;
+				Main_Current_State=81;
 			end
 		end
-/*
-// Set properties:           RF_MODEM_CLKGEN_BAND_1
-// Number of properties:     1
-// Group ID:                 0x20
-// Start ID:                 0x51
-// Default values:           0x08,
-// Descriptions:
-//   MODEM_CLKGEN_BAND - Select PLL Synthesizer output divider ratio as a function of frequency band.
-*/		
-		82:
+		81:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h51;
-			Main_Cmd_Data[39:32]=8'h0A;
-			Main_Data_len=5;
-			Main_Return_len=0;
+			Main_Cmd_Data[39:32]=8'h0a;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=82;
+		end
+		82:
+		begin
+			Main_start=0;
 			Main_Current_State=83;
 		end
 		83:
 		begin
-			Main_start=0;
-			Main_Current_State=84;
+			if(spi_op_done)
+			begin
+				Main_Current_State=84;
+			end
 		end
 		84:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=85;
-			end
-		end
-	/*
-// Set properties:           RF_MODEM_CHFLT_RX1_CHFLT_COE13_7_0_12
-// Number of properties:     12
-// Group ID:                 0x21
-// Start ID:                 0x00
-// Default values:           0xFF, 0xBA, 0x0F, 0x51, 0xCF, 0xA9, 0xC9, 0xFC, 0x1B, 0x1E, 0x0F, 0x01,
-// Descriptions:
-//   MODEM_CHFLT_RX1_CHFLT_COE13_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE12_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE11_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE10_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE9_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE8_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE7_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE6_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE5_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE4_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE3_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE2_7_0 - Filter coefficients for the first set of RX filter coefficients.
-*/	
-		85:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h23;
 			Main_Cmd_Data[47:40]=8'h17;
-			Main_Cmd_Data[55:48]=8'hF4;
-			Main_Cmd_Data[63:56]=8'hC2;
+			Main_Cmd_Data[55:48]=8'hf4;
+			Main_Cmd_Data[63:56]=8'hc2;
 			Main_Cmd_Data[71:64]=8'h88;
 			Main_Cmd_Data[79:72]=8'h50;
 			Main_Cmd_Data[87:80]=8'h21;
-			Main_Cmd_Data[95:88]=8'hFF;
-			Main_Cmd_Data[103:96]=8'hEC;
-			Main_Cmd_Data[111:104]=8'hE6;
-			Main_Cmd_Data[119:112]=8'hE8;
-			Main_Cmd_Data[127:120]=8'hEE;
-			Main_Data_len=16;
-			Main_Return_len=0;
+			Main_Cmd_Data[95:88]=8'hff;
+			Main_Cmd_Data[103:96]=8'hec;
+			Main_Cmd_Data[111:104]=8'he6;
+			Main_Cmd_Data[119:112]=8'he8;
+			Main_Cmd_Data[127:120]=8'hee;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=85;
+		end
+		85:
+		begin
+			Main_start=0;
 			Main_Current_State=86;
 		end
 		86:
 		begin
-			Main_start=0;
-			Main_Current_State=87;
+			if(spi_op_done)
+			begin
+				Main_Current_State=87;
+			end
 		end
 		87:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=88;
-			end
-		end
-/*
-// Set properties:           RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12
-// Number of properties:     12
-// Group ID:                 0x21
-// Start ID:                 0x0C
-// Default values:           0xFC, 0xFD, 0x15, 0xFF, 0x00, 0x0F, 0xFF, 0xC4, 0x30, 0x7F, 0xF5, 0xB5,
-// Descriptions:
-//   MODEM_CHFLT_RX1_CHFLT_COE1_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COE0_7_0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COEM0 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COEM1 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COEM2 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX1_CHFLT_COEM3 - Filter coefficients for the first set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE13_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE12_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE11_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE10_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE9_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE8_7_0 - Filter coefficients for the second set of RX filter coefficients.
-*/		
-		88:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0C;
-			Main_Cmd_Data[31:24]=8'h0C;
-			Main_Cmd_Data[39:32]=8'hF6;
-			Main_Cmd_Data[47:40]=8'hFB;
+			Main_Cmd_Data[23:16]=8'h0c;
+			Main_Cmd_Data[31:24]=8'h0c;
+			Main_Cmd_Data[39:32]=8'hf6;
+			Main_Cmd_Data[47:40]=8'hfb;
 			Main_Cmd_Data[55:48]=8'h05;
-			Main_Cmd_Data[63:56]=8'hC0;
-			Main_Cmd_Data[71:64]=8'hFF;
-			Main_Cmd_Data[79:72]=8'h0F;
+			Main_Cmd_Data[63:56]=8'hc0;
+			Main_Cmd_Data[71:64]=8'hff;
+			Main_Cmd_Data[79:72]=8'h0f;
 			Main_Cmd_Data[87:80]=8'h23;
 			Main_Cmd_Data[95:88]=8'h17;
-			Main_Cmd_Data[103:96]=8'hF4;
-			Main_Cmd_Data[111:104]=8'hC2;
+			Main_Cmd_Data[103:96]=8'hf4;
+			Main_Cmd_Data[111:104]=8'hc2;
 			Main_Cmd_Data[119:112]=8'h88;
 			Main_Cmd_Data[127:120]=8'h50;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=88;
+		end
+		88:
+		begin
+			Main_start=0;
 			Main_Current_State=89;
 		end
 		89:
 		begin
-			Main_start=0;
-			Main_Current_State=90;
+			if(spi_op_done)
+			begin
+				Main_Current_State=90;
+			end
 		end
 		90:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=91;
-			end
-		end
-/*
-// Set properties:           RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12
-// Number of properties:     12
-// Group ID:                 0x21
-// Start ID:                 0x18
-// Default values:           0xB8, 0xDE, 0x05, 0x17, 0x16, 0x0C, 0x03, 0x00, 0x15, 0xFF, 0x00, 0x00,
-// Descriptions:
-//   MODEM_CHFLT_RX2_CHFLT_COE7_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE6_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE5_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE4_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE3_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE2_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE1_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COE0_7_0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COEM0 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COEM1 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COEM2 - Filter coefficients for the second set of RX filter coefficients.
-//   MODEM_CHFLT_RX2_CHFLT_COEM3 - Filter coefficients for the second set of RX filter coefficients.
-*/		
-		91:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h18;
 			Main_Cmd_Data[39:32]=8'h21;
-			Main_Cmd_Data[47:40]=8'hFF;
-			Main_Cmd_Data[55:48]=8'hEC;
-			Main_Cmd_Data[63:56]=8'hE6;
-			Main_Cmd_Data[71:64]=8'hE8;
-			Main_Cmd_Data[79:72]=8'hEE;
-			Main_Cmd_Data[87:80]=8'hF6;
-			Main_Cmd_Data[95:88]=8'hFB;
+			Main_Cmd_Data[47:40]=8'hff;
+			Main_Cmd_Data[55:48]=8'hec;
+			Main_Cmd_Data[63:56]=8'he6;
+			Main_Cmd_Data[71:64]=8'he8;
+			Main_Cmd_Data[79:72]=8'hee;
+			Main_Cmd_Data[87:80]=8'hf6;
+			Main_Cmd_Data[95:88]=8'hfb;
 			Main_Cmd_Data[103:96]=8'h05;
-			Main_Cmd_Data[111:104]=8'hC0;
-			Main_Cmd_Data[119:112]=8'hFF;
-			Main_Cmd_Data[127:120]=8'h0F;
-			Main_Data_len=16;
-			Main_Return_len=0;
+			Main_Cmd_Data[111:104]=8'hc0;
+			Main_Cmd_Data[119:112]=8'hff;
+			Main_Cmd_Data[127:120]=8'h0f;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=91;
+		end
+		91:
+		begin
+			Main_start=0;
 			Main_Current_State=92;
 		end
 		92:
 		begin
-			Main_start=0;
-			Main_Current_State=93;
-		end
-		93:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=94;
+				Main_Current_State=93;
 			end
 		end
-/*
-// Set properties:           RF_PA_MODE_4
-// Number of properties:     4
-// Group ID:                 0x22
-// Start ID:                 0x00
-// Default values:           0x08, 0x7F, 0x00, 0x5D,
-// Descriptions:
-//   PA_MODE - Selects the PA operating mode, and selects resolution of PA power adjustment (i.e., step size).
-//   PA_PWR_LVL - Configuration of PA output power level.
-//   PA_BIAS_CLKDUTY - Configuration of the PA Bias and duty cycle of the TX clock source.
-//   PA_TC - Configuration of PA ramping parameters.
-*/		
-		94:
+		93:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h22;
 			Main_Cmd_Data[23:16]=8'h04;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h08;
-			Main_Cmd_Data[47:40]=8'h7F;
+			Main_Cmd_Data[47:40]=8'h7f;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h5D;
-			Main_Data_len=8;
-			Main_Return_len=0;
+			Main_Cmd_Data[63:56]=8'h5d;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=94;
+		end
+		94:
+		begin
+			Main_start=0;
 			Main_Current_State=95;
 		end
 		95:
 		begin
-			Main_start=0;
-			Main_Current_State=96;
-		end
-		96:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=97;
+				Main_Current_State=96;
 			end
 		end
-/*
-// Set properties:           RF_SYNTH_PFDCP_CPFF_7
-// Number of properties:     7
-// Group ID:                 0x23
-// Start ID:                 0x00
-// Default values:           0x2C, 0x0E, 0x0B, 0x04, 0x0C, 0x73, 0x03,
-// Descriptions:
-//   SYNTH_PFDCP_CPFF - Feed forward charge pump current selection.
-//   SYNTH_PFDCP_CPINT - Integration charge pump current selection.
-//   SYNTH_VCO_KV - Gain scaling factors (Kv) for the VCO tuning varactors on both the integrated-path and feed forward path.
-//   SYNTH_LPFILT3 - Value of resistor R2 in feed-forward path of loop filter.
-//   SYNTH_LPFILT2 - Value of capacitor C2 in feed-forward path of loop filter.
-//   SYNTH_LPFILT1 - Value of capacitors C1 and C3 in feed-forward path of loop filter.
-//   SYNTH_LPFILT0 - Bias current of the active amplifier in the feed-forward loop filter.
-*/		
-		97:
+		96:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h23;
@@ -2102,54 +1765,34 @@ begin
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h01;
 			Main_Cmd_Data[47:40]=8'h05;
-			Main_Cmd_Data[55:48]=8'h0B;
+			Main_Cmd_Data[55:48]=8'h0b;
 			Main_Cmd_Data[63:56]=8'h05;
 			Main_Cmd_Data[71:64]=8'h02;
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h03;
-			Main_Data_len=11;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=11;
+			Main_Return_len=0;
+			Main_Current_State=97;
+		end
+		97:
+		begin
+			Main_start=0;
 			Main_Current_State=98;
 		end
 		98:
 		begin
-			Main_start=0;
-			Main_Current_State=99;
+			if(spi_op_done)
+			begin
+				Main_Current_State=99;
+			end
 		end
 		99:
 		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=100;
-			end
-		end
-/*
-// Set properties:           RF_MATCH_VALUE_1_12
-// Number of properties:     12
-// Group ID:                 0x30
-// Start ID:                 0x00
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-// Descriptions:
-//   MATCH_VALUE_1 - Match value to be compared with the result of logically AND-ing (bit-wise) the Mask 1 value with the received Match 1 byte.
-//   MATCH_MASK_1 - Mask value to be logically AND-ed (bit-wise) with the Match 1 byte.
-//   MATCH_CTRL_1 - Enable for Packet Match functionality, and configuration of Match Byte 1.
-//   MATCH_VALUE_2 - Match value to be compared with the result of logically AND-ing (bit-wise) the Mask 2 value with the received Match 2 byte.
-//   MATCH_MASK_2 - Mask value to be logically AND-ed (bit-wise) with the Match 2 byte.
-//   MATCH_CTRL_2 - Configuration of Match Byte 2.
-//   MATCH_VALUE_3 - Match value to be compared with the result of logically AND-ing (bit-wise) the Mask 3 value with the received Match 3 byte.
-//   MATCH_MASK_3 - Mask value to be logically AND-ed (bit-wise) with the Match 3 byte.
-//   MATCH_CTRL_3 - Configuration of Match Byte 3.
-//   MATCH_VALUE_4 - Match value to be compared with the result of logically AND-ing (bit-wise) the Mask 4 value with the received Match 4 byte.
-//   MATCH_MASK_4 - Mask value to be logically AND-ed (bit-wise) with the Match 4 byte.
-//   MATCH_CTRL_4 - Configuration of Match Byte 4.
-*/		
-		100:
-		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h30;
-			Main_Cmd_Data[23:16]=8'h0C;
+			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
@@ -2163,74 +1806,58 @@ begin
 			Main_Cmd_Data[111:104]=8'h00;
 			Main_Cmd_Data[119:112]=8'h00;
 			Main_Cmd_Data[127:120]=8'h00;
-			Main_Data_len=16;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=100;
+		end
+		100:
+		begin
+			Main_start=0;
 			Main_Current_State=101;
 		end
 		101:
 		begin
-			Main_start=0;
-			Main_Current_State=102;
-		end
-		102:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=103;
+				Main_Current_State=102;
 			end
 		end
-	/*
-// Set properties:           RF_FREQ_CONTROL_INTE_8
-// Number of properties:     8
-// Group ID:                 0x40
-// Start ID:                 0x00
-// Default values:           0x3C, 0x08, 0x00, 0x00, 0x00, 0x00, 0x20, 0xFF,
-// Descriptions:
-//   FREQ_CONTROL_INTE - Frac-N PLL Synthesizer integer divide number.
-//   FREQ_CONTROL_FRAC_2 - Frac-N PLL fraction number.
-//   FREQ_CONTROL_FRAC_1 - Frac-N PLL fraction number.
-//   FREQ_CONTROL_FRAC_0 - Frac-N PLL fraction number.
-//   FREQ_CONTROL_CHANNEL_STEP_SIZE_1 - EZ Frequency Programming channel step size.
-//   FREQ_CONTROL_CHANNEL_STEP_SIZE_0 - EZ Frequency Programming channel step size.
-//   FREQ_CONTROL_W_SIZE - Set window gating period (in number of crystal reference clock cycles) for counting VCO frequency during calibration.
-//   FREQ_CONTROL_VCOCNT_RX_ADJ - Adjust target count for VCO calibration in RX mode.
-*/	
-		103:
+		102:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h40;
 			Main_Cmd_Data[23:16]=8'h08;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h38;
-			Main_Cmd_Data[47:40]=8'h0D;
-			Main_Cmd_Data[55:48]=8'hDD;
-			Main_Cmd_Data[63:56]=8'hDD;
+			Main_Cmd_Data[47:40]=8'h0d;
+			Main_Cmd_Data[55:48]=8'hdd;
+			Main_Cmd_Data[63:56]=8'hdd;
 			Main_Cmd_Data[71:64]=8'h44;
 			Main_Cmd_Data[79:72]=8'h44;
 			Main_Cmd_Data[87:80]=8'h20;
-			Main_Cmd_Data[95:88]=8'hFE;
-			Main_Data_len=12;
-			Main_Return_len=0;
+			Main_Cmd_Data[95:88]=8'hfe;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=12;
+			Main_Return_len=0;
+			Main_Current_State=103;
+		end
+		103:
+		begin
+			Main_start=0;
 			Main_Current_State=104;
 		end
 		104:
 		begin
-			Main_start=0;
-			Main_Current_State=105;
-		end
-		105:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=106;
+				Main_Current_State=105;
 			end
 		end
-	////set_frr_ctl 设置快速寄存器的功能
-		106:
+		//===set_frr_ctl(void)====
+		105:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h02;
@@ -2240,219 +1867,213 @@ begin
 			Main_Cmd_Data[47:40]=8'h02;
 			Main_Cmd_Data[55:48]=8'h09;
 			Main_Cmd_Data[63:56]=8'h00;
-			Main_Data_len=8;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=106;
+		end
+		106:
+		begin
+			Main_start=0;
 			Main_Current_State=107;
 		end
 		107:
 		begin
-			Main_start=0;
-			Main_Current_State=108;
-		end
-		108:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=109;
+				Main_Current_State=108;
 			end
 		end
-	
-	/////Function_set_tran_property,设置射频模块上发送相关的寄存器
-		109:
+		//===Function_set_tran_property()====
+		108:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h06;
 			Main_Cmd_Data[39:32]=8'h80;
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=109;
+		end
+		109:
+		begin
+			Main_start=0;
 			Main_Current_State=110;
 		end
 		110:
 		begin
-			Main_start=0;
-			Main_Current_State=111;
-		end
-		111:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=112;
+				Main_Current_State=111;
 			end
 		end
-		
-		112:
+		111:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h03;
 			Main_Cmd_Data[31:24]=8'h08;
-			Main_Cmd_Data[39:32]=8'h02;
+			Main_Cmd_Data[39:32]=8'h0a;
 			Main_Cmd_Data[47:40]=8'h01;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Data_len=7;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=7;
+			Main_Return_len=0;
+			Main_Current_State=112;
+		end
+		112:
+		begin
+			Main_start=0;
 			Main_Current_State=113;
 		end
 		113:
 		begin
-			Main_start=0;
-			Main_Current_State=114;
-		end
-		114:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=115;
+				Main_Current_State=114;
 			end
 		end
-		
-		115:
+		114:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h0D;
+			Main_Cmd_Data[31:24]=8'h0d;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'hA0;
-			Main_Data_len=8;
-			Main_Return_len=0;
+			Main_Cmd_Data[63:56]=8'ha0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=115;
+		end
+		115:
+		begin
+			Main_start=0;
 			Main_Current_State=116;
 		end
 		116:
 		begin
-			Main_start=0;
-			Main_Current_State=117;
-		end
-		117:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=118;
+				Main_Current_State=117;
 			end
 		end
-		
-		118:
+		117:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h0D;
+			Main_Cmd_Data[31:24]=8'h21;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h01;
 			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h80;
-			Main_Data_len=8;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=118;
+		end
+		118:
+		begin
+			Main_start=0;
 			Main_Current_State=119;
 		end
 		119:
 		begin
-			Main_start=0;
-			Main_Current_State=120;
-		end
-		120:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=121;
+				Main_Current_State=120;
 			end
 		end
-		
-		121:
+		120:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h04;
 			Main_Cmd_Data[31:24]=8'h25;
 			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'hFA;  //包的最大长度为250个字节
+			Main_Cmd_Data[47:40]=8'hfa;
 			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h00;
-			Main_Data_len=8;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=8;
+			Main_Return_len=0;
+			Main_Current_State=121;
+		end
+		121:
+		begin
+			Main_start=0;
 			Main_Current_State=122;
 		end
 		122:
 		begin
-			Main_start=0;
-			Main_Current_State=123;
-		end
-		123:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=124;
+				Main_Current_State=123;
 			end
 		end
-		
-		124:
+		123:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h02;
-			Main_Cmd_Data[31:24]=8'h0B;
+			Main_Cmd_Data[31:24]=8'h0b;
 			Main_Cmd_Data[39:32]=8'h23;
 			Main_Cmd_Data[47:40]=8'h30;
-			Main_Data_len=6;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=6;
+			Main_Return_len=0;
+			Main_Current_State=124;
+		end
+		124:
+		begin
+			Main_start=0;
 			Main_Current_State=125;
 		end
 		125:
 		begin
-			Main_start=0;
-			Main_Current_State=126;
-		end
-		126:
-		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=127;
+				Main_Current_State=126;
 			end
 		end
-		
-		127:
+		126:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h00;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h03;
 			Main_Cmd_Data[39:32]=8'h70;
-			Main_Data_len=5;
-			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=127;
+		end
+		127:
+		begin
+			Main_start=0;
 			Main_Current_State=128;
 		end
 		128:
-		begin
-			Main_start=0;
-			Main_Current_State=129;
-		end
-		129:
 		begin
 			if(spi_op_done)
 			begin
 				Main_Current_State=160;
 			end
 		end
+
 		
 		//需要重置FIFO
 		160:
@@ -2499,7 +2120,7 @@ begin
 			
 			if(spi_op_done)
 			begin
-				if(Main_Return_Data[15:8]==16'h03)
+				if(Main_Return_Data[15:8]==8'h03)
 				begin
 					tx_state=3'b000;
 					Main_Current_State=180;
@@ -2543,6 +2164,85 @@ begin
 			end
 		end
 		
+		/*
+		183:
+		begin
+			Main_Cmd_Data[7:0]=8'h33;
+			Main_Cmd_Data[15:8]=8'h00;
+			Main_Data_len=2;
+			Main_Return_len=2;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Current_State=184;
+		end
+		184:
+		begin
+			Main_start=0;
+			Main_Current_State=185;
+		end
+		185:
+		begin
+			
+			if(spi_op_done)
+			begin
+				//Si4463_Ph_Status_1=Main_Return_Data[15:8];
+				if(Main_Return_Data[15:8]==8'h08)
+				begin
+					tx_state=`RX;
+					Main_Current_State=186;
+				end
+			end
+		end
+		
+		186:
+		begin
+			Main_Cmd_Data[7:0]=8'h20;
+				Main_Cmd_Data[15:8]=8'hFB;
+				Main_Cmd_Data[23:16]=8'h7F;
+				Main_Cmd_Data[31:24]=8'h7F;
+				Main_start=1;
+				Main_Cmd=1;
+				Main_Data_len=4;
+				Main_Return_len=8;
+				Main_Current_State=187;
+		end
+		187:
+		begin
+			Main_start=0;
+			Main_Current_State=188;
+		end
+		188:
+		begin
+			if(spi_op_done)
+			begin
+				Si4463_Ph_Status_1=Main_Return_Data[47:40];
+				Main_Current_State=189;
+			end
+		end
+		189:
+		begin
+				Main_Cmd_Data[7:0]=8'h15;
+				Main_Cmd_Data[15:8]=8'h00;
+
+				Main_start=1;
+				Main_Cmd=1;
+				Main_Data_len=2;
+				Main_Return_len=2;
+				Main_Current_State=190;
+		end
+		190:
+		begin
+			Main_start=0;
+			Main_Current_State=191;
+		end
+		191:
+		begin
+			if(spi_op_done)
+			begin
+				//Si4463_Ph_Status_1=Main_Return_Data[47:40];
+				Main_Current_State=186;
+			end
+		end*/
 		
 		///////////////////////////////////启动完成，开始发送数据、、、、、、、、、、、、、、、、
 		//////////////////////////////////////////////////////////////////////////////
@@ -2567,9 +2267,8 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				if(Main_Data_Check[15:8]==8'h66)
+				if(Main_Data_Check[31:24]==8'h66)
 				begin
-					//led=SRAM_count[3:0];
 					Data_Len_to_Send=Main_Data_Check[7:0];
 					if(SRAM_count*2>=Data_Len_to_Send)
 					begin
@@ -2577,7 +2276,9 @@ begin
 					end
 				end
 				else
+				begin
 					Main_Current_State=130;
+				end
 			end
 		end
 		
@@ -2674,7 +2375,7 @@ begin
 			if(!spi_Using)
 			begin
 				Main_Cmd=2;
-				Main_Data_len=Data_Len_to_Send+1;  //目前最大为126
+				Main_Data_len=Data_Len_to_Send+1;  //+1是因为要发送0x66命令，导致最大包长度为126,再去掉包长度，则只剩125字节
 				Main_Return_len=0;
 				Main_start=1;
 				Main_Current_State=140;
@@ -2731,14 +2432,25 @@ begin
 		end
 		145:
 		begin
-			if(tx_done)
+			if(tx_done)  //增加超时判断
 			begin
-			
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
+			delay_start_2=1;
+			delay_mtime_2=30;
+			if(delay_int)
+			begin
+				tx_state=`RX;
+				delay_start=0;
+				Main_Current_State=0;
+			end
 		end
-			
+		
+		default:
+		begin
+			Main_Current_State=8'h00;
+		end
 	endcase
 
 end
@@ -2756,7 +2468,7 @@ reg [7:0] frame_len;
 /////中断处理程序///////////
 always@(posedge clk)
 begin
-	case (Irq_Current_State)
+	case (Irq_Current_State)		
 		/////等待中断到来
 		0:
 		begin
@@ -2770,7 +2482,6 @@ begin
 		//////读取中断状态，判断中断源
 		1:
 		begin
-		
 			if(!spi_Using)
 			begin
 				Int_Cmd_Data[7:0]=8'h20;
@@ -2794,9 +2505,8 @@ begin
 			if(spi_op_done)
 			begin
 				Si4463_Ph_Status=Int_Return_Data[47:40];
-				if((Si4463_Ph_Status)==8'b00100010 || (Si4463_Ph_Status)==8'b00100000) //发送完成中断
+				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
 				begin
-					
 					tx_flag=1;
 					Irq_Current_State=4;
 				end
@@ -2882,19 +2592,19 @@ begin
 		begin
 			if(rx_start)
 			begin
-			
 				Recv_Current_State=1;
 			end
 		end
 		1:
-		begin //获取射频模块中数据的长度,getPacket()
+		begin
 			if(!spi_Using)
 			begin
-				Int_Cmd_Data[7:0]=8'h16;
+				Int_Cmd_Data[7:0]=8'h15;
+				Int_Cmd_Data[15:8]=8'h00; //这里原来是03，但是我认为02会更好一点
+				Int_Data_len=2;
+				Int_Return_len=2;
 				Int_start=1;
 				Int_Cmd=4;
-				Int_Data_len=1;
-				Int_Return_len=2;
 				Recv_Current_State=2;
 			end
 		end
@@ -2906,24 +2616,19 @@ begin
 		3:
 		begin
 			if(spi_op_done)
-			begin
-				frame_len=Int_Return_Data[15:8];
+			begin			
+				//rx_flag=0;
+				Si4463_Ph_Status_1=Int_Return_Data[15:8];
 				Recv_Current_State=4;
 			end
 		end
 		4: //发送接收命令   ，如果不行的话，可以将这个命令放在SPI中
 		begin
-			if(frame_len> 128)       //128是FIFO的缓冲区长度
-			begin
-				if(!spi_Using)
-				begin
-					Int_Data_len=128;
-					Int_Return_len=0;
-					Int_start=1;
-					Int_Cmd=3;
-					Recv_Current_State=5;
-				end
-			end
+			Int_Data_len=0;
+			Int_Return_len=0;
+			Int_start=1;
+			Int_Cmd=3;
+			Recv_Current_State=5;
 		end
 		5:
 		begin
@@ -2933,12 +2638,13 @@ begin
 		6:
 		begin
 			if(spi_op_done)
-			begin
-				//rx_flag=0;
+			begin			
+				rx_start=0;
 				frame_recved_int=1;
-				Recv_Current_State=7;
+				Recv_Current_State=0;
 			end
 		end
+		/*
 		7: //重置FIFO
 		begin
 			frame_recved_int=0;
@@ -2949,7 +2655,7 @@ begin
 				Int_Data_len=2;
 				Int_Return_len=0;
 				Int_start=1;
-				Int_Cmd=3;
+				Int_Cmd=4;
 				Recv_Current_State=8;
 			end
 		end
@@ -2965,7 +2671,7 @@ begin
 				rx_start=0;
 				Recv_Current_State=0;
 			end
-		end
+		end*/
 		default:
 		begin
 			rx_start=0;
