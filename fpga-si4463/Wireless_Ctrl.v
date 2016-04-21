@@ -37,13 +37,10 @@ module Wireless_Ctrl(
 	Si4463_Ph_Status_1
 );
 input clk;
-output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1={2'b00,Spi_Current_State};
-output [3:0] led;
-assign	led[0]=SRAM_write;
-assign	led[1]=SRAM_read;
-assign led[2]=1;
-assign led[3]=1;
+output[7:0] Si4463_Ph_Status_1;
+assign Si4463_Ph_Status_1={4'b0000,Irq_Current_State};
+output reg [3:0] led=4'b0000;
+
 	//SRAM接口
 output	SRAM_read;
 output	SRAM_write;
@@ -75,11 +72,25 @@ output master_write_n;
 reg reset_n=1;
 
 
+//中断处理函数的信号
+reg [3:0] Irq_Current_State=0;
+reg [3:0] Recv_Current_State=0;
+reg tx_done=0; //置1表示发送完成
+reg rx_start=0;
+reg tx_flag=0; //是发送完成中断
+reg rx_flag=0;
+reg packet_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
+reg [7:0] Si4463_Ph_Status=0;
+reg [7:0] Si4463_Modem_Status=0;
+reg [7:0] frame_len;
+
+
 /////延时函数1///////////////
 reg delay_start=0;
 reg[31:0] delay_count=0;
 reg[7:0] delay_mtime=8'h00;
 reg delay_int=0;
+
 
 always@(posedge clk)
 begin
@@ -792,6 +803,7 @@ reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 
 always@(posedge clk)
 begin
+	led[2]=packet_incoming;
 		case(Main_Current_State) 
 		0:
 		begin
@@ -837,7 +849,7 @@ begin
 			Main_Cmd_Data[47:40]=8'hC3;
 			Main_Cmd_Data[55:48]=8'h80;
 			Main_Data_len=7;
-			Main_Return_len=1;
+			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Current_State=1;
@@ -1055,13 +1067,14 @@ begin
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h01;
-			Main_Cmd_Data[23:16]=8'h02;
+			Main_Cmd_Data[23:16]=8'h03;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h01;
+			Main_Cmd_Data[39:32]=8'h03;
 			Main_Cmd_Data[47:40]=8'h30;
+			Main_Cmd_Data[55:48]=8'h01;
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Data_len=6;
+			Main_Data_len=7;
 			Main_Return_len=0;
 			Main_Current_State=25;
 		end
@@ -1905,8 +1918,8 @@ begin
 			Main_Cmd_Data[23:16]=8'h04;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h04;
-			Main_Cmd_Data[47:40]=8'h02;
-			Main_Cmd_Data[55:48]=8'h09;
+			Main_Cmd_Data[47:40]=8'h06;
+			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h00;
 			Main_Cmd=1;
 			Main_start=1;
@@ -2328,8 +2341,9 @@ begin
 		////切换状态0x34 05 TX_TUNE
 		133:
 		begin
-			if(!spi_Using&&!rx_start)
+			if(!spi_Using&&!rx_start&&!packet_incoming)
 			begin
+				led[0]=1;
 				Main_Cmd=1;
 				Main_Cmd_Data[7:0]=8'h34;
 				Main_Cmd_Data[15:8]=8'h05;
@@ -2475,6 +2489,7 @@ begin
 		begin
 			if(tx_done)  //增加超时判断
 			begin
+				led[1]=1;
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
@@ -2497,14 +2512,7 @@ begin
 end
 
 
-reg [3:0] Irq_Current_State=0;
-reg [3:0] Recv_Current_State=0;
-reg tx_done=0; //置1表示发送完成
-reg rx_start=0;
-reg tx_flag=0; //是发送完成中断
-reg rx_flag=0;
-reg [7:0] Si4463_Ph_Status=0;
-reg [7:0] frame_len;
+
 
 /////中断处理程序///////////
 always@(posedge clk)
@@ -2571,7 +2579,7 @@ begin
 				Int_start=1;
 				Int_Cmd=6;
 				Int_Data_len=1;
-				Int_Return_len=1;
+				Int_Return_len=2;
 				Irq_Current_State=2;
 			end
 		end
@@ -2584,7 +2592,10 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				Si4463_Ph_Status=Int_Return_Data[7:0];
+				
+				Si4463_Ph_Status=Int_Return_Data[15:8];
+				Si4463_Modem_Status=Int_Return_Data[7:0];
+				//Si4463_Ph_Status_1=Si4463_Ph_Status;
 				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
 				begin
 					tx_flag=1;
@@ -2594,6 +2605,12 @@ begin
 				begin
 					Irq_Current_State=4;
 					rx_flag=1;
+				end
+				if((Si4463_Modem_Status&8'h03)==8'h03)
+				begin
+					led[3]=1;
+					packet_incoming=1;
+					Irq_Current_State=4;
 				end
 				else
 				begin
@@ -2636,6 +2653,7 @@ begin
 		begin
 			if(rx_flag)
 			begin
+				packet_incoming=0;
 				rx_start=1;
 				Irq_Current_State=0;
 			end
@@ -2672,15 +2690,16 @@ begin
 		begin
 			if(rx_start)
 			begin
-				Recv_Current_State=1;
+				Recv_Current_State=4;
 			end
 		end
+		/*
 		1:
 		begin
 			if(!spi_Using)
 			begin
 				Int_Cmd_Data[7:0]=8'h15;
-				Int_Cmd_Data[15:8]=8'h00; //这里原来是03，但是我认为02会更好一点
+				Int_Cmd_Data[15:8]=8'h00; 
 				Int_Data_len=2;
 				Int_Return_len=2;
 				Int_start=1;
@@ -2701,7 +2720,7 @@ begin
 				//Si4463_Ph_Status_1=Int_Return_Data[15:8];
 				Recv_Current_State=4;
 			end
-		end
+		end*/
 		4: //发送接收命令   ，如果不行的话，可以将这个命令放在SPI中
 		begin
 			Int_Data_len=0;
