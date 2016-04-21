@@ -40,7 +40,7 @@ PrefsRevisionGUID=
 
 [Document1]
 DocumentPath=FPGA - XC6SLX45T-2CSG324C.schdoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -57,7 +57,7 @@ DocumentUniqueId=WRBSKLAI
 
 [Document2]
 DocumentPath=Arduino FPGA Design.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -91,7 +91,7 @@ DocumentUniqueId=ARDITGBP
 
 [Document4]
 DocumentPath=Arduino FPGA Top-Level Interface.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -108,7 +108,7 @@ DocumentUniqueId=ALRVKULC
 
 [Document5]
 DocumentPath=FPGA - Decoupling.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -125,7 +125,7 @@ DocumentUniqueId=LSVFGCMT
 
 [Document6]
 DocumentPath=Arduino FPGA SPI MUX.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -142,7 +142,7 @@ DocumentUniqueId=LOWWBHYA
 
 [Document7]
 DocumentPath=Flash - M25P32-VMW6TG.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -159,7 +159,7 @@ DocumentUniqueId=HAIHNNYQ
 
 [Document8]
 DocumentPath=SRAM0 - IS61WV12816DBLL-10BLI.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -176,7 +176,7 @@ DocumentUniqueId=RLLBNXMS
 
 [Document9]
 DocumentPath=Power.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -210,7 +210,7 @@ DocumentUniqueId=
 
 [Document11]
 DocumentPath=LEDS - Status.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -223,11 +223,11 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=VBRQVWIS
+DocumentUniqueId=MVCQCCAH
 
 [Document12]
 DocumentPath=Power - 5V0.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -481,91 +481,6 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document27]
-DocumentPath=FPGA - XC6SLX9-2TQG144C.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document28]
-DocumentPath=Arduino FPGA Design.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document29]
-DocumentPath=Arduino FPGA Top-Level Interface.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document30]
-DocumentPath=Arduino FPGA SPI MUX.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document31]
-DocumentPath=SRAM0 - IS61WV12816DBLL-10BLI.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document32]
 DocumentPath=ADTSM32RVTR.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -582,7 +497,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document33]
+[Document28]
 DocumentPath=ADTSM32RVTR.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -599,7 +514,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document34]
+[Document29]
 DocumentPath=CP-102AH-ND.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -616,7 +531,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document35]
+[Document30]
 DocumentPath=CAMtastic Format CAM Document.cam
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -633,7 +548,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document36]
+[Document31]
 DocumentPath=Xilinx Spartan-6 FPGA.IntLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -650,7 +565,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document37]
+[Document32]
 DocumentPath=Xilinx Spartan-6.IntLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -667,7 +582,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document38]
+[Document33]
 DocumentPath=mini-pcie.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -684,7 +599,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=WQRUNUJM
 
-[Document39]
+[Document34]
 DocumentPath=LM2650.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -701,9 +616,9 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=FJKFCBQK
 
-[Document40]
+[Document35]
 DocumentPath=PCIE - mini-pcie-connector.SchDoc
-AnnotationEnabled=0
+AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
@@ -718,7 +633,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HVCMFFRR
 
-[Document41]
+[Document36]
 DocumentPath=Power - 3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -735,7 +650,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XKIIHUWA
 
-[Document42]
+[Document37]
 DocumentPath=Power - MGT1V2.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -752,7 +667,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=TIBCAFAR
 
-[Document43]
+[Document38]
 DocumentPath=Power - 1V5.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -769,7 +684,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=XQCGKKMG
 
-[Document44]
+[Document39]
 DocumentPath=TLV1117LV.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -786,7 +701,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=RLAQUOGO
 
-[Document45]
+[Document40]
 DocumentPath=LP3882.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -803,24 +718,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=LJYFLUMO
 
-[Document46]
-DocumentPath=PCIE - mini-pcie-connector.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document47]
+[Document41]
 DocumentPath=GPS - NEO-M8T.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -837,7 +735,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VQOGCWMI
 
-[Document48]
+[Document42]
 DocumentPath=neom8t.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -854,24 +752,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=CJXIQVSY
 
-[Document49]
-DocumentPath=GPS - NEO-M8T.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document50]
+[Document43]
 DocumentPath=¿â\HDR_fszhang.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -888,7 +769,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document51]
+[Document44]
 DocumentPath=¿â\fszhang.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -903,9 +784,9 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=FPPNJGNH
+DocumentUniqueId=BYEJKXBS
 
-[Document52]
+[Document45]
 DocumentPath=¿â\TL1963A-15_DCY_4.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -922,7 +803,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document53]
+[Document46]
 DocumentPath=¿â\TPS5431X(PWP20).PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -939,7 +820,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document54]
+[Document47]
 DocumentPath=¿â\ubloxLib.IntLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -956,7 +837,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document55]
+[Document48]
 DocumentPath=¿â\ubloxLib\ubloxLib.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -973,7 +854,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document56]
+[Document49]
 DocumentPath=¿â\mini PCI-E²å×ù·â×°.LIB
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -990,7 +871,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document57]
+[Document50]
 DocumentPath=¿â\fszhang.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1007,7 +888,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document58]
+[Document51]
 DocumentPath=¿â\2016-04-10_19-17-58.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1024,7 +905,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document59]
+[Document52]
 DocumentPath=¿â\tps54312-2016-04-09_23-25-45.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1041,7 +922,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document60]
+[Document53]
 DocumentPath=¿â\TPS62091-2016-04-17_07-39-50.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1058,7 +939,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document61]
+[Document54]
 DocumentPath=¿â\TPS6213X(RGT16).PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1075,7 +956,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document62]
+[Document55]
 DocumentPath=¿â\lp3879(mra08).PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1092,7 +973,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document63]
+[Document56]
 DocumentPath=W25P32-VMW6TG.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1109,7 +990,58 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=FQJOMRJL
 
-[Document64]
+[Document57]
+DocumentPath=SIT8209.SchLib
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=IIYXCOND
+
+[Document58]
+DocumentPath=GPS - NEO-M8T.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document59]
+DocumentPath=Arduino FPGA SPI MUX.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document60]
 DocumentPath=Flash - M25P32-VMW6TG.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1126,7 +1058,24 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document65]
+[Document61]
+DocumentPath=PCIE - mini-pcie-connector.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document62]
 DocumentPath=FPGA - XC6SLX45T-2CSG324C.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -1143,8 +1092,8 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document66]
-DocumentPath=SIT8209.SchLib
+[Document63]
+DocumentPath=Arduino FPGA Top-Level Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -1158,7 +1107,41 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=IIYXCOND
+DocumentUniqueId=
+
+[Document64]
+DocumentPath=Arduino FPGA Design.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document65]
+DocumentPath=SRAM0 - IS61WV12816DBLL-10BLI.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
 
 [GeneratedDocument1]
 DocumentPath=Generated Output Files\NC Drill\Arduino_FPGA_Shield-RoundHoles.TXT
