@@ -37,26 +37,26 @@ Setup/Hold to clock clk
             |Max Setup to|  Process   |Max Hold to |  Process   |                  | Clock  |
 Source      | clk (edge) |   Corner   | clk (edge) |   Corner   |Internal Clock(s) | Phase  |
 ------------+------------+------------+------------+------------+------------------+--------+
-Dout<0>     |    1.048(R)|      SLOW  |   -0.174(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<1>     |    0.841(R)|      SLOW  |    0.022(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<2>     |    1.075(R)|      SLOW  |   -0.199(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<3>     |    1.637(R)|      SLOW  |   -0.729(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<4>     |    1.017(R)|      SLOW  |   -0.134(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<5>     |    1.058(R)|      SLOW  |   -0.173(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<6>     |    0.827(R)|      SLOW  |    0.047(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<7>     |    0.849(R)|      SLOW  |    0.026(R)|      SLOW  |clk_BUFGP         |   0.000|
-Dout<8>     |    3.876(R)|      SLOW  |   -2.315(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<9>     |    3.394(R)|      SLOW  |   -1.857(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<10>    |    3.654(R)|      SLOW  |   -2.018(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<11>    |    3.702(R)|      SLOW  |   -2.079(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<12>    |    3.017(R)|      SLOW  |   -1.553(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<13>    |    2.918(R)|      SLOW  |   -1.483(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<14>    |    2.954(R)|      SLOW  |   -1.516(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<15>    |    3.298(R)|      SLOW  |   -1.751(R)|      FAST  |clk_BUFGP         |   0.000|
-cpu_mosi    |    0.654(R)|      SLOW  |    0.205(R)|      SLOW  |clk_BUFGP         |   0.000|
-cpu_sclk    |    0.259(R)|      FAST  |    0.640(R)|      SLOW  |clk_BUFGP         |   0.000|
-si4463_irq  |    4.111(R)|      SLOW  |   -1.505(R)|      FAST  |clk_BUFGP         |   0.000|
-si4463_miso |    2.645(R)|      SLOW  |   -1.337(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<0>     |    0.865(R)|      SLOW  |    0.023(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<1>     |    1.049(R)|      SLOW  |   -0.155(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<2>     |    0.926(R)|      SLOW  |   -0.039(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<3>     |    1.416(R)|      SLOW  |   -0.499(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<4>     |    0.844(R)|      SLOW  |    0.041(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<5>     |    0.980(R)|      SLOW  |   -0.089(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<6>     |    0.709(R)|      SLOW  |    0.168(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<7>     |    0.810(R)|      SLOW  |    0.071(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<8>     |    1.906(R)|      SLOW  |   -0.876(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<9>     |    1.993(R)|      SLOW  |   -0.946(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<10>    |    1.781(R)|      SLOW  |   -0.801(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<11>    |    2.151(R)|      SLOW  |   -1.097(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<12>    |    1.755(R)|      SLOW  |   -0.771(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<13>    |    1.805(R)|      SLOW  |   -0.834(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<14>    |    1.479(R)|      SLOW  |   -0.559(R)|      SLOW  |clk_BUFGP         |   0.000|
+Dout<15>    |    1.489(R)|      SLOW  |   -0.570(R)|      SLOW  |clk_BUFGP         |   0.000|
+cpu_mosi    |    0.568(R)|      SLOW  |    0.292(R)|      SLOW  |clk_BUFGP         |   0.000|
+cpu_sclk    |    0.273(R)|      FAST  |    0.623(R)|      SLOW  |clk_BUFGP         |   0.000|
+si4463_irq  |    4.022(R)|      SLOW  |   -1.224(R)|      FAST  |clk_BUFGP         |   0.000|
+si4463_miso |    2.742(R)|      SLOW  |   -1.339(R)|      FAST  |clk_BUFGP         |   0.000|
 ------------+------------+------------+------------+------------+------------------+--------+
 
 Clock clk to Pad
@@ -64,53 +64,51 @@ Clock clk to Pad
                     |Max (slowest) clk|  Process   |Min (fastest) clk|  Process   |                  | Clock  |
 Destination         |  (edge) to PAD  |   Corner   |  (edge) to PAD  |   Corner   |Internal Clock(s) | Phase  |
 --------------------+-----------------+------------+-----------------+------------+------------------+--------+
-Dout<0>             |         7.895(R)|      SLOW  |         3.481(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<1>             |         8.284(R)|      SLOW  |         3.780(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<2>             |         8.288(R)|      SLOW  |         3.697(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<3>             |         9.294(R)|      SLOW  |         4.231(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<4>             |         7.618(R)|      SLOW  |         3.875(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<5>             |         7.821(R)|      SLOW  |         3.668(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<6>             |         7.689(R)|      SLOW  |         3.668(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<7>             |         7.973(R)|      SLOW  |         3.625(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<8>             |        10.372(R)|      SLOW  |         4.597(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<9>             |        10.583(R)|      SLOW  |         4.648(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<10>            |        10.376(R)|      SLOW  |         4.786(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<11>            |        10.583(R)|      SLOW  |         4.529(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<12>            |         9.302(R)|      SLOW  |         4.565(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<13>            |         9.436(R)|      SLOW  |         4.462(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<14>            |         9.423(R)|      SLOW  |         4.565(R)|      FAST  |clk_BUFGP         |   0.000|
-Dout<15>            |         9.377(R)|      SLOW  |         4.462(R)|      FAST  |clk_BUFGP         |   0.000|
-OE_n                |         8.674(R)|      SLOW  |         4.657(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<0>|         8.864(R)|      SLOW  |         4.750(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<1>|         8.620(R)|      SLOW  |         4.525(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<2>|         8.882(R)|      SLOW  |         4.738(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<3>|         8.746(R)|      SLOW  |         4.653(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<4>|         8.742(R)|      SLOW  |         4.671(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<5>|         8.709(R)|      SLOW  |         4.629(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<6>|         8.814(R)|      SLOW  |         4.726(R)|      FAST  |clk_BUFGP         |   0.000|
-Spi_Current_State<7>|         9.012(R)|      SLOW  |         4.830(R)|      FAST  |clk_BUFGP         |   0.000|
-WE_n                |         7.134(R)|      SLOW  |         3.656(R)|      FAST  |clk_BUFGP         |   0.000|
-cpu_irq             |         7.644(R)|      SLOW  |         4.017(R)|      FAST  |clk_BUFGP         |   0.000|
-cpu_miso            |         7.139(R)|      SLOW  |         3.671(R)|      FAST  |clk_BUFGP         |   0.000|
-led<0>              |         9.484(R)|      SLOW  |         5.073(R)|      FAST  |clk_BUFGP         |   0.000|
-led<1>              |         9.363(R)|      SLOW  |         5.016(R)|      FAST  |clk_BUFGP         |   0.000|
-si4463_mosi         |         8.105(R)|      SLOW  |         4.195(R)|      FAST  |clk_BUFGP         |   0.000|
-si4463_reset        |         8.466(R)|      SLOW  |         4.543(R)|      FAST  |clk_BUFGP         |   0.000|
-si4463_sclk         |         8.301(R)|      SLOW  |         4.310(R)|      FAST  |clk_BUFGP         |   0.000|
-si4463_ss_n         |         9.700(R)|      SLOW  |         5.048(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<0>    |         8.181(R)|      SLOW  |         4.311(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<1>    |         8.102(R)|      SLOW  |         4.239(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<2>    |         7.942(R)|      SLOW  |         4.143(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<3>    |         8.442(R)|      SLOW  |         4.437(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<4>    |         7.701(R)|      SLOW  |         3.976(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<5>    |         8.125(R)|      SLOW  |         4.274(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<6>    |         8.004(R)|      SLOW  |         4.191(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<7>    |         7.697(R)|      SLOW  |         4.005(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<8>    |         8.731(R)|      SLOW  |         4.719(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<9>    |         8.704(R)|      SLOW  |         4.689(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<10>   |         8.034(R)|      SLOW  |         4.198(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<11>   |         7.804(R)|      SLOW  |         4.045(R)|      FAST  |clk_BUFGP         |   0.000|
-sram_mem_addr<12>   |         8.222(R)|      SLOW  |         4.336(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<0>             |         7.606(R)|      SLOW  |         3.874(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<1>             |         7.986(R)|      SLOW  |         4.094(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<2>             |         7.968(R)|      SLOW  |         4.028(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<3>             |         8.974(R)|      SLOW  |         4.449(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<4>             |         7.977(R)|      SLOW  |         3.608(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<5>             |         7.599(R)|      SLOW  |         3.688(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<6>             |         7.599(R)|      SLOW  |         3.804(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<7>             |         7.529(R)|      SLOW  |         3.781(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<8>             |         8.930(R)|      SLOW  |         4.460(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<9>             |         9.107(R)|      SLOW  |         4.563(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<10>            |         9.357(R)|      SLOW  |         4.462(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<11>            |         8.869(R)|      SLOW  |         4.563(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<12>            |         8.687(R)|      SLOW  |         4.549(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<13>            |         8.774(R)|      SLOW  |         4.448(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<14>            |         8.826(R)|      SLOW  |         4.551(R)|      FAST  |clk_BUFGP         |   0.000|
+Dout<15>            |         8.754(R)|      SLOW  |         4.448(R)|      FAST  |clk_BUFGP         |   0.000|
+OE_n                |         6.996(R)|      SLOW  |         3.541(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<0>|        11.085(R)|      SLOW  |         5.067(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<1>|        11.267(R)|      SLOW  |         5.744(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<2>|        10.186(R)|      SLOW  |         5.369(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<3>|        10.493(R)|      SLOW  |         5.496(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<4>|         9.905(R)|      SLOW  |         4.940(R)|      FAST  |clk_BUFGP         |   0.000|
+Spi_Current_State<5>|        11.547(R)|      SLOW  |         5.067(R)|      FAST  |clk_BUFGP         |   0.000|
+WE_n                |         7.680(R)|      SLOW  |         4.073(R)|      FAST  |clk_BUFGP         |   0.000|
+cpu_irq             |         7.942(R)|      SLOW  |         4.205(R)|      FAST  |clk_BUFGP         |   0.000|
+cpu_miso            |         7.598(R)|      SLOW  |         3.937(R)|      FAST  |clk_BUFGP         |   0.000|
+led<0>              |         9.293(R)|      SLOW  |         4.980(R)|      FAST  |clk_BUFGP         |   0.000|
+led<1>              |         9.004(R)|      SLOW  |         4.832(R)|      FAST  |clk_BUFGP         |   0.000|
+si4463_mosi         |         7.858(R)|      SLOW  |         4.037(R)|      FAST  |clk_BUFGP         |   0.000|
+si4463_reset        |         7.983(R)|      SLOW  |         4.297(R)|      FAST  |clk_BUFGP         |   0.000|
+si4463_sclk         |         8.499(R)|      SLOW  |         4.470(R)|      FAST  |clk_BUFGP         |   0.000|
+si4463_ss_n         |        11.210(R)|      SLOW  |         6.024(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<0>    |         7.908(R)|      SLOW  |         4.120(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<1>    |         7.775(R)|      SLOW  |         3.992(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<2>    |         7.580(R)|      SLOW  |         3.886(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<3>    |         7.757(R)|      SLOW  |         4.005(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<4>    |         7.704(R)|      SLOW  |         3.970(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<5>    |         7.946(R)|      SLOW  |         4.171(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<6>    |         7.808(R)|      SLOW  |         4.050(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<7>    |         7.536(R)|      SLOW  |         3.908(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<8>    |         8.906(R)|      SLOW  |         4.813(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<9>    |         8.827(R)|      SLOW  |         4.807(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<10>   |         8.739(R)|      SLOW  |         4.732(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<11>   |         8.638(R)|      SLOW  |         4.638(R)|      FAST  |clk_BUFGP         |   0.000|
+sram_mem_addr<12>   |         8.868(R)|      SLOW  |         4.785(R)|      FAST  |clk_BUFGP         |   0.000|
 --------------------+-----------------+------------+-----------------+------------+------------------+--------+
 
 Clock to Setup on destination clock clk
@@ -118,18 +116,18 @@ Clock to Setup on destination clock clk
                | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock   |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ---------------+---------+---------+---------+---------+
-clk            |    7.446|         |         |         |
+clk            |    7.911|         |         |         |
 ---------------+---------+---------+---------+---------+
 
 
-Analysis completed Wed Apr 20 15:34:08 2016 
+Analysis completed Thu Apr 21 11:16:47 2016 
 --------------------------------------------------------------------------------
 
 Trace Settings:
 -------------------------
 Trace Settings 
 
-Peak Memory Usage: 237 MB
+Peak Memory Usage: 239 MB
 
 
 

@@ -37,8 +37,8 @@ module Wireless_Ctrl(
 	Si4463_Ph_Status_1
 );
 input clk;
-output reg [7:0] Si4463_Ph_Status_1;
-
+output [7:0] Si4463_Ph_Status_1;
+assign Si4463_Ph_Status_1={2'b00,Spi_Current_State};
 output [3:0] led;
 assign	led[0]=SRAM_write;
 assign	led[1]=SRAM_read;
@@ -130,7 +130,7 @@ end
 				3 int接收数据帧
 				4 int 获取中断状态
 				5 main程序从SRAM中读取数据，唯一的用途是获取需要发送的数据
-				
+				6 int读快速寄存器
 	spi_Using  bool值，代表spi模块是否正在被使用
 	spi_start  bool值，设置为1，代表准备开始发送或接收数据
 */
@@ -271,6 +271,12 @@ begin
 					Spi_Current_State=36;
 					spi_op_done=0;
 				end
+				6:
+				begin
+					Spi_Current_State=1;
+					spi_Using=1;
+					spi_op_done=0;
+				end
 				default:
 				begin
 					spi_start=0;
@@ -355,6 +361,10 @@ begin
 							spi_cmd_data={8'h00,spi_cmd_data[79:8]};
 							Spi_Current_State=8;
 						end
+						6:
+						begin
+							Spi_Current_State=40;
+						end
 					endcase
 					
 
@@ -410,7 +420,7 @@ begin
 			end
 			15:
 			begin
-				if(spi_cmd==2||spi_cmd==3 ||Ended_flag) //发送和接收数据帧不需要GetCTS
+				if(spi_cmd==2||spi_cmd==3 ||Ended_flag || spi_cmd==6) //发送和接收数据帧不需要GetCTS
 				begin
 					spi_op_done=1;
 					spi_Using=0;
@@ -566,6 +576,20 @@ begin
 						begin
 							//spi_return_len=0;
 							Ended_flag=1;
+							Spi_Current_State=12;
+						end
+					end
+					6:
+					begin
+						Int_Return_Data={Int_Return_Data[71:0],8'h00};
+						Int_Return_Data[7:0]=Data_from_master[7:0];
+						
+						Sended_count=Sended_count+1'b1;
+						if(Sended_count<spi_return_len)
+							Spi_Current_State=22;
+						else
+						begin
+							//spi_return_len=0;
 							Spi_Current_State=12;
 						end
 					end
@@ -733,6 +757,23 @@ begin
 				end
 			end
 			
+			//读取快速寄存器
+			40:
+			begin
+				Data_to_master={8'h00,Int_Cmd_Data[7:0]};
+				master_write_n=0;
+				master_mem_addr=3'b001;
+				Spi_Current_State=41;
+			end
+			41:
+			begin
+				master_write_n=1;
+				Spi_Current_State=42;
+			end
+			42:
+			begin
+				Spi_Current_State=22;
+			end
 		endcase
 	end
 end
@@ -2479,8 +2520,8 @@ begin
 				Irq_Current_State=1;
 			end
 		end
-		//////读取中断状态，判断中断源
-		1:
+		/*
+		9:
 		begin
 			if(!spi_Using)
 			begin
@@ -2492,6 +2533,45 @@ begin
 				Int_Cmd=4;
 				Int_Data_len=4;
 				Int_Return_len=8;
+				Irq_Current_State=10;
+			end
+		end
+		10:
+		begin
+			Int_start=0;
+			Irq_Current_State=11;
+		end
+		11:
+		begin
+			if(spi_op_done)
+			begin
+				Si4463_Ph_Status=Int_Return_Data[47:40];
+				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
+				begin
+					tx_flag=1;
+					Irq_Current_State=1;
+				end
+				if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+				begin
+					Irq_Current_State=1;
+					rx_flag=1;
+				end
+				else
+				begin
+					Irq_Current_State=1;
+				end
+			end
+		end*/
+		//////读取中断状态，判断中断源
+		1:
+		begin
+			if(!spi_Using)
+			begin
+				Int_Cmd_Data[7:0]=8'h50;
+				Int_start=1;
+				Int_Cmd=6;
+				Int_Data_len=1;
+				Int_Return_len=1;
 				Irq_Current_State=2;
 			end
 		end
@@ -2504,7 +2584,7 @@ begin
 		begin
 			if(spi_op_done)
 			begin
-				Si4463_Ph_Status=Int_Return_Data[47:40];
+				Si4463_Ph_Status=Int_Return_Data[7:0];
 				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
 				begin
 					tx_flag=1;
@@ -2618,7 +2698,7 @@ begin
 			if(spi_op_done)
 			begin			
 				//rx_flag=0;
-				Si4463_Ph_Status_1=Int_Return_Data[15:8];
+				//Si4463_Ph_Status_1=Int_Return_Data[15:8];
 				Recv_Current_State=4;
 			end
 		end

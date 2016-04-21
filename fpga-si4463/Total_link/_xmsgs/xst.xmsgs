@@ -44,13 +44,13 @@
 <msg type="warning" file="HDLCompiler" num="413" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 335: Result of <arg fmt="%d" index="1">9</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">8</arg>-bit target.
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="872" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 741: Using initial value of <arg fmt="%s" index="1">GPS_sync_time</arg> since it is never assigned
+<msg type="warning" file="HDLCompiler" num="872" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 782: Using initial value of <arg fmt="%s" index="1">GPS_sync_time</arg> since it is never assigned
 </msg>
 
 <msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 105: Assignment to <arg fmt="%s" index="1">delay_int_2</arg> ignored, since the identifier is never used
 </msg>
 
-<msg type="warning" file="HDLCompiler" num="413" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 2378: Result of <arg fmt="%d" index="1">9</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">8</arg>-bit target.
+<msg type="warning" file="HDLCompiler" num="413" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 2419: Result of <arg fmt="%d" index="1">9</arg>-bit expression is truncated to fit in <arg fmt="%d" index="2">8</arg>-bit target.
 </msg>
 
 <msg type="warning" file="HDLCompiler" num="1127" delta="old" >"C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 198: Assignment to <arg fmt="%s" index="1">endofpacket</arg> ignored, since the identifier is never used
@@ -125,37 +125,88 @@
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">wireless</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;delay_mtime_5&gt; &lt;delay_mtime_6&gt; &lt;delay_mtime_7&gt; </arg>
 </msg>
 
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">wireless</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Int_Cmd_Data_0&gt; </arg>
+</msg>
+
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Return_len_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">wireless</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Return_len_4&gt; </arg>
 </msg>
 
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">LB_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">CE_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">UB_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">SS_latched</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">slave</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_108</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_107</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_104</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_0</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">tx_state_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">tx_state_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_0</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_16</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_17</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_18</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_19</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_20</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_22</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_23</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_21</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_24</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_25</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_26</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_27</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_29</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_30</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_28</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_31</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_104</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_107</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_108</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">wireless</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">SS_latched</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">slave</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">UB_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">CE_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">LB_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">sram</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">SS_old</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">slave</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -186,6 +237,237 @@
 </msg>
 
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">master_control_reg_10</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_0</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_2</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_3</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_6</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_7</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_8</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_9</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_10</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_11</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_12</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_13</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_14</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_15</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_17</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_18</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_19</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_20</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_21</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_22</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_23</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_24</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_25</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_26</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_27</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_28</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_29</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_30</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_31</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_32</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_33</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_34</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_35</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_36</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_37</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_38</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_39</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_40</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_41</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_42</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_43</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_44</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_45</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_46</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_47</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_48</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_49</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_50</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_51</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_52</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_53</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_54</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_55</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_56</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_57</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_58</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_59</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_60</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_61</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_62</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_63</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_64</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_65</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_66</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_67</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_68</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_69</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_70</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_71</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_72</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_73</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_74</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_75</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_76</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_77</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_78</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
 </msg>
 
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Main_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
@@ -380,162 +662,6 @@
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Main_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
 </msg>
 
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_18</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_19</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_22</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_23</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_24</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_26</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_27</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_30</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_31</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_32</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_34</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_35</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_38</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_39</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_40</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_42</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_43</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_46</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_47</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_48</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_49</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_50</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_51</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_52</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_53</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_54</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_55</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_56</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_57</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_58</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_59</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_60</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_61</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_62</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_63</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_64</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_65</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_66</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_67</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_68</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_69</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_70</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_71</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_72</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_73</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_74</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_75</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_76</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_77</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_78</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">wireless</arg>&gt;.
-</msg>
-
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">data_to_cpu_10</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">spi</arg>&gt;.
 </msg>
 
@@ -567,6 +693,237 @@
 </msg>
 
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">master_control_reg_10</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_0</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_2</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_3</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_6</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_7</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_8</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_9</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_10</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_11</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_12</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_13</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_14</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_15</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_17</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_18</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_19</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_20</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_21</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_22</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_23</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_24</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_25</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_26</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_27</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_28</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_29</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_30</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_31</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_32</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_33</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_34</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_35</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_36</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_37</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_38</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_39</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_40</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_41</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_42</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_43</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_44</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_45</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_46</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_47</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_48</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_49</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_50</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_51</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_52</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_53</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_54</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_55</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_56</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_57</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_58</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_59</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_60</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_61</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_62</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_63</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_64</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_65</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_66</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_67</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_68</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_69</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_70</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_71</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_72</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_73</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_74</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_75</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_76</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_77</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_78</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
+</msg>
+
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
 </msg>
 
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Main_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
@@ -761,162 +1118,6 @@
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Main_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
 </msg>
 
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_16</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_18</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_19</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_22</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_23</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_24</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_26</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_27</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_30</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_31</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_32</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_34</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_35</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_38</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_39</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_40</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_42</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_43</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_46</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_47</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_48</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_49</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_50</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_51</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_52</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_53</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_54</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_55</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_56</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_57</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_58</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_59</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_60</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_61</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_62</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_63</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_64</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_65</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_66</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_67</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_68</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_69</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_70</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_71</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_72</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_73</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_74</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_75</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_76</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_77</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_78</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_79</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Main_Data_Check_8</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
 </msg>
 
@@ -974,31 +1175,82 @@
 <msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">UB_n</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">SRAM_ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_108</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_107</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_104</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_0</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_5</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_6</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_7</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Main_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">tx_state_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_7</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_6</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_5</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">delay_mtime_0</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_16</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_17</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_18</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_19</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_20</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_22</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_23</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_21</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_24</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_25</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_26</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_27</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_29</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_30</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_28</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_31</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_104</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_107</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_108</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_2</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Int_Cmd_Data_0&gt; </arg>
 </msg>
 
 <msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">SS_latched</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">spi_slave</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -1100,46 +1352,13 @@ Xilinx highly recommends one of the following:
 <msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">sram/fifo_o_wr_ptr_13</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_23</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_1</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
 </msg>
 
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_31</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_17</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_25</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_33</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">Int_Return_Data_41</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt;.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_1</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_6</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_7</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_10</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_116</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_114&gt; &lt;Main_Cmd_Data_113&gt; &lt;Main_Cmd_Data_112&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_94</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_91&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_123</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_121&gt; &lt;Main_Cmd_Data_118&gt; &lt;Main_Cmd_Data_117&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_116</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_113&gt; &lt;Main_Cmd_Data_114&gt; &lt;Main_Cmd_Data_112&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_126</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_105&gt; </arg>
@@ -1148,7 +1367,49 @@ Xilinx highly recommends one of the following:
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_119</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_115&gt; &lt;Main_Cmd_Data_110&gt; </arg>
 </msg>
 
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_0</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_123</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_121&gt; &lt;Main_Cmd_Data_118&gt; &lt;Main_Cmd_Data_117&gt; </arg>
+</msg>
+
+<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_4</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_5</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_6</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_7</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi_return_len_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_116</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_114&gt; &lt;Main_Cmd_Data_113&gt; &lt;Main_Cmd_Data_112&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_94</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_91&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_126</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_105&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_119</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_115&gt; &lt;Main_Cmd_Data_110&gt; </arg>
+</msg>
+
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_123</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_121&gt; &lt;Main_Cmd_Data_118&gt; &lt;Main_Cmd_Data_117&gt; </arg>
+</msg>
+
+<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi_return_len_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -1166,70 +1427,10 @@ Xilinx highly recommends one of the following:
 <msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_7</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_0</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
 <msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi_return_len_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_1</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_6</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_7</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Cmd_Data_10</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_94</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_91&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_123</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_121&gt; &lt;Main_Cmd_Data_118&gt; &lt;Main_Cmd_Data_117&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_116</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">3 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_113&gt; &lt;Main_Cmd_Data_114&gt; &lt;Main_Cmd_Data_112&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_126</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_105&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">Main_Cmd_Data_119</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">Wireless_Ctrl</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;Main_Cmd_Data_115&gt; &lt;Main_Cmd_Data_110&gt; </arg>
-</msg>
-
-<msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi_return_len_2</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_0</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_4</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_5</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_6</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Data_len_7</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_0</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
-</msg>
-
-<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">Int_Return_len_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">Wireless_Ctrl</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1293" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi/spi_slave_select_holding_reg_0</arg>&gt; has a constant value of <arg fmt="%d" index="2">1</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -1454,7 +1655,16 @@ Xilinx highly recommends one of the following:
 <msg type="warning" file="Xst" num="2677" delta="old" >Node &lt;<arg fmt="%s" index="1">spi/spi_slave_select_holding_reg_8</arg>&gt; of sequential type is unconnected in block &lt;<arg fmt="%s" index="2">total_link</arg>&gt;.
 </msg>
 
-<msg type="warning" file="Xst" num="1710" delta="old" >FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_4</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+<msg type="warning" file="Xst" num="1710" delta="new" >FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_1</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="new" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_2</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="new" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_3</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
+</msg>
+
+<msg type="warning" file="Xst" num="1895" delta="new" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_4</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
 <msg type="warning" file="Xst" num="1895" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">spi/slowcount_5</arg>&gt; (without init value) has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
@@ -1517,9 +1727,6 @@ Xilinx highly recommends one of the following:
 <msg type="warning" file="Xst" num="1896" delta="old" >Due to other FF/Latch trimming, FF/Latch &lt;<arg fmt="%s" index="1">sram/fifo_i_wr_ptr_17</arg>&gt; has a constant value of <arg fmt="%d" index="2">0</arg> in block &lt;<arg fmt="%s" index="3">total_link</arg>&gt;. This FF/Latch will be trimmed during the optimization process.
 </msg>
 
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Cmd_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Cmd_0&gt; </arg>
-</msg>
-
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Irq_Current_State_FSM_FFd1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/tx_done&gt; </arg>
 </msg>
 
@@ -1535,16 +1742,10 @@ Xilinx highly recommends one of the following:
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">slave/Spi_Current_State_FSM_FFd1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;slave/irq_noted&gt; </arg>
 </msg>
 
+<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Return_len_0</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Data_len_0&gt; </arg>
+</msg>
+
 <msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Return_len_1</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Data_len_1&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Cmd_Data_15</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">6 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Cmd_Data_14&gt; &lt;wireless/Int_Cmd_Data_13&gt; &lt;wireless/Int_Cmd_Data_12&gt; &lt;wireless/Int_Cmd_Data_11&gt; &lt;wireless/Int_Cmd_Data_9&gt; &lt;wireless/Int_Cmd_Data_8&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Cmd_Data_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">2 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Cmd_Data_2&gt; &lt;wireless/Int_Cmd_Data_0&gt; </arg>
-</msg>
-
-<msg type="info" file="Xst" num="2261" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Cmd_Data_30</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is equivalent to the following <arg fmt="%s" index="3">13 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Cmd_Data_29&gt; &lt;wireless/Int_Cmd_Data_28&gt; &lt;wireless/Int_Cmd_Data_27&gt; &lt;wireless/Int_Cmd_Data_26&gt; &lt;wireless/Int_Cmd_Data_25&gt; &lt;wireless/Int_Cmd_Data_24&gt; &lt;wireless/Int_Cmd_Data_22&gt; &lt;wireless/Int_Cmd_Data_21&gt; &lt;wireless/Int_Cmd_Data_20&gt; &lt;wireless/Int_Cmd_Data_19&gt; &lt;wireless/Int_Cmd_Data_18&gt; &lt;wireless/Int_Cmd_Data_17&gt; &lt;wireless/Int_Cmd_Data_16&gt; </arg>
 </msg>
 
 <msg type="info" file="Xst" num="3203" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">sram/WE_n</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;sram/link&gt; </arg>
@@ -1553,10 +1754,10 @@ Xilinx highly recommends one of the following:
 <msg type="info" file="Xst" num="3203" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">sram/fifo_o_wr_ptr_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;sram/fifo_o_wr_ptr_11&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="3203" delta="new" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Spi_Current_State_FSM_FFd43</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">2 FFs/Latches</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/spi_start&gt; &lt;wireless/spi_Using&gt; </arg>
+<msg type="info" file="Xst" num="3203" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">sram/fifo_o_rd_ptr_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;sram/fifo_o_rd_ptr_11&gt; </arg>
 </msg>
 
-<msg type="info" file="Xst" num="3203" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">sram/fifo_o_rd_ptr_12</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;sram/fifo_o_rd_ptr_11&gt; </arg>
+<msg type="info" file="Xst" num="3203" delta="old" >The FF/Latch &lt;<arg fmt="%s" index="1">wireless/Int_Cmd_Data_4</arg>&gt; in Unit &lt;<arg fmt="%s" index="2">total_link</arg>&gt; is the opposite to the following <arg fmt="%s" index="3">FF/Latch</arg>, which will be removed : <arg fmt="%s" index="4">&lt;wireless/Int_Cmd_Data_5&gt; </arg>
 </msg>
 
 <msg type="warning" file="Xst" num="1426" delta="old" >The value init of the FF/Latch <arg fmt="%s" index="1">wireless/spi_op_fifo_flag_LD</arg> hinder the constant cleaning in the block <arg fmt="%s" index="2">total_link</arg>.
