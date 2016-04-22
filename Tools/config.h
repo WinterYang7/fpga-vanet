@@ -1,35 +1,32 @@
 /*! @file radio_config.h
-* @brief This file contains the automatically generated
-* configurations.
-*
-* @n WDS GUI Version: 3.2.9.0
-* @n Device: Si4463 Rev.: B1
-*
-* @b COPYRIGHT
-* @n Silicon Laboratories Confidential
-* @n Copyright 2015 Silicon Laboratories, Inc.
-* @n http://www.silabs.com
-*/
+ * @brief This file contains the automatically generated
+ * configurations.
+ *
+ * @n WDS GUI Version: 3.2.9.0
+ * @n Device: Si4463 Rev.: B1                                 
+ *
+ * @b COPYRIGHT
+ * @n Silicon Laboratories Confidential
+ * @n Copyright 2015 Silicon Laboratories, Inc.
+ * @n http://www.silabs.com
+ */
 
 #ifndef RADIO_CONFIG_H_
 #define RADIO_CONFIG_H_
-
-
-
 
 // USER DEFINED PARAMETERS
 // Define your own parameters here
 
 // INPUT DATA
 /*
-// Crys_freq(Hz): 30000000    Crys_tol(ppm): 10    IF_mode: 2    High_perf_Ch_Fil: 1    OSRtune: 0    Ch_Fil_Bw_AFC: 0    ANT_DIV: 0    PM_pattern: 0
-// MOD_type: 3    Rsymb(sps): 400000    Fdev(Hz): 20000    RXBW(Hz): 150000    Manchester: 0    AFC_en: 1    Rsymb_error: 0.0    Chip-Version: 2
-// RF Freq.(MHz): 433    API_TC: 29    fhst: 250000    inputBW: 0    BERT: 0    RAW_dout: 0    D_source: 0    Hi_pfm_div: 1
-//
+// Crys_freq(Hz): 30000000    Crys_tol(ppm): 10    IF_mode: 2    High_perf_Ch_Fil: 1    OSRtune: 0    Ch_Fil_Bw_AFC: 0    ANT_DIV: 0    PM_pattern: 0    
+// MOD_type: 3    Rsymb(sps): 200000    Fdev(Hz): 20000    RXBW(Hz): 150000    Manchester: 0    AFC_en: 1    Rsymb_error: 0.0    Chip-Version: 2    
+// RF Freq.(MHz): 450    API_TC: 29    fhst: 250000    inputBW: 0    BERT: 0    RAW_dout: 0    D_source: 0    Hi_pfm_div: 1    
+// 
 // # RX IF frequency is  -468750 Hz
-// # WB filter 8 (BW = 436.10 kHz);  NB-filter 8 (BW = 436.10 kHz)
-//
-// Modulation index: 0.1
+// # WB filter 7 (BW = 241.95 kHz);  NB-filter 7 (BW = 241.95 kHz)
+// 
+// Modulation index: 0.2
 */
 
 
@@ -53,14 +50,14 @@
 // Command:                  RF_GPIO_PIN_CFG
 // Description:              Configures the GPIO pins.
 */
-#define RF_GPIO_PIN_CFG 0x13, 0x1B, 0x23, 0x21, 0x20, 0x00, 0x00, 0x00
+#define RF_GPIO_PIN_CFG 0x13, 0x00, 0x00, 0x21, 0x20, 0x00, 0x00, 0x00
 
 /*
 // Set properties:           RF_GLOBAL_XO_TUNE_2
 // Number of properties:     2
 // Group ID:                 0x00
 // Start ID:                 0x00
-// Default values:           0x40, 0x00,
+// Default values:           0x40, 0x00, 
 // Descriptions:
 //   GLOBAL_XO_TUNE - Configure the internal capacitor frequency tuning bank for the crystal oscillator.
 //   GLOBAL_CLK_CFG - Clock configuration options.
@@ -72,30 +69,31 @@
 // Number of properties:     1
 // Group ID:                 0x00
 // Start ID:                 0x03
-// Default values:           0x20,
+// Default values:           0x20, 
 // Descriptions:
 //   GLOBAL_CONFIG - Global configuration settings.
 */
 #define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x60
 
 /*
-// Set properties:           RF_INT_CTL_ENABLE_2
-// Number of properties:     2
+// Set properties:           RF_INT_CTL_ENABLE_3
+// Number of properties:     3
 // Group ID:                 0x01
 // Start ID:                 0x00
-// Default values:           0x04, 0x00,
+// Default values:           0x04, 0x00, 0x00, 
 // Descriptions:
 //   INT_CTL_ENABLE - This property provides for global enabling of the three interrupt groups (Chip, Modem and Packet Handler) in order to generate HW interrupts at the NIRQ pin.
 //   INT_CTL_PH_ENABLE - Enable individual interrupt sources within the Packet Handler Interrupt Group to generate a HW interrupt on the NIRQ output pin.
+//   INT_CTL_MODEM_ENABLE - Enable individual interrupt sources within the Modem Interrupt Group to generate a HW interrupt on the NIRQ output pin.
 */
-#define RF_INT_CTL_ENABLE_2 0x11, 0x01, 0x02, 0x00, 0x01, 0x30
+#define RF_INT_CTL_ENABLE_3 0x11, 0x01, 0x03, 0x00, 0x03, 0x30, 0x01
 
 /*
 // Set properties:           RF_FRR_CTL_A_MODE_4
 // Number of properties:     4
 // Group ID:                 0x02
 // Start ID:                 0x00
-// Default values:           0x01, 0x02, 0x09, 0x00,
+// Default values:           0x01, 0x02, 0x09, 0x00, 
 // Descriptions:
 //   FRR_CTL_A_MODE - Fast Response Register A Configuration.
 //   FRR_CTL_B_MODE - Fast Response Register B Configuration.
@@ -109,7 +107,7 @@
 // Number of properties:     9
 // Group ID:                 0x10
 // Start ID:                 0x00
-// Default values:           0x08, 0x14, 0x00, 0x0F, 0x21, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x08, 0x14, 0x00, 0x0F, 0x21, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   PREAMBLE_TX_LENGTH - Configure length of TX Preamble.
 //   PREAMBLE_CONFIG_STD_1 - Configuration of reception of a packet with a Standard Preamble pattern.
@@ -121,14 +119,14 @@
 //   PREAMBLE_PATTERN_15_8 - Configuration of the bit values describing a Non-Standard Preamble pattern.
 //   PREAMBLE_PATTERN_7_0 - Configuration of the bit values describing a Non-Standard Preamble pattern.
 */
-#define RF_PREAMBLE_TX_LENGTH_9 0x11, 0x10, 0x09, 0x00, 0x08, 0x14, 0x00, 0x0F, 0x31, 0x00, 0x00, 0x00, 0x00
+#define RF_PREAMBLE_TX_LENGTH_9 0x11, 0x10, 0x09, 0x00, 0x05, 0x14, 0x00, 0x0F, 0x31, 0x00, 0x00, 0x00, 0x00
 
 /*
 // Set properties:           RF_SYNC_CONFIG_5
 // Number of properties:     5
 // Group ID:                 0x11
 // Start ID:                 0x00
-// Default values:           0x01, 0x2D, 0xD4, 0x2D, 0xD4,
+// Default values:           0x01, 0x2D, 0xD4, 0x2D, 0xD4, 
 // Descriptions:
 //   SYNC_CONFIG - Sync Word configuration bits.
 //   SYNC_BITS_31_24 - Sync word.
@@ -143,7 +141,7 @@
 // Number of properties:     7
 // Group ID:                 0x12
 // Start ID:                 0x00
-// Default values:           0x00, 0x01, 0x08, 0xFF, 0xFF, 0x00, 0x00,
+// Default values:           0x00, 0x01, 0x08, 0xFF, 0xFF, 0x00, 0x00, 
 // Descriptions:
 //   PKT_CRC_CONFIG - Select a CRC polynomial and seed.
 //   PKT_WHT_POLY_15_8 - 16-bit polynomial value for the PN Generator (e.g., for Data Whitening)
@@ -153,14 +151,14 @@
 //   PKT_WHT_BIT_NUM - Selects which bit of the LFSR (used to generate the PN / data whitening sequence) is used as the output bit for data scrambling.
 //   PKT_CONFIG1 - General configuration bits for transmission or reception of a packet.
 */
-#define RF_PKT_CRC_CONFIG_7 0x11, 0x12, 0x07, 0x00, 0x84, 0x00, 0x30, 0xFF, 0xFF, 0x00, 0x02
+#define RF_PKT_CRC_CONFIG_7 0x11, 0x12, 0x07, 0x00, 0x84, 0x01, 0x08, 0xFF, 0xFF, 0x00, 0x02
 
 /*
 // Set properties:           RF_PKT_LEN_12
 // Number of properties:     12
 // Group ID:                 0x12
 // Start ID:                 0x08
-// Default values:           0x00, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x00, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   PKT_LEN - Configuration bits for reception of a variable length packet.
 //   PKT_LEN_FIELD_SOURCE - Field number containing the received packet length byte(s).
@@ -175,14 +173,14 @@
 //   PKT_FIELD_2_LENGTH_7_0 - Unsigned 13-bit Field 2 length value.
 //   PKT_FIELD_2_CONFIG - General data processing and packet configuration bits for Field 2.
 */
-#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x00, 0x00, 0x00, 0x40, 0x40, 0x00, 0x40, 0x04, 0x80, 0x00, 0x00, 0x00
+#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x2A, 0x01, 0x00, 0x30, 0x30, 0x00, 0x01, 0x04, 0x80, 0x00, 0x07, 0x00
 
 /*
 // Set properties:           RF_PKT_FIELD_2_CRC_CONFIG_12
 // Number of properties:     12
 // Group ID:                 0x12
 // Start ID:                 0x14
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   PKT_FIELD_2_CRC_CONFIG - Configuration of CRC control bits across Field 2.
 //   PKT_FIELD_3_LENGTH_12_8 - Unsigned 13-bit Field 3 length value.
@@ -204,7 +202,7 @@
 // Number of properties:     12
 // Group ID:                 0x12
 // Start ID:                 0x20
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   PKT_FIELD_5_CRC_CONFIG - Configuration of CRC control bits across Field 5.
 //   PKT_RX_FIELD_1_LENGTH_12_8 - Unsigned 13-bit RX Field 1 length value.
@@ -226,7 +224,7 @@
 // Number of properties:     9
 // Group ID:                 0x12
 // Start ID:                 0x2C
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   PKT_RX_FIELD_3_CRC_CONFIG - Configuration of CRC control bits across RX Field 3.
 //   PKT_RX_FIELD_4_LENGTH_12_8 - Unsigned 13-bit RX Field 4 length value.
@@ -245,7 +243,7 @@
 // Number of properties:     12
 // Group ID:                 0x20
 // Start ID:                 0x00
-// Default values:           0x02, 0x80, 0x07, 0x0F, 0x42, 0x40, 0x01, 0xC9, 0xC3, 0x80, 0x00, 0x06,
+// Default values:           0x02, 0x80, 0x07, 0x0F, 0x42, 0x40, 0x01, 0xC9, 0xC3, 0x80, 0x00, 0x06, 
 // Descriptions:
 //   MODEM_MOD_TYPE - Selects the type of modulation. In TX mode, additionally selects the source of the modulation.
 //   MODEM_MAP_CONTROL - Controls polarity and mapping of transmit and receive bits.
@@ -260,14 +258,14 @@
 //   MODEM_FREQ_DEV_2 - 17-bit unsigned TX frequency deviation word.
 //   MODEM_FREQ_DEV_1 - 17-bit unsigned TX frequency deviation word.
 */
-#define RF_MODEM_MOD_TYPE_12 0x11, 0x20, 0x0C, 0x00, 0x03, 0x00, 0x07, 0x3D, 0x09, 0x00, 0x01, 0xC9, 0xC3, 0x80, 0x00, 0x05
+#define RF_MODEM_MOD_TYPE_12 0x11, 0x20, 0x0C, 0x00, 0x03, 0x00, 0x07, 0x3D, 0x09, 0x00, 0x09, 0xC9, 0xC3, 0x80, 0x00, 0x05
 
 /*
 // Set properties:           RF_MODEM_FREQ_DEV_0_1
 // Number of properties:     1
 // Group ID:                 0x20
 // Start ID:                 0x0C
-// Default values:           0xD3,
+// Default values:           0xD3, 
 // Descriptions:
 //   MODEM_FREQ_DEV_0 - 17-bit unsigned TX frequency deviation word.
 */
@@ -278,7 +276,7 @@
 // Number of properties:     8
 // Group ID:                 0x20
 // Start ID:                 0x18
-// Default values:           0x01, 0x00, 0x08, 0x03, 0xC0, 0x00, 0x10, 0x20,
+// Default values:           0x01, 0x00, 0x08, 0x03, 0xC0, 0x00, 0x10, 0x20, 
 // Descriptions:
 //   MODEM_TX_RAMP_DELAY - TX ramp-down delay setting.
 //   MODEM_MDM_CTRL - MDM control.
@@ -289,14 +287,14 @@
 //   MODEM_DECIMATION_CFG1 - Specifies three decimator ratios for the Cascaded Integrator Comb (CIC) filter.
 //   MODEM_DECIMATION_CFG0 - Specifies miscellaneous parameters and decimator ratios for the Cascaded Integrator Comb (CIC) filter.
 */
-#define RF_MODEM_TX_RAMP_DELAY_8 0x11, 0x20, 0x08, 0x18, 0x01, 0x00, 0x08, 0x03, 0x80, 0x00, 0x00, 0x30
+#define RF_MODEM_TX_RAMP_DELAY_8 0x11, 0x20, 0x08, 0x18, 0x01, 0x00, 0x08, 0x03, 0x80, 0x00, 0x00, 0x20
 
 /*
 // Set properties:           RF_MODEM_BCR_OSR_1_9
 // Number of properties:     9
 // Group ID:                 0x20
 // Start ID:                 0x22
-// Default values:           0x00, 0x4B, 0x06, 0xD3, 0xA0, 0x06, 0xD3, 0x02, 0xC0,
+// Default values:           0x00, 0x4B, 0x06, 0xD3, 0xA0, 0x06, 0xD3, 0x02, 0xC0, 
 // Descriptions:
 //   MODEM_BCR_OSR_1 - RX BCR/Slicer oversampling rate (12-bit unsigned number).
 //   MODEM_BCR_OSR_0 - RX BCR/Slicer oversampling rate (12-bit unsigned number).
@@ -315,7 +313,7 @@
 // Number of properties:     7
 // Group ID:                 0x20
 // Start ID:                 0x2C
-// Default values:           0x00, 0x23, 0x83, 0x69, 0x00, 0x40, 0xA0,
+// Default values:           0x00, 0x23, 0x83, 0x69, 0x00, 0x40, 0xA0, 
 // Descriptions:
 //   MODEM_AFC_GEAR - RX AFC loop gear control.
 //   MODEM_AFC_WAIT - RX AFC loop wait time control.
@@ -325,14 +323,14 @@
 //   MODEM_AFC_LIMITER_0 - Set the AFC limiter value.
 //   MODEM_AFC_MISC - Specifies miscellaneous AFC control bits.
 */
-#define RF_MODEM_AFC_GEAR_7 0x11, 0x20, 0x07, 0x2C, 0x00, 0x23, 0x8F, 0xFF, 0x00, 0xB7, 0xE0
+#define RF_MODEM_AFC_GEAR_7 0x11, 0x20, 0x07, 0x2C, 0x00, 0x23, 0x8D, 0xA7, 0x00, 0x7C, 0xE0
 
 /*
 // Set properties:           RF_MODEM_AGC_CONTROL_1
 // Number of properties:     1
 // Group ID:                 0x20
 // Start ID:                 0x35
-// Default values:           0xE0,
+// Default values:           0xE0, 
 // Descriptions:
 //   MODEM_AGC_CONTROL - Miscellaneous control bits for the Automatic Gain Control (AGC) function in the RX Chain.
 */
@@ -343,7 +341,7 @@
 // Number of properties:     9
 // Group ID:                 0x20
 // Start ID:                 0x38
-// Default values:           0x11, 0x10, 0x10, 0x0B, 0x1C, 0x40, 0x00, 0x00, 0x2B,
+// Default values:           0x11, 0x10, 0x10, 0x0B, 0x1C, 0x40, 0x00, 0x00, 0x2B, 
 // Descriptions:
 //   MODEM_AGC_WINDOW_SIZE - Specifies the size of the measurement and settling windows for the AGC algorithm.
 //   MODEM_AGC_RFPD_DECAY - Sets the decay time of the RF peak detectors.
@@ -355,14 +353,14 @@
 //   MODEM_FSK4_MAP - 4(G)FSK symbol mapping code.
 //   MODEM_OOK_PDTC - Configures the attack and decay times of the OOK Peak Detector.
 */
-#define RF_MODEM_AGC_WINDOW_SIZE_9 0x11, 0x20, 0x09, 0x38, 0x22, 0x08, 0x08, 0x00, 0x1A, 0x06, 0x66, 0x00, 0x28
+#define RF_MODEM_AGC_WINDOW_SIZE_9 0x11, 0x20, 0x09, 0x38, 0x11, 0x10, 0x10, 0x00, 0x1A, 0x0C, 0xCD, 0x00, 0x28
 
 /*
 // Set properties:           RF_MODEM_OOK_CNT1_9
 // Number of properties:     9
 // Group ID:                 0x20
 // Start ID:                 0x42
-// Default values:           0xA4, 0x03, 0x56, 0x02, 0x00, 0xA3, 0x02, 0x80, 0xFF,
+// Default values:           0xA4, 0x03, 0x56, 0x02, 0x00, 0xA3, 0x02, 0x80, 0xFF, 
 // Descriptions:
 //   MODEM_OOK_CNT1 - OOK control.
 //   MODEM_OOK_MISC - Selects the detector(s) used for demodulation of an OOK signal, or for demodulation of a (G)FSK signal when using the asynchronous demodulator.
@@ -374,14 +372,14 @@
 //   MODEM_ANT_DIV_CONTROL - Specifies controls for the Antenna Diversity algorithm.
 //   MODEM_RSSI_THRESH - Configures the RSSI threshold.
 */
-#define RF_MODEM_OOK_CNT1_9 0x11, 0x20, 0x09, 0x42, 0xA4, 0x03, 0xD6, 0x03, 0x00, 0x1A, 0x01, 0x80, 0x55
+#define RF_MODEM_OOK_CNT1_9 0x11, 0x20, 0x09, 0x42, 0xA4, 0x03, 0xD6, 0x03, 0x00, 0x33, 0x01, 0x80, 0xFF
 
 /*
 // Set properties:           RF_MODEM_RSSI_CONTROL_1
 // Number of properties:     1
 // Group ID:                 0x20
 // Start ID:                 0x4C
-// Default values:           0x01,
+// Default values:           0x01, 
 // Descriptions:
 //   MODEM_RSSI_CONTROL - Control of the averaging modes and latching time for reporting RSSI value(s).
 */
@@ -392,7 +390,7 @@
 // Number of properties:     1
 // Group ID:                 0x20
 // Start ID:                 0x4E
-// Default values:           0x32,
+// Default values:           0x32, 
 // Descriptions:
 //   MODEM_RSSI_COMP - RSSI compensation value.
 */
@@ -403,7 +401,7 @@
 // Number of properties:     1
 // Group ID:                 0x20
 // Start ID:                 0x51
-// Default values:           0x08,
+// Default values:           0x08, 
 // Descriptions:
 //   MODEM_CLKGEN_BAND - Select PLL Synthesizer output divider ratio as a function of frequency band.
 */
@@ -414,7 +412,7 @@
 // Number of properties:     12
 // Group ID:                 0x21
 // Start ID:                 0x00
-// Default values:           0xFF, 0xBA, 0x0F, 0x51, 0xCF, 0xA9, 0xC9, 0xFC, 0x1B, 0x1E, 0x0F, 0x01,
+// Default values:           0xFF, 0xBA, 0x0F, 0x51, 0xCF, 0xA9, 0xC9, 0xFC, 0x1B, 0x1E, 0x0F, 0x01, 
 // Descriptions:
 //   MODEM_CHFLT_RX1_CHFLT_COE13_7_0 - Filter coefficients for the first set of RX filter coefficients.
 //   MODEM_CHFLT_RX1_CHFLT_COE12_7_0 - Filter coefficients for the first set of RX filter coefficients.
@@ -429,14 +427,14 @@
 //   MODEM_CHFLT_RX1_CHFLT_COE3_7_0 - Filter coefficients for the first set of RX filter coefficients.
 //   MODEM_CHFLT_RX1_CHFLT_COE2_7_0 - Filter coefficients for the first set of RX filter coefficients.
 */
-#define RF_MODEM_CHFLT_RX1_CHFLT_COE13_7_0_12 0x11, 0x21, 0x0C, 0x00, 0x23, 0x17, 0xF4, 0xC2, 0x88, 0x50, 0x21, 0xFF, 0xEC, 0xE6, 0xE8, 0xEE
+#define RF_MODEM_CHFLT_RX1_CHFLT_COE13_7_0_12 0x11, 0x21, 0x0C, 0x00, 0x39, 0x2B, 0x00, 0xC3, 0x7F, 0x3F, 0x0C, 0xEC, 0xDC, 0xDC, 0xE3, 0xED
 
 /*
 // Set properties:           RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12
 // Number of properties:     12
 // Group ID:                 0x21
 // Start ID:                 0x0C
-// Default values:           0xFC, 0xFD, 0x15, 0xFF, 0x00, 0x0F, 0xFF, 0xC4, 0x30, 0x7F, 0xF5, 0xB5,
+// Default values:           0xFC, 0xFD, 0x15, 0xFF, 0x00, 0x0F, 0xFF, 0xC4, 0x30, 0x7F, 0xF5, 0xB5, 
 // Descriptions:
 //   MODEM_CHFLT_RX1_CHFLT_COE1_7_0 - Filter coefficients for the first set of RX filter coefficients.
 //   MODEM_CHFLT_RX1_CHFLT_COE0_7_0 - Filter coefficients for the first set of RX filter coefficients.
@@ -451,14 +449,14 @@
 //   MODEM_CHFLT_RX2_CHFLT_COE9_7_0 - Filter coefficients for the second set of RX filter coefficients.
 //   MODEM_CHFLT_RX2_CHFLT_COE8_7_0 - Filter coefficients for the second set of RX filter coefficients.
 */
-#define RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12 0x11, 0x21, 0x0C, 0x0C, 0xF6, 0xFB, 0x05, 0xC0, 0xFF, 0x0F, 0x23, 0x17, 0xF4, 0xC2, 0x88, 0x50
+#define RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12 0x11, 0x21, 0x0C, 0x0C, 0xF6, 0xFD, 0x15, 0xC0, 0xFF, 0x0F, 0x39, 0x2B, 0x00, 0xC3, 0x7F, 0x3F
 
 /*
 // Set properties:           RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12
 // Number of properties:     12
 // Group ID:                 0x21
 // Start ID:                 0x18
-// Default values:           0xB8, 0xDE, 0x05, 0x17, 0x16, 0x0C, 0x03, 0x00, 0x15, 0xFF, 0x00, 0x00,
+// Default values:           0xB8, 0xDE, 0x05, 0x17, 0x16, 0x0C, 0x03, 0x00, 0x15, 0xFF, 0x00, 0x00, 
 // Descriptions:
 //   MODEM_CHFLT_RX2_CHFLT_COE7_7_0 - Filter coefficients for the second set of RX filter coefficients.
 //   MODEM_CHFLT_RX2_CHFLT_COE6_7_0 - Filter coefficients for the second set of RX filter coefficients.
@@ -473,14 +471,14 @@
 //   MODEM_CHFLT_RX2_CHFLT_COEM2 - Filter coefficients for the second set of RX filter coefficients.
 //   MODEM_CHFLT_RX2_CHFLT_COEM3 - Filter coefficients for the second set of RX filter coefficients.
 */
-#define RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12 0x11, 0x21, 0x0C, 0x18, 0x21, 0xFF, 0xEC, 0xE6, 0xE8, 0xEE, 0xF6, 0xFB, 0x05, 0xC0, 0xFF, 0x0F
+#define RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12 0x11, 0x21, 0x0C, 0x18, 0x0C, 0xEC, 0xDC, 0xDC, 0xE3, 0xED, 0xF6, 0xFD, 0x15, 0xC0, 0xFF, 0x0F
 
 /*
 // Set properties:           RF_PA_MODE_4
 // Number of properties:     4
 // Group ID:                 0x22
 // Start ID:                 0x00
-// Default values:           0x08, 0x7F, 0x00, 0x5D,
+// Default values:           0x08, 0x7F, 0x00, 0x5D, 
 // Descriptions:
 //   PA_MODE - Selects the PA operating mode, and selects resolution of PA power adjustment (i.e., step size).
 //   PA_PWR_LVL - Configuration of PA output power level.
@@ -494,7 +492,7 @@
 // Number of properties:     7
 // Group ID:                 0x23
 // Start ID:                 0x00
-// Default values:           0x2C, 0x0E, 0x0B, 0x04, 0x0C, 0x73, 0x03,
+// Default values:           0x2C, 0x0E, 0x0B, 0x04, 0x0C, 0x73, 0x03, 
 // Descriptions:
 //   SYNTH_PFDCP_CPFF - Feed forward charge pump current selection.
 //   SYNTH_PFDCP_CPINT - Integration charge pump current selection.
@@ -511,7 +509,7 @@
 // Number of properties:     12
 // Group ID:                 0x30
 // Start ID:                 0x00
-// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+// Default values:           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 // Descriptions:
 //   MATCH_VALUE_1 - Match value to be compared with the result of logically AND-ing (bit-wise) the Mask 1 value with the received Match 1 byte.
 //   MATCH_MASK_1 - Mask value to be logically AND-ed (bit-wise) with the Match 1 byte.
@@ -533,7 +531,7 @@
 // Number of properties:     8
 // Group ID:                 0x40
 // Start ID:                 0x00
-// Default values:           0x3C, 0x08, 0x00, 0x00, 0x00, 0x00, 0x20, 0xFF,
+// Default values:           0x3C, 0x08, 0x00, 0x00, 0x00, 0x00, 0x20, 0xFF, 
 // Descriptions:
 //   FREQ_CONTROL_INTE - Frac-N PLL Synthesizer integer divide number.
 //   FREQ_CONTROL_FRAC_2 - Frac-N PLL fraction number.
@@ -544,48 +542,48 @@
 //   FREQ_CONTROL_W_SIZE - Set window gating period (in number of crystal reference clock cycles) for counting VCO frequency during calibration.
 //   FREQ_CONTROL_VCOCNT_RX_ADJ - Adjust target count for VCO calibration in RX mode.
 */
-#define RF_FREQ_CONTROL_INTE_8 0x11, 0x40, 0x08, 0x00, 0x38, 0x0D, 0xDD, 0xDD, 0x44, 0x44, 0x20, 0xFE
+#define RF_FREQ_CONTROL_INTE_8 0x11, 0x40, 0x08, 0x00, 0x3B, 0x08, 0x00, 0x00, 0x44, 0x44, 0x20, 0xFE
 
 
-// AUTOMATICALLY GENERATED CODE!
+// AUTOMATICALLY GENERATED CODE! 
 // DO NOT EDIT/MODIFY BELOW THIS LINE!
 // --------------------------------------------
 
 #ifndef FIRMWARE_LOAD_COMPILE
 #define RADIO_CONFIGURATION_DATA_ARRAY { \
-	0x07, RF_POWER_UP, \
-	0x08, RF_GPIO_PIN_CFG, \
-	0x06, RF_GLOBAL_XO_TUNE_2, \
-	0x05, RF_GLOBAL_CONFIG_1, \
-	0x06, RF_INT_CTL_ENABLE_2, \
-	0x08, RF_FRR_CTL_A_MODE_4, \
-	0x0D, RF_PREAMBLE_TX_LENGTH_9, \
-	0x09, RF_SYNC_CONFIG_5, \
-	0x0B, RF_PKT_CRC_CONFIG_7, \
-	0x10, RF_PKT_LEN_12, \
-	0x10, RF_PKT_FIELD_2_CRC_CONFIG_12, \
-	0x10, RF_PKT_FIELD_5_CRC_CONFIG_12, \
-	0x0D, RF_PKT_RX_FIELD_3_CRC_CONFIG_9, \
-	0x10, RF_MODEM_MOD_TYPE_12, \
-	0x05, RF_MODEM_FREQ_DEV_0_1, \
-	0x0C, RF_MODEM_TX_RAMP_DELAY_8, \
-	0x0D, RF_MODEM_BCR_OSR_1_9, \
-	0x0B, RF_MODEM_AFC_GEAR_7, \
-	0x05, RF_MODEM_AGC_CONTROL_1, \
-	0x0D, RF_MODEM_AGC_WINDOW_SIZE_9, \
-	0x0D, RF_MODEM_OOK_CNT1_9, \
-	0x05, RF_MODEM_RSSI_CONTROL_1, \
-	0x05, RF_MODEM_RSSI_COMP_1, \
-	0x05, RF_MODEM_CLKGEN_BAND_1, \
-	0x10, RF_MODEM_CHFLT_RX1_CHFLT_COE13_7_0_12, \
-	0x10, RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12, \
-	0x10, RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12, \
-	0x08, RF_PA_MODE_4, \
-	0x0B, RF_SYNTH_PFDCP_CPFF_7, \
-	0x10, RF_MATCH_VALUE_1_12, \
-	0x0C, RF_FREQ_CONTROL_INTE_8, \
-	0x00 \
-}
+        0x07, RF_POWER_UP, \
+        0x08, RF_GPIO_PIN_CFG, \
+        0x06, RF_GLOBAL_XO_TUNE_2, \
+        0x05, RF_GLOBAL_CONFIG_1, \
+        0x07, RF_INT_CTL_ENABLE_3, \
+        0x08, RF_FRR_CTL_A_MODE_4, \
+        0x0D, RF_PREAMBLE_TX_LENGTH_9, \
+        0x09, RF_SYNC_CONFIG_5, \
+        0x0B, RF_PKT_CRC_CONFIG_7, \
+        0x10, RF_PKT_LEN_12, \
+        0x10, RF_PKT_FIELD_2_CRC_CONFIG_12, \
+        0x10, RF_PKT_FIELD_5_CRC_CONFIG_12, \
+        0x0D, RF_PKT_RX_FIELD_3_CRC_CONFIG_9, \
+        0x10, RF_MODEM_MOD_TYPE_12, \
+        0x05, RF_MODEM_FREQ_DEV_0_1, \
+        0x0C, RF_MODEM_TX_RAMP_DELAY_8, \
+        0x0D, RF_MODEM_BCR_OSR_1_9, \
+        0x0B, RF_MODEM_AFC_GEAR_7, \
+        0x05, RF_MODEM_AGC_CONTROL_1, \
+        0x0D, RF_MODEM_AGC_WINDOW_SIZE_9, \
+        0x0D, RF_MODEM_OOK_CNT1_9, \
+        0x05, RF_MODEM_RSSI_CONTROL_1, \
+        0x05, RF_MODEM_RSSI_COMP_1, \
+        0x05, RF_MODEM_CLKGEN_BAND_1, \
+        0x10, RF_MODEM_CHFLT_RX1_CHFLT_COE13_7_0_12, \
+        0x10, RF_MODEM_CHFLT_RX1_CHFLT_COE1_7_0_12, \
+        0x10, RF_MODEM_CHFLT_RX2_CHFLT_COE7_7_0_12, \
+        0x08, RF_PA_MODE_4, \
+        0x0B, RF_SYNTH_PFDCP_CPFF_7, \
+        0x10, RF_MATCH_VALUE_1_12, \
+        0x0C, RF_FREQ_CONTROL_INTE_8, \
+        0x00 \
+ }
 #else
 #define RADIO_CONFIGURATION_DATA_ARRAY { 0 }
 #endif
@@ -606,32 +604,31 @@
 #endif
 
 #ifndef RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ
-#define RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ          RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ_DEFAULT
+#define RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ          RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ_DEFAULT 
 #endif
 
 #ifndef RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER
-#define RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER         RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER_DEFAULT
+#define RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER         RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER_DEFAULT 
 #endif
 
 #ifndef RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
-#define RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH    RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH_DEFAULT
+#define RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH    RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH_DEFAULT 
 #endif
 
 #ifndef RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP
-#define RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP   RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP_DEFAULT
+#define RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP   RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP_DEFAULT 
 #endif
 
 #ifndef RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET
-#define RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET  RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET_DEFAULT
+#define RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET  RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET_DEFAULT 
 #endif
 
 #define RADIO_CONFIGURATION_DATA { \
-	Radio_Configuration_Data_Array, \
-	RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER, \
-	RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH, \
-	RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP, \
-	RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET       \
-}
+                            Radio_Configuration_Data_Array,                            \
+                            RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER,                   \
+                            RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH,              \
+                            RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP,       \
+                            RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET       \
+                            }
 
 #endif /* RADIO_CONFIG_H_ */
-

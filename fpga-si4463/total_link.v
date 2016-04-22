@@ -5,7 +5,8 @@ module total_link(
 	cpu_mosi,
 	cpu_miso,
 	cpu_sclk,
-	cpu_irq,
+	cpu_irq_recv,
+	cpu_irq_full,
 	
 	//wireless_ctrl引脚
 	si4463_mosi,
@@ -33,6 +34,7 @@ input	clk;
 output[3:0] led;
 output[7:0] Spi_Current_State;
 
+/*
 assign Spi_Current_State[0]=clk;
 assign Spi_Current_State[1]=0;
 assign Spi_Current_State[2]=0;
@@ -40,7 +42,7 @@ assign Spi_Current_State[3]=0;
 assign Spi_Current_State[4]=0;
 assign Spi_Current_State[5]=0;
 assign Spi_Current_State[6]=0;
-assign Spi_Current_State[7]=0;
+assign Spi_Current_State[7]=0;*/
 //assign Spi_Current_State={7'b0000000,slave_write_sram};
 //assign Spi_Current_State=sram_count_to_slave[7:0];
 	
@@ -48,7 +50,9 @@ assign Spi_Current_State[7]=0;
 input	cpu_mosi;
 output	cpu_miso;
 input	cpu_sclk;
-output	cpu_irq;
+output	cpu_irq_recv;
+output cpu_irq_full;
+assign cpu_irq_full=sram_full_to_slave;
 	
 	//wireless_ctrl引脚
 output	si4463_mosi;
@@ -167,7 +171,7 @@ Slave_Ctrl slave(
 	.frame_recved_int(signal_for_recved_irq),
 	
 	//与CPU连接的中断
-	.cpu_recv_int(cpu_irq)
+	.cpu_recv_int(cpu_irq_recv)
 	
 	//.Spi_Current_State_1(Spi_Current_State)
 );
@@ -205,8 +209,8 @@ Wireless_Ctrl wireless(
 	.frame_recved_int(signal_for_recved_irq),
 	
 	//指示当前状态
-	.led(led)
-	//.Si4463_Ph_Status_1(Spi_Current_State)
+	.led(led),
+	.Si4463_Ph_Status_1(Spi_Current_State)
 );
 
 spi_master spi(

@@ -1,7 +1,7 @@
 Release 14.7 - par P.20131013 (nt64)
 Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-Thu Apr 21 15:40:21 2016
+Fri Apr 22 14:44:49 2016
 
 
 INFO: The IO information is provided in three file formats as part of the Place and Route (PAR) process.  These formats are:
@@ -80,7 +80,7 @@ Pinout by Pin Number:
 |P58       |                    |IOBM     |IO_L14P_D11_2             |UNUSED   |           |2             |          |         |           |         |       |          |           |                |
 |P59       |                    |IOBS     |IO_L13N_D10_2             |UNUSED   |           |2             |          |         |           |         |       |          |           |                |
 |P60       |                    |IOBM     |IO_L13P_M1_2              |UNUSED   |           |2             |          |         |           |         |       |          |           |                |
-|P61       |cpu_irq             |IOB      |IO_L12N_D2_MISO3_2        |OUTPUT   |LVCMOS25*  |2             |12        |SLOW     |           |         |       |LOCATED   |NO         |NONE            |
+|P61       |cpu_irq_recv        |IOB      |IO_L12N_D2_MISO3_2        |OUTPUT   |LVCMOS25*  |2             |12        |SLOW     |           |         |       |LOCATED   |NO         |NONE            |
 |P62       |si4463_irq          |IOB      |IO_L12P_D1_MISO2_2        |INPUT    |LVCMOS25*  |2             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |
 |P63       |                    |         |VCCO_2                    |         |           |2             |          |         |           |         |2.50   |          |           |                |
 |P64       |                    |IOBS     |IO_L3N_MOSI_CSI_B_MISO0_2 |UNUSED   |           |2             |          |         |           |         |       |          |           |                |
@@ -120,7 +120,7 @@ Pinout by Pin Number:
 |P98       |Dout<13>            |IOB      |IO_L34P_1                 |BIDIR    |LVCMOS25*  |1             |12        |SLOW     |           |NONE     |       |LOCATED   |NO         |NONE            |
 |P99       |Dout<14>            |IOB      |IO_L33N_1                 |BIDIR    |LVCMOS25*  |1             |12        |SLOW     |           |NONE     |       |LOCATED   |NO         |NONE            |
 |P100      |Dout<12>            |IOB      |IO_L33P_1                 |BIDIR    |LVCMOS25*  |1             |12        |SLOW     |           |NONE     |       |LOCATED   |NO         |NONE            |
-|P101      |                    |IOBS     |IO_L32N_1                 |UNUSED   |           |1             |          |         |           |         |       |          |           |                |
+|P101      |cpu_irq_full        |IOB      |IO_L32N_1                 |OUTPUT   |LVCMOS25*  |1             |12        |SLOW     |           |         |       |LOCATED   |NO         |NONE            |
 |P102      |si4463_mosi         |IOB      |IO_L32P_1                 |OUTPUT   |LVCMOS25*  |1             |12        |SLOW     |           |         |       |LOCATED   |NO         |NONE            |
 |P103      |                    |         |VCCO_1                    |         |           |1             |          |         |           |         |2.50   |          |           |                |
 |P104      |si4463_miso         |IOB      |IO_L1N_VREF_1             |INPUT    |LVCMOS25*  |1             |          |         |           |NONE     |       |LOCATED   |NO         |NONE            |

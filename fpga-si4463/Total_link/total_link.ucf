@@ -49,7 +49,10 @@ NET "si4463_mosi" LOC = P102;
 NET "si4463_ss_n" LOC = P74;
 NET "si4463_irq" LOC = P62;
 NET "si4463_reset" LOC = P119;
-NET "cpu_irq" LOC = P61;
+NET "cpu_irq_recv" LOC = P61;
+NET "cpu_irq_full" LOC = P101;
+
+
 
 
 NET "led[1]" LOC = P126;

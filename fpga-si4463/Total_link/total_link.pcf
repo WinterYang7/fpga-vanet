@@ -1,5 +1,5 @@
 //! **************************************************************************
-// Written by: Map P.20131013 on Thu Apr 21 15:40:00 2016
+// Written by: Map P.20131013 on Fri Apr 22 14:44:25 2016
 //! **************************************************************************
 
 SCHEMATIC START;
@@ -35,7 +35,6 @@ COMP "sram_mem_addr<6>" LOCATE = SITE "P22" LEVEL 1;
 COMP "sram_mem_addr<7>" LOCATE = SITE "P33" LEVEL 1;
 COMP "sram_mem_addr<8>" LOCATE = SITE "P95" LEVEL 1;
 COMP "sram_mem_addr<9>" LOCATE = SITE "P93" LEVEL 1;
-COMP "cpu_irq" LOCATE = SITE "P61" LEVEL 1;
 COMP "sram_mem_addr<10>" LOCATE = SITE "P88" LEVEL 1;
 COMP "sram_mem_addr<11>" LOCATE = SITE "P84" LEVEL 1;
 COMP "sram_mem_addr<12>" LOCATE = SITE "P92" LEVEL 1;
@@ -59,6 +58,8 @@ COMP "led<3>" LOCATE = SITE "P116" LEVEL 1;
 COMP "cpu_miso" LOCATE = SITE "P55" LEVEL 1;
 COMP "cpu_sclk" LOCATE = SITE "P75" LEVEL 1;
 COMP "cpu_mosi" LOCATE = SITE "P57" LEVEL 1;
+COMP "cpu_irq_full" LOCATE = SITE "P101" LEVEL 1;
+COMP "cpu_irq_recv" LOCATE = SITE "P61" LEVEL 1;
 COMP "si4463_reset" LOCATE = SITE "P119" LEVEL 1;
 COMP "si4463_miso" LOCATE = SITE "P104" LEVEL 1;
 COMP "si4463_sclk" LOCATE = SITE "P105" LEVEL 1;

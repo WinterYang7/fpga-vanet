@@ -37,8 +37,8 @@ module Wireless_Ctrl(
 	Si4463_Ph_Status_1
 );
 input clk;
-output[7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1={4'b0000,Irq_Current_State};
+output reg[7:0] Si4463_Ph_Status_1;
+//assign Si4463_Ph_Status_1=Main_Current_State;
 output reg [3:0] led=4'b0000;
 
 	//SRAM接口
@@ -803,7 +803,6 @@ reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 
 always@(posedge clk)
 begin
-	led[2]=packet_incoming;
 		case(Main_Current_State) 
 		0:
 		begin
@@ -956,7 +955,7 @@ begin
 		
 	////////setRFParameters(),设置射频模块参数(初始化射频模块上的各种寄存器)
 	
-			//===setRFParameters(void)====
+		//===setRFParameters(void)====
 		12:
 		begin
 			Main_Cmd_Data[7:0]=8'h02;
@@ -987,8 +986,8 @@ begin
 		15:
 		begin
 			Main_Cmd_Data[7:0]=8'h13;
-			Main_Cmd_Data[15:8]=8'h1b;
-			Main_Cmd_Data[23:16]=8'h23;
+			Main_Cmd_Data[15:8]=8'h00;
+			Main_Cmd_Data[23:16]=8'h00;
 			Main_Cmd_Data[31:24]=8'h21;
 			Main_Cmd_Data[39:32]=8'h20;
 			Main_Cmd_Data[47:40]=8'h00;
@@ -1124,7 +1123,7 @@ begin
 			Main_Cmd_Data[15:8]=8'h10;
 			Main_Cmd_Data[23:16]=8'h09;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h08;
+			Main_Cmd_Data[39:32]=8'h05;
 			Main_Cmd_Data[47:40]=8'h14;
 			Main_Cmd_Data[55:48]=8'h00;
 			Main_Cmd_Data[63:56]=8'h0f;
@@ -1187,8 +1186,8 @@ begin
 			Main_Cmd_Data[23:16]=8'h07;
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'h84;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h30;
+			Main_Cmd_Data[47:40]=8'h01;
+			Main_Cmd_Data[55:48]=8'h08;
 			Main_Cmd_Data[63:56]=8'hff;
 			Main_Cmd_Data[71:64]=8'hff;
 			Main_Cmd_Data[79:72]=8'h00;
@@ -1217,17 +1216,17 @@ begin
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h08;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
+			Main_Cmd_Data[39:32]=8'h2a;
+			Main_Cmd_Data[47:40]=8'h01;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h40;
-			Main_Cmd_Data[71:64]=8'h40;
+			Main_Cmd_Data[63:56]=8'h30;
+			Main_Cmd_Data[71:64]=8'h30;
 			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h40;
+			Main_Cmd_Data[87:80]=8'h01;
 			Main_Cmd_Data[95:88]=8'h04;
 			Main_Cmd_Data[103:96]=8'h80;
 			Main_Cmd_Data[111:104]=8'h00;
-			Main_Cmd_Data[119:112]=8'h00;
+			Main_Cmd_Data[119:112]=8'h07;
 			Main_Cmd_Data[127:120]=8'h00;
 			Main_Cmd=1;
 			Main_start=1;
@@ -1364,7 +1363,7 @@ begin
 			Main_Cmd_Data[63:56]=8'h3d;
 			Main_Cmd_Data[71:64]=8'h09;
 			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h01;
+			Main_Cmd_Data[87:80]=8'h09;
 			Main_Cmd_Data[95:88]=8'hc9;
 			Main_Cmd_Data[103:96]=8'hc3;
 			Main_Cmd_Data[111:104]=8'h80;
@@ -1426,7 +1425,7 @@ begin
 			Main_Cmd_Data[71:64]=8'h80;
 			Main_Cmd_Data[79:72]=8'h00;
 			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h30;
+			Main_Cmd_Data[95:88]=8'h20;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=12;
@@ -1486,10 +1485,10 @@ begin
 			Main_Cmd_Data[31:24]=8'h2c;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h23;
-			Main_Cmd_Data[55:48]=8'h8f;
-			Main_Cmd_Data[63:56]=8'hff;
+			Main_Cmd_Data[55:48]=8'h8d;
+			Main_Cmd_Data[63:56]=8'ha7;
 			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'hb7;
+			Main_Cmd_Data[79:72]=8'h7c;
 			Main_Cmd_Data[87:80]=8'he0;
 			Main_Cmd=1;
 			Main_start=1;
@@ -1540,13 +1539,13 @@ begin
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h09;
 			Main_Cmd_Data[31:24]=8'h38;
-			Main_Cmd_Data[39:32]=8'h22;
-			Main_Cmd_Data[47:40]=8'h08;
-			Main_Cmd_Data[55:48]=8'h08;
+			Main_Cmd_Data[39:32]=8'h11;
+			Main_Cmd_Data[47:40]=8'h10;
+			Main_Cmd_Data[55:48]=8'h10;
 			Main_Cmd_Data[63:56]=8'h00;
 			Main_Cmd_Data[71:64]=8'h1a;
-			Main_Cmd_Data[79:72]=8'h06;
-			Main_Cmd_Data[87:80]=8'h66;
+			Main_Cmd_Data[79:72]=8'h0c;
+			Main_Cmd_Data[87:80]=8'hcd;
 			Main_Cmd_Data[95:88]=8'h00;
 			Main_Cmd_Data[103:96]=8'h28;
 			Main_Cmd=1;
@@ -1578,10 +1577,10 @@ begin
 			Main_Cmd_Data[55:48]=8'hd6;
 			Main_Cmd_Data[63:56]=8'h03;
 			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h1a;
+			Main_Cmd_Data[79:72]=8'h33;
 			Main_Cmd_Data[87:80]=8'h01;
 			Main_Cmd_Data[95:88]=8'h80;
-			Main_Cmd_Data[103:96]=8'h55;
+			Main_Cmd_Data[103:96]=8'hff;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=13;
@@ -1681,18 +1680,18 @@ begin
 			Main_Cmd_Data[15:8]=8'h21;
 			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h23;
-			Main_Cmd_Data[47:40]=8'h17;
-			Main_Cmd_Data[55:48]=8'hf4;
-			Main_Cmd_Data[63:56]=8'hc2;
-			Main_Cmd_Data[71:64]=8'h88;
-			Main_Cmd_Data[79:72]=8'h50;
-			Main_Cmd_Data[87:80]=8'h21;
-			Main_Cmd_Data[95:88]=8'hff;
-			Main_Cmd_Data[103:96]=8'hec;
-			Main_Cmd_Data[111:104]=8'he6;
-			Main_Cmd_Data[119:112]=8'he8;
-			Main_Cmd_Data[127:120]=8'hee;
+			Main_Cmd_Data[39:32]=8'h39;
+			Main_Cmd_Data[47:40]=8'h2b;
+			Main_Cmd_Data[55:48]=8'h00;
+			Main_Cmd_Data[63:56]=8'hc3;
+			Main_Cmd_Data[71:64]=8'h7f;
+			Main_Cmd_Data[79:72]=8'h3f;
+			Main_Cmd_Data[87:80]=8'h0c;
+			Main_Cmd_Data[95:88]=8'hec;
+			Main_Cmd_Data[103:96]=8'hdc;
+			Main_Cmd_Data[111:104]=8'hdc;
+			Main_Cmd_Data[119:112]=8'he3;
+			Main_Cmd_Data[127:120]=8'hed;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=16;
@@ -1718,17 +1717,17 @@ begin
 			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h0c;
 			Main_Cmd_Data[39:32]=8'hf6;
-			Main_Cmd_Data[47:40]=8'hfb;
-			Main_Cmd_Data[55:48]=8'h05;
+			Main_Cmd_Data[47:40]=8'hfd;
+			Main_Cmd_Data[55:48]=8'h15;
 			Main_Cmd_Data[63:56]=8'hc0;
 			Main_Cmd_Data[71:64]=8'hff;
 			Main_Cmd_Data[79:72]=8'h0f;
-			Main_Cmd_Data[87:80]=8'h23;
-			Main_Cmd_Data[95:88]=8'h17;
-			Main_Cmd_Data[103:96]=8'hf4;
-			Main_Cmd_Data[111:104]=8'hc2;
-			Main_Cmd_Data[119:112]=8'h88;
-			Main_Cmd_Data[127:120]=8'h50;
+			Main_Cmd_Data[87:80]=8'h39;
+			Main_Cmd_Data[95:88]=8'h2b;
+			Main_Cmd_Data[103:96]=8'h00;
+			Main_Cmd_Data[111:104]=8'hc3;
+			Main_Cmd_Data[119:112]=8'h7f;
+			Main_Cmd_Data[127:120]=8'h3f;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=16;
@@ -1753,15 +1752,15 @@ begin
 			Main_Cmd_Data[15:8]=8'h21;
 			Main_Cmd_Data[23:16]=8'h0c;
 			Main_Cmd_Data[31:24]=8'h18;
-			Main_Cmd_Data[39:32]=8'h21;
-			Main_Cmd_Data[47:40]=8'hff;
-			Main_Cmd_Data[55:48]=8'hec;
-			Main_Cmd_Data[63:56]=8'he6;
-			Main_Cmd_Data[71:64]=8'he8;
-			Main_Cmd_Data[79:72]=8'hee;
+			Main_Cmd_Data[39:32]=8'h0c;
+			Main_Cmd_Data[47:40]=8'hec;
+			Main_Cmd_Data[55:48]=8'hdc;
+			Main_Cmd_Data[63:56]=8'hdc;
+			Main_Cmd_Data[71:64]=8'he3;
+			Main_Cmd_Data[79:72]=8'hed;
 			Main_Cmd_Data[87:80]=8'hf6;
-			Main_Cmd_Data[95:88]=8'hfb;
-			Main_Cmd_Data[103:96]=8'h05;
+			Main_Cmd_Data[95:88]=8'hfd;
+			Main_Cmd_Data[103:96]=8'h15;
 			Main_Cmd_Data[111:104]=8'hc0;
 			Main_Cmd_Data[119:112]=8'hff;
 			Main_Cmd_Data[127:120]=8'h0f;
@@ -1884,10 +1883,10 @@ begin
 			Main_Cmd_Data[15:8]=8'h40;
 			Main_Cmd_Data[23:16]=8'h08;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h38;
-			Main_Cmd_Data[47:40]=8'h0d;
-			Main_Cmd_Data[55:48]=8'hdd;
-			Main_Cmd_Data[63:56]=8'hdd;
+			Main_Cmd_Data[39:32]=8'h3b;
+			Main_Cmd_Data[47:40]=8'h08;
+			Main_Cmd_Data[55:48]=8'h00;
+			Main_Cmd_Data[63:56]=8'h00;
 			Main_Cmd_Data[71:64]=8'h44;
 			Main_Cmd_Data[79:72]=8'h44;
 			Main_Cmd_Data[87:80]=8'h20;
@@ -1910,6 +1909,8 @@ begin
 				Main_Current_State=105;
 			end
 		end
+
+
 		//===set_frr_ctl(void)====
 		105:
 		begin
@@ -2343,7 +2344,6 @@ begin
 		begin
 			if(!spi_Using&&!rx_start&&!packet_incoming)
 			begin
-				led[0]=1;
 				Main_Cmd=1;
 				Main_Cmd_Data[7:0]=8'h34;
 				Main_Cmd_Data[15:8]=8'h05;
@@ -2489,7 +2489,7 @@ begin
 		begin
 			if(tx_done)  //增加超时判断
 			begin
-				led[1]=1;
+				led[3]=~led[3];
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
@@ -2595,20 +2595,21 @@ begin
 				
 				Si4463_Ph_Status=Int_Return_Data[15:8];
 				Si4463_Modem_Status=Int_Return_Data[7:0];
-				//Si4463_Ph_Status_1=Si4463_Ph_Status;
+				Si4463_Ph_Status_1=Si4463_Ph_Status;
 				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
 				begin
+					led[0]=~led[0];
 					tx_flag=1;
 					Irq_Current_State=4;
 				end
 				if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 				begin
+					led[1]=~led[1];
 					Irq_Current_State=4;
 					rx_flag=1;
 				end
 				if((Si4463_Modem_Status&8'h03)==8'h03)
 				begin
-					led[3]=1;
 					packet_incoming=1;
 					Irq_Current_State=4;
 				end

@@ -1,6 +1,6 @@
 #define  _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
-#include<Windows.h>
+//#include<Windows.h>
 #include"config.h"
 #include"spi_api.h"
 
@@ -16,7 +16,7 @@ void setRFParameters(void)  //设置RF参数
 	int j = 0;
 	int k = 0;
 
-	fprintf(fp, "===setRFParameters(void)====\n");
+	fprintf(fp, "//===setRFParameters(void)====\n");
 	while ((i = config_table[j]) != 0)
 	{
 		j += 1;
@@ -54,7 +54,7 @@ void setRFParameters(void)  //设置RF参数
 }
 
 void set_frr_ctl(void) {
-	fprintf(fp, "===set_frr_ctl(void)====\n");
+	fprintf(fp, "//===set_frr_ctl(void)====\n");
 	int k = 0;
 	fprintf(fp,"%d:\n", state);
 	state += 1;
@@ -100,7 +100,7 @@ void set_frr_ctl(void) {
 }
 
 void Function_set_tran_property(){
-	fprintf(fp, "===Function_set_tran_property()====\n");
+	fprintf(fp, "//===Function_set_tran_property()====\n");
 	int k = 0;
 	fprintf(fp,"%d:\n", state);
 	state += 1;
@@ -405,12 +405,13 @@ fprintf(fp, "\tend\n");
 fprintf(fp, "end\n");
 }
 
-void main()
+int main()
 {
 	fp = fopen("data.txt", "w");
 	setRFParameters();
-	set_frr_ctl();
-	Function_set_tran_property();
+	//set_frr_ctl();
+	//Function_set_tran_property();
 	fclose(fp);
 	getchar();
+	return 0;
 }
