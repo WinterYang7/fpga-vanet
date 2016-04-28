@@ -168,7 +168,7 @@ Slave_Ctrl slave(
 	.SRAM_count(sram_count_to_slave),
 	
 	//帧接收中断,与wireless_ctrl连接
-	.frame_recved_int(signal_for_recved_irq),
+	.frame_recved_int(signal_for_recved_irq), //可以删掉了
 	
 	//与CPU连接的中断
 	.cpu_recv_int(cpu_irq_recv)

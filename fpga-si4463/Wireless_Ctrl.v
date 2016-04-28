@@ -37,8 +37,8 @@ module Wireless_Ctrl(
 	Si4463_Ph_Status_1
 );
 input clk;
-output reg[7:0] Si4463_Ph_Status_1;
-//assign Si4463_Ph_Status_1=Main_Current_State;
+output [7:0] Si4463_Ph_Status_1;
+assign Si4463_Ph_Status_1={4'b000,Irq_Current_State};
 output reg [3:0] led=4'b0000;
 
 	//SRAM接口
@@ -83,6 +83,7 @@ reg packet_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
 reg [7:0] Si4463_Ph_Status=0;
 reg [7:0] Si4463_Modem_Status=0;
 reg [7:0] frame_len;
+reg irq_dealing=0;
 
 
 /////延时函数1///////////////
@@ -797,6 +798,7 @@ wire Si4463_int;
 reg [2:0] tx_state=3'b000;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
 reg[7:0] Data_Len_to_Send=8'h00;
 reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
+reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
 `define RX 3'b001
 `define TX_TUNE 3'b010
 `define TX 3'b011
@@ -955,960 +957,962 @@ begin
 		
 	////////setRFParameters(),设置射频模块参数(初始化射频模块上的各种寄存器)
 	
-		//===setRFParameters(void)====
-		12:
-		begin
-			Main_Cmd_Data[7:0]=8'h02;
-			Main_Cmd_Data[15:8]=8'h01;
-			Main_Cmd_Data[23:16]=8'h00;
-			Main_Cmd_Data[31:24]=8'h01;
-			Main_Cmd_Data[39:32]=8'hc9;
-			Main_Cmd_Data[47:40]=8'hc3;
-			Main_Cmd_Data[55:48]=8'h80;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=7;
-			Main_Return_len=0;
-			Main_Current_State=13;
-		end
-		13:
-		begin
-			Main_start=0;
-			Main_Current_State=14;
-		end
-		14:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=15;
-			end
-		end
-		15:
-		begin
-			Main_Cmd_Data[7:0]=8'h13;
-			Main_Cmd_Data[15:8]=8'h00;
-			Main_Cmd_Data[23:16]=8'h00;
-			Main_Cmd_Data[31:24]=8'h21;
-			Main_Cmd_Data[39:32]=8'h20;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=8;
-			Main_Return_len=0;
-			Main_Current_State=16;
-		end
-		16:
-		begin
-			Main_start=0;
-			Main_Current_State=17;
-		end
-		17:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=18;
-			end
-		end
-		18:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h00;
-			Main_Cmd_Data[23:16]=8'h02;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h52;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=6;
-			Main_Return_len=0;
-			Main_Current_State=19;
-		end
-		19:
-		begin
-			Main_start=0;
-			Main_Current_State=20;
-		end
-		20:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=21;
-			end
-		end
-		21:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h00;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h03;
-			Main_Cmd_Data[39:32]=8'h60;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=22;
-		end
-		22:
-		begin
-			Main_start=0;
-			Main_Current_State=23;
-		end
-		23:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=24;
-			end
-		end
-		24:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h01;
-			Main_Cmd_Data[23:16]=8'h03;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h03;
-			Main_Cmd_Data[47:40]=8'h30;
-			Main_Cmd_Data[55:48]=8'h01;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=7;
-			Main_Return_len=0;
-			Main_Current_State=25;
-		end
-		25:
-		begin
-			Main_start=0;
-			Main_Current_State=26;
-		end
-		26:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=27;
-			end
-		end
-		27:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h02;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h04;
-			Main_Cmd_Data[47:40]=8'h06;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=8;
-			Main_Return_len=0;
-			Main_Current_State=28;
-		end
-		28:
-		begin
-			Main_start=0;
-			Main_Current_State=29;
-		end
-		29:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=30;
-			end
-		end
-		30:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h10;
-			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h05;
-			Main_Cmd_Data[47:40]=8'h14;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h0f;
-			Main_Cmd_Data[71:64]=8'h31;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=13;
-			Main_Return_len=0;
-			Main_Current_State=31;
-		end
-		31:
-		begin
-			Main_start=0;
-			Main_Current_State=32;
-		end
-		32:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=33;
-			end
-		end
-		33:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h11;
-			Main_Cmd_Data[23:16]=8'h05;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h01;
-			Main_Cmd_Data[47:40]=8'hb4;
-			Main_Cmd_Data[55:48]=8'h2b;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=9;
-			Main_Return_len=0;
-			Main_Current_State=34;
-		end
-		34:
-		begin
-			Main_start=0;
-			Main_Current_State=35;
-		end
-		35:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=36;
-			end
-		end
-		36:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h07;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h84;
-			Main_Cmd_Data[47:40]=8'h01;
-			Main_Cmd_Data[55:48]=8'h08;
-			Main_Cmd_Data[63:56]=8'hff;
-			Main_Cmd_Data[71:64]=8'hff;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h02;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=11;
-			Main_Return_len=0;
-			Main_Current_State=37;
-		end
-		37:
-		begin
-			Main_start=0;
-			Main_Current_State=38;
-		end
-		38:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=39;
-			end
-		end
-		39:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h08;
-			Main_Cmd_Data[39:32]=8'h2a;
-			Main_Cmd_Data[47:40]=8'h01;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h30;
-			Main_Cmd_Data[71:64]=8'h30;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h01;
-			Main_Cmd_Data[95:88]=8'h04;
-			Main_Cmd_Data[103:96]=8'h80;
-			Main_Cmd_Data[111:104]=8'h00;
-			Main_Cmd_Data[119:112]=8'h07;
-			Main_Cmd_Data[127:120]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=40;
-		end
-		40:
-		begin
-			Main_start=0;
-			Main_Current_State=41;
-		end
-		41:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=42;
-			end
-		end
-		42:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h14;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd_Data[111:104]=8'h00;
-			Main_Cmd_Data[119:112]=8'h00;
-			Main_Cmd_Data[127:120]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=43;
-		end
-		43:
-		begin
-			Main_start=0;
-			Main_Current_State=44;
-		end
-		44:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=45;
-			end
-		end
-		45:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h20;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd_Data[111:104]=8'h00;
-			Main_Cmd_Data[119:112]=8'h00;
-			Main_Cmd_Data[127:120]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=46;
-		end
-		46:
-		begin
-			Main_start=0;
-			Main_Current_State=47;
-		end
-		47:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=48;
-			end
-		end
-		48:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h2c;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=13;
-			Main_Return_len=0;
-			Main_Current_State=49;
-		end
-		49:
-		begin
-			Main_start=0;
-			Main_Current_State=50;
-		end
-		50:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=51;
-			end
-		end
-		51:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h03;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h07;
-			Main_Cmd_Data[63:56]=8'h3d;
-			Main_Cmd_Data[71:64]=8'h09;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h09;
-			Main_Cmd_Data[95:88]=8'hc9;
-			Main_Cmd_Data[103:96]=8'hc3;
-			Main_Cmd_Data[111:104]=8'h80;
-			Main_Cmd_Data[119:112]=8'h00;
-			Main_Cmd_Data[127:120]=8'h05;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=52;
-		end
-		52:
-		begin
-			Main_start=0;
-			Main_Current_State=53;
-		end
-		53:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=54;
-			end
-		end
-		54:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h0c;
-			Main_Cmd_Data[39:32]=8'h76;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=55;
-		end
-		55:
-		begin
-			Main_start=0;
-			Main_Current_State=56;
-		end
-		56:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=57;
-			end
-		end
-		57:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h08;
-			Main_Cmd_Data[31:24]=8'h18;
-			Main_Cmd_Data[39:32]=8'h01;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h08;
-			Main_Cmd_Data[63:56]=8'h03;
-			Main_Cmd_Data[71:64]=8'h80;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h20;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=12;
-			Main_Return_len=0;
-			Main_Current_State=58;
-		end
-		58:
-		begin
-			Main_start=0;
-			Main_Current_State=59;
-		end
-		59:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=60;
-			end
-		end
-		60:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h22;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h4b;
-			Main_Cmd_Data[55:48]=8'h06;
-			Main_Cmd_Data[63:56]=8'hd3;
-			Main_Cmd_Data[71:64]=8'ha0;
-			Main_Cmd_Data[79:72]=8'h07;
-			Main_Cmd_Data[87:80]=8'hff;
-			Main_Cmd_Data[95:88]=8'h02;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=13;
-			Main_Return_len=0;
-			Main_Current_State=61;
-		end
-		61:
-		begin
-			Main_start=0;
-			Main_Current_State=62;
-		end
-		62:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=63;
-			end
-		end
-		63:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h07;
-			Main_Cmd_Data[31:24]=8'h2c;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h23;
-			Main_Cmd_Data[55:48]=8'h8d;
-			Main_Cmd_Data[63:56]=8'ha7;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h7c;
-			Main_Cmd_Data[87:80]=8'he0;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=11;
-			Main_Return_len=0;
-			Main_Current_State=64;
-		end
-		64:
-		begin
-			Main_start=0;
-			Main_Current_State=65;
-		end
-		65:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=66;
-			end
-		end
-		66:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h35;
-			Main_Cmd_Data[39:32]=8'he2;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=67;
-		end
-		67:
-		begin
-			Main_start=0;
-			Main_Current_State=68;
-		end
-		68:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=69;
-			end
-		end
-		69:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h38;
-			Main_Cmd_Data[39:32]=8'h11;
-			Main_Cmd_Data[47:40]=8'h10;
-			Main_Cmd_Data[55:48]=8'h10;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h1a;
-			Main_Cmd_Data[79:72]=8'h0c;
-			Main_Cmd_Data[87:80]=8'hcd;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h28;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=13;
-			Main_Return_len=0;
-			Main_Current_State=70;
-		end
-		70:
-		begin
-			Main_start=0;
-			Main_Current_State=71;
-		end
-		71:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=72;
-			end
-		end
-		72:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h09;
-			Main_Cmd_Data[31:24]=8'h42;
-			Main_Cmd_Data[39:32]=8'ha4;
-			Main_Cmd_Data[47:40]=8'h03;
-			Main_Cmd_Data[55:48]=8'hd6;
-			Main_Cmd_Data[63:56]=8'h03;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h33;
-			Main_Cmd_Data[87:80]=8'h01;
-			Main_Cmd_Data[95:88]=8'h80;
-			Main_Cmd_Data[103:96]=8'hff;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=13;
-			Main_Return_len=0;
-			Main_Current_State=73;
-		end
-		73:
-		begin
-			Main_start=0;
-			Main_Current_State=74;
-		end
-		74:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=75;
-			end
-		end
-		75:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h4c;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=76;
-		end
-		76:
-		begin
-			Main_start=0;
-			Main_Current_State=77;
-		end
-		77:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=78;
-			end
-		end
-		78:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h4e;
-			Main_Cmd_Data[39:32]=8'h40;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=79;
-		end
-		79:
-		begin
-			Main_start=0;
-			Main_Current_State=80;
-		end
-		80:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=81;
-			end
-		end
-		81:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h20;
-			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h51;
-			Main_Cmd_Data[39:32]=8'h0a;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Current_State=82;
-		end
-		82:
-		begin
-			Main_start=0;
-			Main_Current_State=83;
-		end
-		83:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=84;
-			end
-		end
-		84:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h39;
-			Main_Cmd_Data[47:40]=8'h2b;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'hc3;
-			Main_Cmd_Data[71:64]=8'h7f;
-			Main_Cmd_Data[79:72]=8'h3f;
-			Main_Cmd_Data[87:80]=8'h0c;
-			Main_Cmd_Data[95:88]=8'hec;
-			Main_Cmd_Data[103:96]=8'hdc;
-			Main_Cmd_Data[111:104]=8'hdc;
-			Main_Cmd_Data[119:112]=8'he3;
-			Main_Cmd_Data[127:120]=8'hed;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=85;
-		end
-		85:
-		begin
-			Main_start=0;
-			Main_Current_State=86;
-		end
-		86:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=87;
-			end
-		end
-		87:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h0c;
-			Main_Cmd_Data[39:32]=8'hf6;
-			Main_Cmd_Data[47:40]=8'hfd;
-			Main_Cmd_Data[55:48]=8'h15;
-			Main_Cmd_Data[63:56]=8'hc0;
-			Main_Cmd_Data[71:64]=8'hff;
-			Main_Cmd_Data[79:72]=8'h0f;
-			Main_Cmd_Data[87:80]=8'h39;
-			Main_Cmd_Data[95:88]=8'h2b;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd_Data[111:104]=8'hc3;
-			Main_Cmd_Data[119:112]=8'h7f;
-			Main_Cmd_Data[127:120]=8'h3f;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=88;
-		end
-		88:
-		begin
-			Main_start=0;
-			Main_Current_State=89;
-		end
-		89:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=90;
-			end
-		end
-		90:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h21;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h18;
-			Main_Cmd_Data[39:32]=8'h0c;
-			Main_Cmd_Data[47:40]=8'hec;
-			Main_Cmd_Data[55:48]=8'hdc;
-			Main_Cmd_Data[63:56]=8'hdc;
-			Main_Cmd_Data[71:64]=8'he3;
-			Main_Cmd_Data[79:72]=8'hed;
-			Main_Cmd_Data[87:80]=8'hf6;
-			Main_Cmd_Data[95:88]=8'hfd;
-			Main_Cmd_Data[103:96]=8'h15;
-			Main_Cmd_Data[111:104]=8'hc0;
-			Main_Cmd_Data[119:112]=8'hff;
-			Main_Cmd_Data[127:120]=8'h0f;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=91;
-		end
-		91:
-		begin
-			Main_start=0;
-			Main_Current_State=92;
-		end
-		92:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=93;
-			end
-		end
-		93:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h22;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h08;
-			Main_Cmd_Data[47:40]=8'h7f;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h5d;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=8;
-			Main_Return_len=0;
-			Main_Current_State=94;
-		end
-		94:
-		begin
-			Main_start=0;
-			Main_Current_State=95;
-		end
-		95:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=96;
-			end
-		end
-		96:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h23;
-			Main_Cmd_Data[23:16]=8'h07;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h01;
-			Main_Cmd_Data[47:40]=8'h05;
-			Main_Cmd_Data[55:48]=8'h0b;
-			Main_Cmd_Data[63:56]=8'h05;
-			Main_Cmd_Data[71:64]=8'h02;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h03;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=11;
-			Main_Return_len=0;
-			Main_Current_State=97;
-		end
-		97:
-		begin
-			Main_start=0;
-			Main_Current_State=98;
-		end
-		98:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=99;
-			end
-		end
-		99:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h30;
-			Main_Cmd_Data[23:16]=8'h0c;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h00;
-			Main_Cmd_Data[79:72]=8'h00;
-			Main_Cmd_Data[87:80]=8'h00;
-			Main_Cmd_Data[95:88]=8'h00;
-			Main_Cmd_Data[103:96]=8'h00;
-			Main_Cmd_Data[111:104]=8'h00;
-			Main_Cmd_Data[119:112]=8'h00;
-			Main_Cmd_Data[127:120]=8'h00;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=16;
-			Main_Return_len=0;
-			Main_Current_State=100;
-		end
-		100:
-		begin
-			Main_start=0;
-			Main_Current_State=101;
-		end
-		101:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=102;
-			end
-		end
-		102:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h40;
-			Main_Cmd_Data[23:16]=8'h08;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h3b;
-			Main_Cmd_Data[47:40]=8'h08;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
-			Main_Cmd_Data[71:64]=8'h44;
-			Main_Cmd_Data[79:72]=8'h44;
-			Main_Cmd_Data[87:80]=8'h20;
-			Main_Cmd_Data[95:88]=8'hfe;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=12;
-			Main_Return_len=0;
-			Main_Current_State=103;
-		end
-		103:
-		begin
-			Main_start=0;
-			Main_Current_State=104;
-		end
-		104:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=105;
-			end
-		end
+//===setRFParameters(void)====
+12:
+begin
+	Main_Cmd_Data[7:0]=8'h02;
+	Main_Cmd_Data[15:8]=8'h01;
+	Main_Cmd_Data[23:16]=8'h00;
+	Main_Cmd_Data[31:24]=8'h01;
+	Main_Cmd_Data[39:32]=8'hc9;
+	Main_Cmd_Data[47:40]=8'hc3;
+	Main_Cmd_Data[55:48]=8'h80;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=7;
+	Main_Return_len=0;
+	Main_Current_State=13;
+end
+13:
+begin
+	Main_start=0;
+	Main_Current_State=14;
+end
+14:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=15;
+	end
+end
+15:
+begin
+	Main_Cmd_Data[7:0]=8'h13;
+	Main_Cmd_Data[15:8]=8'h1b;
+	Main_Cmd_Data[23:16]=8'h23;
+	Main_Cmd_Data[31:24]=8'h21;
+	Main_Cmd_Data[39:32]=8'h20;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=8;
+	Main_Return_len=0;
+	Main_Current_State=16;
+end
+16:
+begin
+	Main_start=0;
+	Main_Current_State=17;
+end
+17:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=18;
+	end
+end
+18:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h00;
+	Main_Cmd_Data[23:16]=8'h02;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h52;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=6;
+	Main_Return_len=0;
+	Main_Current_State=19;
+end
+19:
+begin
+	Main_start=0;
+	Main_Current_State=20;
+end
+20:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=21;
+	end
+end
+21:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h00;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h03;
+	Main_Cmd_Data[39:32]=8'h60;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=22;
+end
+22:
+begin
+	Main_start=0;
+	Main_Current_State=23;
+end
+23:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=24;
+	end
+end
+24:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h01;
+	Main_Cmd_Data[23:16]=8'h03;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h03;
+	Main_Cmd_Data[47:40]=8'h30;
+	Main_Cmd_Data[55:48]=8'h01;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=6;
+	Main_Return_len=0;
+	Main_Current_State=25;
+end
+25:
+begin
+	Main_start=0;
+	Main_Current_State=26;
+end
+26:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=27;
+	end
+end
+27:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h02;
+	Main_Cmd_Data[23:16]=8'h04;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h04;
+	Main_Cmd_Data[47:40]=8'h06;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=8;
+	Main_Return_len=0;
+	Main_Current_State=28;
+end
+28:
+begin
+	Main_start=0;
+	Main_Current_State=29;
+end
+29:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=30;
+	end
+end
+30:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h10;
+	Main_Cmd_Data[23:16]=8'h09;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h08;
+	Main_Cmd_Data[47:40]=8'h14;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h0f;
+	Main_Cmd_Data[71:64]=8'h31;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=13;
+	Main_Return_len=0;
+	Main_Current_State=31;
+end
+31:
+begin
+	Main_start=0;
+	Main_Current_State=32;
+end
+32:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=33;
+	end
+end
+33:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h11;
+	Main_Cmd_Data[23:16]=8'h05;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h01;
+	Main_Cmd_Data[47:40]=8'hb4;
+	Main_Cmd_Data[55:48]=8'h2b;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=9;
+	Main_Return_len=0;
+	Main_Current_State=34;
+end
+34:
+begin
+	Main_start=0;
+	Main_Current_State=35;
+end
+35:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=36;
+	end
+end
+36:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h12;
+	Main_Cmd_Data[23:16]=8'h07;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h84;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h30;
+	Main_Cmd_Data[63:56]=8'hff;
+	Main_Cmd_Data[71:64]=8'hff;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h02;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=11;
+	Main_Return_len=0;
+	Main_Current_State=37;
+end
+37:
+begin
+	Main_start=0;
+	Main_Current_State=38;
+end
+38:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=39;
+	end
+end
+39:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h12;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h08;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h40;
+	Main_Cmd_Data[71:64]=8'h40;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h40;
+	Main_Cmd_Data[95:88]=8'h04;
+	Main_Cmd_Data[103:96]=8'h80;
+	Main_Cmd_Data[111:104]=8'h00;
+	Main_Cmd_Data[119:112]=8'h00;
+	Main_Cmd_Data[127:120]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=40;
+end
+40:
+begin
+	Main_start=0;
+	Main_Current_State=41;
+end
+41:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=42;
+	end
+end
+42:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h12;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h14;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd_Data[111:104]=8'h00;
+	Main_Cmd_Data[119:112]=8'h00;
+	Main_Cmd_Data[127:120]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=43;
+end
+43:
+begin
+	Main_start=0;
+	Main_Current_State=44;
+end
+44:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=45;
+	end
+end
+45:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h12;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h20;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd_Data[111:104]=8'h00;
+	Main_Cmd_Data[119:112]=8'h00;
+	Main_Cmd_Data[127:120]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=46;
+end
+46:
+begin
+	Main_start=0;
+	Main_Current_State=47;
+end
+47:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=48;
+	end
+end
+48:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h12;
+	Main_Cmd_Data[23:16]=8'h09;
+	Main_Cmd_Data[31:24]=8'h2c;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=13;
+	Main_Return_len=0;
+	Main_Current_State=49;
+end
+49:
+begin
+	Main_start=0;
+	Main_Current_State=50;
+end
+50:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=51;
+	end
+end
+51:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h03;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h07;
+	Main_Cmd_Data[63:56]=8'h3d;
+	Main_Cmd_Data[71:64]=8'h09;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h01;
+	Main_Cmd_Data[95:88]=8'hc9;
+	Main_Cmd_Data[103:96]=8'hc3;
+	Main_Cmd_Data[111:104]=8'h80;
+	Main_Cmd_Data[119:112]=8'h00;
+	Main_Cmd_Data[127:120]=8'h05;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=52;
+end
+52:
+begin
+	Main_start=0;
+	Main_Current_State=53;
+end
+53:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=54;
+	end
+end
+54:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h0c;
+	Main_Cmd_Data[39:32]=8'h76;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=55;
+end
+55:
+begin
+	Main_start=0;
+	Main_Current_State=56;
+end
+56:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=57;
+	end
+end
+57:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h08;
+	Main_Cmd_Data[31:24]=8'h18;
+	Main_Cmd_Data[39:32]=8'h01;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h08;
+	Main_Cmd_Data[63:56]=8'h03;
+	Main_Cmd_Data[71:64]=8'h80;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h30;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=12;
+	Main_Return_len=0;
+	Main_Current_State=58;
+end
+58:
+begin
+	Main_start=0;
+	Main_Current_State=59;
+end
+59:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=60;
+	end
+end
+60:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h09;
+	Main_Cmd_Data[31:24]=8'h22;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h4b;
+	Main_Cmd_Data[55:48]=8'h06;
+	Main_Cmd_Data[63:56]=8'hd3;
+	Main_Cmd_Data[71:64]=8'ha0;
+	Main_Cmd_Data[79:72]=8'h07;
+	Main_Cmd_Data[87:80]=8'hff;
+	Main_Cmd_Data[95:88]=8'h02;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=13;
+	Main_Return_len=0;
+	Main_Current_State=61;
+end
+61:
+begin
+	Main_start=0;
+	Main_Current_State=62;
+end
+62:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=63;
+	end
+end
+63:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h07;
+	Main_Cmd_Data[31:24]=8'h2c;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h23;
+	Main_Cmd_Data[55:48]=8'h8f;
+	Main_Cmd_Data[63:56]=8'hff;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'hb7;
+	Main_Cmd_Data[87:80]=8'he0;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=11;
+	Main_Return_len=0;
+	Main_Current_State=64;
+end
+64:
+begin
+	Main_start=0;
+	Main_Current_State=65;
+end
+65:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=66;
+	end
+end
+66:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h35;
+	Main_Cmd_Data[39:32]=8'he2;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=67;
+end
+67:
+begin
+	Main_start=0;
+	Main_Current_State=68;
+end
+68:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=69;
+	end
+end
+69:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h09;
+	Main_Cmd_Data[31:24]=8'h38;
+	Main_Cmd_Data[39:32]=8'h22;
+	Main_Cmd_Data[47:40]=8'h08;
+	Main_Cmd_Data[55:48]=8'h08;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h1a;
+	Main_Cmd_Data[79:72]=8'h06;
+	Main_Cmd_Data[87:80]=8'h66;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h28;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=13;
+	Main_Return_len=0;
+	Main_Current_State=70;
+end
+70:
+begin
+	Main_start=0;
+	Main_Current_State=71;
+end
+71:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=72;
+	end
+end
+72:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h09;
+	Main_Cmd_Data[31:24]=8'h42;
+	Main_Cmd_Data[39:32]=8'ha4;
+	Main_Cmd_Data[47:40]=8'h03;
+	Main_Cmd_Data[55:48]=8'hd6;
+	Main_Cmd_Data[63:56]=8'h03;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'h1a;
+	Main_Cmd_Data[87:80]=8'h01;
+	Main_Cmd_Data[95:88]=8'h80;
+	Main_Cmd_Data[103:96]=8'h55;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=13;
+	Main_Return_len=0;
+	Main_Current_State=73;
+end
+73:
+begin
+	Main_start=0;
+	Main_Current_State=74;
+end
+74:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=75;
+	end
+end
+75:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h4c;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=76;
+end
+76:
+begin
+	Main_start=0;
+	Main_Current_State=77;
+end
+77:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=78;
+	end
+end
+78:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h4e;
+	Main_Cmd_Data[39:32]=8'h40;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=79;
+end
+79:
+begin
+	Main_start=0;
+	Main_Current_State=80;
+end
+80:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=81;
+	end
+end
+81:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h20;
+	Main_Cmd_Data[23:16]=8'h01;
+	Main_Cmd_Data[31:24]=8'h51;
+	Main_Cmd_Data[39:32]=8'h0a;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=5;
+	Main_Return_len=0;
+	Main_Current_State=82;
+end
+82:
+begin
+	Main_start=0;
+	Main_Current_State=83;
+end
+83:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=84;
+	end
+end
+84:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h21;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h23;
+	Main_Cmd_Data[47:40]=8'h17;
+	Main_Cmd_Data[55:48]=8'hf4;
+	Main_Cmd_Data[63:56]=8'hc2;
+	Main_Cmd_Data[71:64]=8'h88;
+	Main_Cmd_Data[79:72]=8'h50;
+	Main_Cmd_Data[87:80]=8'h21;
+	Main_Cmd_Data[95:88]=8'hff;
+	Main_Cmd_Data[103:96]=8'hec;
+	Main_Cmd_Data[111:104]=8'he6;
+	Main_Cmd_Data[119:112]=8'he8;
+	Main_Cmd_Data[127:120]=8'hee;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=85;
+end
+85:
+begin
+	Main_start=0;
+	Main_Current_State=86;
+end
+86:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=87;
+	end
+end
+87:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h21;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h0c;
+	Main_Cmd_Data[39:32]=8'hf6;
+	Main_Cmd_Data[47:40]=8'hfb;
+	Main_Cmd_Data[55:48]=8'h05;
+	Main_Cmd_Data[63:56]=8'hc0;
+	Main_Cmd_Data[71:64]=8'hff;
+	Main_Cmd_Data[79:72]=8'h0f;
+	Main_Cmd_Data[87:80]=8'h23;
+	Main_Cmd_Data[95:88]=8'h17;
+	Main_Cmd_Data[103:96]=8'hf4;
+	Main_Cmd_Data[111:104]=8'hc2;
+	Main_Cmd_Data[119:112]=8'h88;
+	Main_Cmd_Data[127:120]=8'h50;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=88;
+end
+88:
+begin
+	Main_start=0;
+	Main_Current_State=89;
+end
+89:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=90;
+	end
+end
+90:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h21;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h18;
+	Main_Cmd_Data[39:32]=8'h21;
+	Main_Cmd_Data[47:40]=8'hff;
+	Main_Cmd_Data[55:48]=8'hec;
+	Main_Cmd_Data[63:56]=8'he6;
+	Main_Cmd_Data[71:64]=8'he8;
+	Main_Cmd_Data[79:72]=8'hee;
+	Main_Cmd_Data[87:80]=8'hf6;
+	Main_Cmd_Data[95:88]=8'hfb;
+	Main_Cmd_Data[103:96]=8'h05;
+	Main_Cmd_Data[111:104]=8'hc0;
+	Main_Cmd_Data[119:112]=8'hff;
+	Main_Cmd_Data[127:120]=8'h0f;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=91;
+end
+91:
+begin
+	Main_start=0;
+	Main_Current_State=92;
+end
+92:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=93;
+	end
+end
+93:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h22;
+	Main_Cmd_Data[23:16]=8'h04;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h08;
+	Main_Cmd_Data[47:40]=8'h7f;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h5d;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=8;
+	Main_Return_len=0;
+	Main_Current_State=94;
+end
+94:
+begin
+	Main_start=0;
+	Main_Current_State=95;
+end
+95:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=96;
+	end
+end
+96:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h23;
+	Main_Cmd_Data[23:16]=8'h07;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h01;
+	Main_Cmd_Data[47:40]=8'h05;
+	Main_Cmd_Data[55:48]=8'h0b;
+	Main_Cmd_Data[63:56]=8'h05;
+	Main_Cmd_Data[71:64]=8'h02;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h03;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=11;
+	Main_Return_len=0;
+	Main_Current_State=97;
+end
+97:
+begin
+	Main_start=0;
+	Main_Current_State=98;
+end
+98:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=99;
+	end
+end
+99:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h30;
+	Main_Cmd_Data[23:16]=8'h0c;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[47:40]=8'h00;
+	Main_Cmd_Data[55:48]=8'h00;
+	Main_Cmd_Data[63:56]=8'h00;
+	Main_Cmd_Data[71:64]=8'h00;
+	Main_Cmd_Data[79:72]=8'h00;
+	Main_Cmd_Data[87:80]=8'h00;
+	Main_Cmd_Data[95:88]=8'h00;
+	Main_Cmd_Data[103:96]=8'h00;
+	Main_Cmd_Data[111:104]=8'h00;
+	Main_Cmd_Data[119:112]=8'h00;
+	Main_Cmd_Data[127:120]=8'h00;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=16;
+	Main_Return_len=0;
+	Main_Current_State=100;
+end
+100:
+begin
+	Main_start=0;
+	Main_Current_State=101;
+end
+101:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=102;
+	end
+end
+102:
+begin
+	Main_Cmd_Data[7:0]=8'h11;
+	Main_Cmd_Data[15:8]=8'h40;
+	Main_Cmd_Data[23:16]=8'h08;
+	Main_Cmd_Data[31:24]=8'h00;
+	Main_Cmd_Data[39:32]=8'h38;
+	Main_Cmd_Data[47:40]=8'h0d;
+	Main_Cmd_Data[55:48]=8'hdd;
+	Main_Cmd_Data[63:56]=8'hdd;
+	Main_Cmd_Data[71:64]=8'h44;
+	Main_Cmd_Data[79:72]=8'h44;
+	Main_Cmd_Data[87:80]=8'h20;
+	Main_Cmd_Data[95:88]=8'hfe;
+	Main_Cmd=1;
+	Main_start=1;
+	Main_Data_len=12;
+	Main_Return_len=0;
+	Main_Current_State=103;
+end
+103:
+begin
+	Main_start=0;
+	Main_Current_State=104;
+end
+104:
+begin
+	if(spi_op_done)
+	begin
+		Main_Current_State=105;
+	end
+end
+
+
 
 
 		//===set_frr_ctl(void)====
@@ -2306,6 +2310,7 @@ begin
 		////判断是否有数据及数据帧长度,如果想要读取数据包长度，可以另外设置一条命令，从SPI中读取SRAM
 		130:
 		begin
+			led[2]=1;
 			if(!SRAM_empty&&!spi_Using)
 			begin
 				Main_Cmd=5;
@@ -2342,8 +2347,9 @@ begin
 		////切换状态0x34 05 TX_TUNE
 		133:
 		begin
-			if(!spi_Using&&!rx_start&&!packet_incoming)
+			if(!spi_Using&&!irq_dealing&&!rx_start&&!packet_incoming)
 			begin
+				enable_irq_sending=0;
 				Main_Cmd=1;
 				Main_Cmd_Data[7:0]=8'h34;
 				Main_Cmd_Data[15:8]=8'h05;
@@ -2461,16 +2467,19 @@ begin
 		/////////发送命令，开始发送数据///////////
 		142:
 		begin
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=5;
-			Main_Return_len=0;
-			Main_Cmd_Data[7:0]=8'h31;
-			Main_Cmd_Data[15:8]=8'h00;
-			Main_Cmd_Data[23:16]=8'h80;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Current_State=143;
+			if(!spi_Using)
+			begin
+				Main_Cmd=1;
+				Main_start=1;
+				Main_Data_len=5;
+				Main_Return_len=0;
+				Main_Cmd_Data[7:0]=8'h31;
+				Main_Cmd_Data[15:8]=8'h00;
+				Main_Cmd_Data[23:16]=8'h80;
+				Main_Cmd_Data[31:24]=8'h00;
+				Main_Cmd_Data[39:32]=8'h00;
+				Main_Current_State=143;
+			end
 		end
 		143:
 		begin
@@ -2481,6 +2490,7 @@ begin
 		begin
 			if(spi_op_done)
 			begin
+				enable_irq_sending=1;
 				tx_state=`TX;
 				Main_Current_State=145;
 			end
@@ -2493,14 +2503,15 @@ begin
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
+			/*
 			delay_start_2=1;
 			delay_mtime_2=30;
-			if(delay_int)
+			if(delay_int_2)
 			begin
 				tx_state=`RX;
-				delay_start=0;
+				delay_start_2=0;
 				Main_Current_State=0;
-			end
+			end*/
 		end
 		
 		default:
@@ -2521,10 +2532,11 @@ begin
 		/////等待中断到来
 		0:
 		begin
-			if(enable_irq&&!Si4463_int)
+			if(enable_irq&&enable_irq_sending&&!Si4463_int)
 			begin
 				rx_flag=0;  ///这里可能出现问题
 				tx_flag=0;
+				irq_dealing=1;
 				Irq_Current_State=1;
 			end
 		end
@@ -2595,20 +2607,27 @@ begin
 				
 				Si4463_Ph_Status=Int_Return_Data[15:8];
 				Si4463_Modem_Status=Int_Return_Data[7:0];
-				Si4463_Ph_Status_1=Si4463_Ph_Status;
+				//Si4463_Ph_Status_1=Si4463_Ph_Status;
+				/*
 				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
 				begin
 					led[0]=~led[0];
 					tx_flag=1;
 					Irq_Current_State=4;
+				end*/
+				if(tx_state==`TX)
+				begin
+					led[0]=~led[0];
+					tx_flag=1;
+					Irq_Current_State=4;
 				end
-				if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+				else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 				begin
 					led[1]=~led[1];
 					Irq_Current_State=4;
 					rx_flag=1;
 				end
-				if((Si4463_Modem_Status&8'h03)==8'h03)
+				else if((Si4463_Modem_Status&8'h03)==8'h03)
 				begin
 					packet_incoming=1;
 					Irq_Current_State=4;
@@ -2647,7 +2666,9 @@ begin
 				if(!Si4463_int)
 					Irq_Current_State=4;
 				else
+				begin
 					Irq_Current_State=7;
+				end
 			end
 		end
 		7:
@@ -2656,15 +2677,17 @@ begin
 			begin
 				packet_incoming=0;
 				rx_start=1;
+				irq_dealing=0;
 				Irq_Current_State=0;
 			end
-			if(tx_flag)
+			else if(tx_flag)
 			begin
 				tx_done=1;
 				Irq_Current_State=8;
 			end
 			else
 			begin
+				irq_dealing=0;
 				Irq_Current_State=0;
 			end
 		end
@@ -2674,14 +2697,17 @@ begin
 			begin
 				tx_flag=0;
 				tx_done=0;
+				irq_dealing=0;
 				Irq_Current_State=0;
 			end
 		end
 		///如果是发送中断，置tx_done 为1
 		///如果是接收中断，提示用户开始接收数据,置rx_start为1,接收完成后，置为0/////////
 		default:
+		begin
+			irq_dealing=0;
 			Irq_Current_State=0;
-		
+		end
 	endcase
 	
 	
@@ -2718,7 +2744,7 @@ begin
 			if(spi_op_done)
 			begin			
 				//rx_flag=0;
-				//Si4463_Ph_Status_1=Int_Return_Data[15:8];
+				Si4463_Ph_Status_1=Int_Return_Data[15:8];
 				Recv_Current_State=4;
 			end
 		end*/

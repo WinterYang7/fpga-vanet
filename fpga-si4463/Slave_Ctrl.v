@@ -347,7 +347,6 @@ begin
 			Spi_Current_State=0;
 		end
 	endcase
-
 end
 
 

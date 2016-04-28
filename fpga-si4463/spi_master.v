@@ -263,7 +263,7 @@ module spi_master (
 
   // slowclock is active once every 196 system clock pulses.
 //slowclock的周期为196个系统周期
-  assign slowclock = slowcount == 8'h01;
+  assign slowclock = slowcount == 8'h0;
 
   assign p1_slowcount = ({8 {(transmitting && !slowclock)}} & (slowcount + 1)) |
     ({8 {(~((transmitting && !slowclock)))}} & 0);
