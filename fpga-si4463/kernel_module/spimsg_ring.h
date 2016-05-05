@@ -9,7 +9,7 @@
 #include <linux/sched.h>
 #include <linux/spi/spi.h>
 
-#define RBUF_MAXSIZE 	100
+#define RBUF_MAXSIZE 	10
 #define BUFSIZE			200
 
 

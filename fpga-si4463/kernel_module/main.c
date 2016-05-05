@@ -57,6 +57,8 @@ struct {
 	int position;
 } data_sending;
 
+u8 global_reader[200];
+
 /**
  * CONST Commands
  */
@@ -260,6 +262,9 @@ static void spidev_complete(void *arg)
 
 void spi_complete_send(void *arg){
 	struct spimsg* msg = (struct spimsg*)arg;
+
+	printk(KERN_ALERT "spi_complete_send,arg:0x%x\n", arg);
+
 	spin_lock(&(msg->rbuf_->lock));
 //	mutex_lock(&mutex_rbuf);
 	msg->rbuf_->size++;
@@ -267,6 +272,8 @@ void spi_complete_send(void *arg){
 	msg->rbuf_->next_in %= msg->rbuf_->capacity;
 	spin_unlock(&(msg->rbuf_->lock));
 	wake_up_interruptible(&(msg->rbuf_->wait_isempty));
+	printk(KERN_ALERT "spi_complete_send end\n");
+	netif_wake_queue(global_net_devs);
 //	complete(&msg->done);
 }
 
@@ -275,18 +282,25 @@ void spi_complete_recv(void *arg){
 	struct sk_buff *skb;
 
 	struct spimsg* msg = (struct spimsg*)arg;
+
+	printk(KERN_ALERT "spi_complete_recv\n");
+
 	spin_lock(&(msg->rbuf_->lock));
 //	mutex_lock(&mutex_rbuf);
 	msg->rbuf_->size++;
+	printk(KERN_ALERT "size %d\n",msg->rbuf_->size);
 	msg->rbuf_->next_in++;
 	msg->rbuf_->next_in %= msg->rbuf_->capacity;
+	printk(KERN_ALERT "nextin %d\n",msg->rbuf_->next_in);
 	spin_unlock(&(msg->rbuf_->lock));
 	wake_up_interruptible(&(msg->rbuf_->wait_isempty));
 //	complete(&msg->done);
 	/* Handover recieved data */
 	status = msg->message.status;
-	if (status == 0)
+	if (status == 0){
 		recvlen = msg->message.actual_length;
+		printk(KERN_ALERT "actual_length %d\n",msg->message.actual_length);
+	}
 	else {
 		printk(KERN_ALERT "spi_complete_recv: STATUS=%d\n", status);
 		return;
@@ -305,27 +319,41 @@ void spi_complete_recv(void *arg){
 inline int spi_write_packet(struct spidev_data *spidev, u8 *tx_buf, size_t len)
 {
 	ssize_t ret;
+
 	struct spimsg *msg = rbuf_get_avail_msg(&global_spimsg_write_queue);
 	struct spi_transfer	tcmd = {
 				.tx_buf		= &sendcmd,
+				.rx_buf		= global_reader,
 				.len		= 1,
 				.cs_change	= 0
 			};
 	struct spi_transfer	tlen = {
 				.tx_buf		= &(msg->len_),
+				.rx_buf		= global_reader,
 				.len		= PACKETLEN_BITS,
 				.cs_change	= 0
 			};
 	struct spi_transfer	t = {
 			.tx_buf		= msg->buf_,
+			.rx_buf		= global_reader,
 			.len		= len,
 			.cs_change	= 0
 		};
+//	spi_message_init(&(msg->message));
+//	msg->message.context = msg;
+//	printk(KERN_ALERT "spi_write_packet: context:0x%x\n",msg);
 	msg->message.complete = spi_complete_send;
 	msg->len_ = len;
 	memcpy(msg->buf_, tx_buf, len);
 
-	spi_message_init(&msg->message);
+	netif_stop_queue(global_net_devs);
+
+	printk(KERN_ALERT "spi_write_packet: len:%d\n",len);
+	if(tcmd.tx_buf == NULL || tlen.tx_buf == NULL || t.tx_buf == NULL) {
+		printk(KERN_ALERT "spi_write_packet: NULL point!\n");
+		return -1;
+	}
+
 	spi_message_add_tail(&tcmd, &msg->message);
 	spi_message_add_tail(&tlen, &msg->message);
 	spi_message_add_tail(&t, &msg->message);
@@ -369,7 +397,6 @@ inline int spi_recv_packet(struct spidev_data *spidev)
 	t.cs_change = 0;
 	t.len = msg->len_;
 
-	spi_message_init(&msg->message);
 	spi_message_add_tail(&t, &msg->message);
 
 	return spidev_async(spidev, &msg->message);
@@ -409,8 +436,9 @@ struct si4463 {
 
 static int si4463_tx(struct sk_buff *skb, struct net_device *dev)
 {
-//	printk(KERN_ALERT "si4463_tx! dev:%x glo:%x\n", dev, global_net_devs);
+	printk(KERN_ALERT "si4463_tx! dev:%x glo:%x\n", dev, global_net_devs);
 	if(ISRAMFULL){
+		printk(KERN_ALERT "si4463_tx! RAM is full!!\n");
 		add_timer(&tx_withdraw_timer);
 		netif_stop_queue(dev);
 		return NETDEV_TX_BUSY;
@@ -750,7 +778,7 @@ void module_net_init(struct net_device *dev)
 	dev->features        |= NETIF_F_HW_CSUM;
 //	dev->features		 |= NETIF_F_LLTX;
 
-	dev->tx_queue_len = 200;
+	dev->tx_queue_len = 1;
 	/*
 	 * Then, initialize the priv field. This encloses the statistics
 	 * and a few private fields.

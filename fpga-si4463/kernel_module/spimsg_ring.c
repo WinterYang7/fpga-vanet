@@ -46,17 +46,17 @@ void rbuf_destroy(rbuf_t *c)
 struct spimsg* rbuf_get_avail_msg(rbuf_t *rb)
 {
 //	printk(KERN_ALERT "rbuf_dequeue\n");
-	struct spi_message *msg;
+	struct spimsg *msg;
 	if (rbuf_empty(rb))
 	{
-//		printk(KERN_ALERT "ringbuffer is EMPTY!\n");
+		printk(KERN_ALERT "ringbuffer is EMPTY!\n");
 		wait_event_interruptible(rb->wait_isempty, !rbuf_empty(rb));
 	}
 
 //	printk(KERN_ALERT "next_in:%d, size: %d\n", rb->next_in, rb->size);
 	spin_lock(&rb->lock);
 //	mutex_lock(&mutex_rbuf);
-	msg = &rb->msg_queue_[rb->next_out++].message;
+	msg = &(rb->msg_queue_[rb->next_out++]);
 	rb->size--;
 	rb->next_out %= rb->capacity;
 
@@ -104,8 +104,8 @@ int rbuf_len(rbuf_t *c)
 void rbuf_print_status(rbuf_t *rb) {
 //	spin_lock(&rb->lock);
 	printk(KERN_ALERT "size: %d\n", rb->size);
-//	printk(KERN_ALERT "next_in: %d\n", rb->next_in);
-//	printk(KERN_ALERT "next_out %d\n", rb->next_out);
+	printk(KERN_ALERT "next_in: %d\n", rb->next_in);
+	printk(KERN_ALERT "next_out %d\n", rb->next_out);
 //	spin_unlock(&rb->lock);
 //	printk(KERN_ALERT "", );
 }
