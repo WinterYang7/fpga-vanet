@@ -236,12 +236,12 @@ int set_pinmux(void){
 /*-------------------------------------------------------------------------*/
 
 
-static void spidev_complete(void *arg)
+void spidev_complete(void *arg)
 {
 	complete(arg);
 }
 
-static int
+inline int
 spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 {
 	DECLARE_COMPLETION_ONSTACK(done);
@@ -304,7 +304,7 @@ inline int spi_write_packet(struct spidev_data *spidev, struct sk_buff *skb)
 inline u16 spi_recv_packetlen(struct spidev_data *spidev)
 {
 	u32 len;
-	int status;
+//	int status;
 	struct spi_transfer	t = {
 				.tx_buf		= recvcmd,
 				.rx_buf		= &len,
@@ -317,20 +317,62 @@ inline u16 spi_recv_packetlen(struct spidev_data *spidev)
 	spi_message_add_tail(&t, &m);
 	spidev_sync(spidev, &m);
 //	printk(KERN_ALERT "len1: 0x%x\n", len);
-	len = len >> 16;
-	len = len & 0xff;
+	len = (len >> 16) & 0xff;
 //	printk(KERN_ALERT "len2: 0x%x\n", len);
 	return len;
 }
 
+struct rx_work {
+	u8* data;
+	u32 len;
+	struct work_struct work;
+	struct net_device *dev;
+};
 
+static void si4463_handle_rx(struct work_struct *work)
+{
+	struct sk_buff *skb;
+	u32 len;
+	u8* data;
+	struct rx_work *rw = container_of(work, struct rx_work, work);
+
+
+	len = rw->len;
+	data = rw->data;
+
+	skb = dev_alloc_skb(len+2);
+	skb_reserve(skb, 2);
+	memcpy(skb_put(skb, len), data, len);
+//	printk(KERN_ALERT "spi_complete_recv\n");
+//int j;
+//for(j=0;j<20;j++)
+//	printk(KERN_ALERT "%d ",skb->data[j]);
+//printk(KERN_ALERT "\n");
+//return 1;
+	/* Handover recieved data */
+
+
+
+	skb->dev = global_net_devs;
+	skb->protocol = eth_type_trans(skb, global_net_devs);
+	/* We need not check the checksum */
+	skb->ip_summed = CHECKSUM_UNNECESSARY;
+	netif_rx(skb);
+
+//	printk(KERN_ALERT "si4463_handle_rx out 2 \n");
+	kfree(rw);
+
+}
 
 inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 {
 	struct spi_transfer	t;
 	int status;
-	struct sk_buff *skb;
+
 	struct spi_message m;
+	struct rx_work *work;
+	struct module_priv *priv;
+	priv = netdev_priv(global_net_devs);
 
 	spi_message_init(&m);
 
@@ -340,35 +382,33 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 	}
 
 //	printk(KERN_ALERT "spi_recv_packet: len: %d\n", len);
-	skb = dev_alloc_skb(len+2);
-	skb_reserve(skb, 2);
 
-	memset(global_reader, 0 , 50);
-	t.rx_buf = skb_put(skb, len);
+	t.rx_buf = global_reader;//
 	t.cs_change = 0;
 	t.len = len;
 	spi_message_add_tail(&t, &m);
 	spidev_sync(spidev, &m);
 
-	printk(KERN_ALERT "spi_complete_recv\n");
-
-
-	/* Handover recieved data */
 	status = m.status;
 	if (status == 0){
-		printk(KERN_ALERT "spi_actual_length %d\n",m.actual_length);
+//		printk(KERN_ALERT "spi_actual_length %d\n",m.actual_length);
 	}
 	else {
 		printk(KERN_ALERT "spi_complete_recv: STATUS=%d\n", status);
 		return -1;
 	}
 
+	work = kzalloc(sizeof(struct rx_work), GFP_KERNEL);
+	if (!work)
+		return -1;
 
-	skb->dev = global_net_devs;
-	skb->protocol = eth_type_trans(skb, global_net_devs);
-	/* We need not check the checksum */
-	skb->ip_summed = CHECKSUM_UNNECESSARY;
-	netif_rx(skb);
+	INIT_WORK(&work->work, si4463_handle_rx);
+	work->data = global_reader;
+	work->dev = global_net_devs;
+	work->len = len;
+	queue_work(priv->dev_workqueue, &work->work);
+
+
 	return 0;
 }
 
@@ -455,12 +495,6 @@ static int si4463_tx(struct sk_buff *skb, struct net_device *dev)
 }
 
 
-struct rx_work {
-	struct sk_buff *skb;
-	struct work_struct work;
-	struct net_device *dev;
-};
-
 int si4463_release(struct net_device *dev)
 {
 	printk("si4463_release\n");
@@ -530,7 +564,7 @@ int si4463_change_mtu(struct net_device *dev, int new_mtu)
 
 static irqreturn_t si4463_isr_data(int irq, void *data)
 {
-	printk(KERN_ALERT "=====IRQ=====\n");
+//	printk(KERN_ALERT "=====IRQ=====\n");
 	struct si4463 *devrec = data;
 
 	disable_irq_nosync(irq);
