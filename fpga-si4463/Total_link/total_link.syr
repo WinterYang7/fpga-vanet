@@ -4,13 +4,13 @@ Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total CPU time to Xst completion: 0.12 secs
  
 --> Parameter xsthdpdir set to xst
 
 
 Total REAL time to Xst completion: 0.00 secs
-Total CPU time to Xst completion: 0.11 secs
+Total CPU time to Xst completion: 0.12 secs
  
 --> Reading design: total_link.prj
 
@@ -105,83 +105,82 @@ Slice Utilization Ratio Delta      : 5
 =========================================================================
 *                          HDL Parsing                                  *
 =========================================================================
-Analyzing Verilog file "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" into library work
+Analyzing Verilog file "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v" into library work
 Parsing module <Wireless_Ctrl>.
-Analyzing Verilog file "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" into library work
+Analyzing Verilog file "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" into library work
 Parsing module <SRAM_ctrl>.
-Analyzing Verilog file "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" into library work
+Analyzing Verilog file "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" into library work
 Parsing module <spi_master>.
-Analyzing Verilog file "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" into library work
+Analyzing Verilog file "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" into library work
 Parsing module <Slave_Ctrl>.
-Analyzing Verilog file "C:\Users\TM\Desktop\FPGA\Total\total_link.v" into library work
+Analyzing Verilog file "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" into library work
 Parsing module <total_link>.
-Parsing VHDL file "C:\Users\TM\Desktop\FPGA\Total\Total_link\spi_slave.vhd" into library work
+Parsing VHDL file "C:\Users\TM\Desktop\DE2\Total\Total\Total_link\spi_slave.vhd" into library work
 Parsing entity <spi_slave>.
 Parsing architecture <Behavioral> of entity <spi_slave>.
 
 =========================================================================
 *                            HDL Elaboration                            *
 =========================================================================
-WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 111: Port nUsing is not connected to this instance
-WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" Line 152: Port Spi_Current_State_1 is not connected to this instance
+WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" Line 111: Port nUsing is not connected to this instance
+WARNING:HDLCompiler:1016 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" Line 152: Port Spi_Current_State_1 is not connected to this instance
 
 Elaborating module <total_link>.
 
 Elaborating module <SRAM_ctrl>.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 158: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 159: Result of 12-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 169: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 170: Result of 32-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 181: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 182: Result of 12-bit expression is truncated to fit in 11-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 192: Result of 19-bit expression is truncated to fit in 18-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v" Line 193: Result of 32-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 158: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 159: Result of 12-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 169: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 170: Result of 32-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 181: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 182: Result of 12-bit expression is truncated to fit in 11-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 192: Result of 19-bit expression is truncated to fit in 18-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v" Line 193: Result of 32-bit expression is truncated to fit in 11-bit target.
 
 Elaborating module <Slave_Ctrl>.
 Going to vhdl side to elaborate module spi_slave
 
 Elaborating entity <spi_slave> (architecture <Behavioral>) from library <work>.
 Back to verilog to continue elaboration
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 277: Result of 9-bit expression is truncated to fit in 8-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 313: Result of 9-bit expression is truncated to fit in 8-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" Line 335: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" Line 291: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" Line 327: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" Line 349: Result of 9-bit expression is truncated to fit in 8-bit target.
 
 Elaborating module <Wireless_Ctrl>.
-WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 112: Using initial value of delay_start_2 since it is never assigned
-WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 114: Using initial value of delay_mtime_2 since it is never assigned
-WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 794: Using initial value of GPS_sync_time since it is never assigned
-WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 117: Assignment to delay_int_2 ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v" Line 2439: Result of 9-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v" Line 114: Using initial value of delay_mtime_2 since it is never assigned
+WARNING:HDLCompiler:872 - "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v" Line 794: Using initial value of GPS_sync_time since it is never assigned
+WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v" Line 117: Assignment to delay_int_2 ignored, since the identifier is never used
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v" Line 2452: Result of 9-bit expression is truncated to fit in 8-bit target.
 
 Elaborating module <spi_master>.
-WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 198: Assignment to endofpacket ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 202: Assignment to iTMT_reg ignored, since the identifier is never used
-WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 240: Assignment to irq ignored, since the identifier is never used
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 268: Result of 32-bit expression is truncated to fit in 8-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 325: Result of 6-bit expression is truncated to fit in 5-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 332: Result of 16-bit expression is truncated to fit in 1-bit target.
-WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\FPGA\Total\spi_master.v" Line 366: Result of 16-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 200: Assignment to endofpacket ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 204: Assignment to iTMT_reg ignored, since the identifier is never used
+WARNING:HDLCompiler:1127 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 242: Assignment to irq ignored, since the identifier is never used
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 270: Result of 32-bit expression is truncated to fit in 8-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 327: Result of 6-bit expression is truncated to fit in 5-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 334: Result of 16-bit expression is truncated to fit in 1-bit target.
+WARNING:HDLCompiler:413 - "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v" Line 368: Result of 16-bit expression is truncated to fit in 8-bit target.
 
 =========================================================================
 *                           HDL Synthesis                               *
 =========================================================================
 
 Synthesizing Unit <total_link>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\total_link.v".
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 111: Output port <count> of the instance <sram> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 111: Output port <Current_State> of the instance <sram> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 111: Output port <opcode> of the instance <sram> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 111: Output port <nUsing> of the instance <sram> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 152: Output port <Spi_Current_State_1> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 152: Output port <Spi_rrdy> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 152: Output port <Spi_trdy> of the instance <slave> is unconnected or connected to loadless signal.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\total_link.v" line 152: Output port <Data_from_spi> of the instance <slave> is unconnected or connected to loadless signal.
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v".
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 111: Output port <count> of the instance <sram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 111: Output port <Current_State> of the instance <sram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 111: Output port <opcode> of the instance <sram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 111: Output port <nUsing> of the instance <sram> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 152: Output port <Spi_Current_State_1> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 152: Output port <Spi_rrdy> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 152: Output port <Spi_trdy> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\total_link.v" line 152: Output port <Data_from_spi> of the instance <slave> is unconnected or connected to loadless signal.
     Summary:
 	no macro.
 Unit <total_link> synthesized.
 
 Synthesizing Unit <SRAM_ctrl>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\SRAM_ctrl.v".
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\SRAM_ctrl.v".
     Found 4-bit register for signal <Current_State>.
     Found 1-bit register for signal <slave_hint>.
     Found 1-bit register for signal <master_hint>.
@@ -245,17 +244,17 @@ Synthesizing Unit <SRAM_ctrl>.
 Unit <SRAM_ctrl> synthesized.
 
 Synthesizing Unit <Slave_Ctrl>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v".
-WARNING:Xst:647 - Input <frame_recved_int> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-INFO:Xst:3210 - "C:\Users\TM\Desktop\FPGA\Total\Slave_Ctrl.v" line 70: Output port <index1> of the instance <slave> is unconnected or connected to loadless signal.
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v".
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" line 71: Output port <index1> of the instance <slave> is unconnected or connected to loadless signal.
+INFO:Xst:3210 - "C:\Users\TM\Desktop\DE2\Total\Total\Slave_Ctrl.v" line 71: Output port <outdata> of the instance <slave> is unconnected or connected to loadless signal.
 WARNING:Xst:653 - Signal <Data_from_spi> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <Spi_trdy> is used but never assigned. This sourceless signal will be automatically connected to value GND.
 WARNING:Xst:653 - Signal <Spi_rrdy> is used but never assigned. This sourceless signal will be automatically connected to value GND.
     Found 1-bit register for signal <slave_write>.
+    Found 8-bit register for signal <slave_data_to_spi>.
     Found 8-bit register for signal <Sended_count>.
     Found 1-bit register for signal <irq_noted>.
     Found 1-bit register for signal <spi_send_end>.
-    Found 8-bit register for signal <slave_data_to_spi>.
     Found 1-bit register for signal <spi_read_sram>.
     Found 1-bit register for signal <SRAM_write>.
     Found 1-bit register for signal <Data_to_sram<15>>.
@@ -296,32 +295,32 @@ WARNING:Xst:653 - Signal <Spi_rrdy> is used but never assigned. This sourceless 
     -----------------------------------------------------------------------
     Found finite state machine <FSM_1> for signal <Spi_Current_State>.
     -----------------------------------------------------------------------
-    | States             | 20                                             |
-    | Transitions        | 41                                             |
-    | Inputs             | 10                                             |
+    | States             | 22                                             |
+    | Transitions        | 44                                             |
+    | Inputs             | 11                                             |
     | Outputs            | 10                                             |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00000                                          |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found 9-bit subtractor for signal <GND_19_o_GND_19_o_sub_72_OUT> created at line 383.
-    Found 9-bit adder for signal <n0254[8:0]> created at line 184.
-    Found 8-bit adder for signal <Sended_count[7]_GND_19_o_add_20_OUT> created at line 216.
-    Found 8-bit comparator greater for signal <n0042> created at line 218
-    Found 8-bit comparator greater for signal <Sended_count[7]_Data_len[7]_LessThan_29_o> created at line 248
-    Found 8-bit comparator greater for signal <Sended_count[7]_packet_len[7]_LessThan_46_o> created at line 336
-    Found 32-bit comparator greater for signal <n0123> created at line 383
+    Found 9-bit subtractor for signal <GND_19_o_GND_19_o_sub_73_OUT> created at line 397.
+    Found 9-bit adder for signal <n0255[8:0]> created at line 184.
+    Found 8-bit adder for signal <Sended_count[7]_GND_19_o_add_19_OUT> created at line 216.
+    Found 8-bit comparator greater for signal <n0040> created at line 218
+    Found 8-bit comparator greater for signal <Sended_count[7]_Data_len[7]_LessThan_28_o> created at line 248
+    Found 8-bit comparator greater for signal <Sended_count[7]_packet_len[7]_LessThan_47_o> created at line 350
+    Found 32-bit comparator greater for signal <n0123> created at line 397
     Summary:
 	inferred   3 Adder/Subtractor(s).
 	inferred  80 D-type flip-flop(s).
 	inferred   4 Comparator(s).
-	inferred  57 Multiplexer(s).
+	inferred  54 Multiplexer(s).
 	inferred   2 Finite State Machine(s).
 Unit <Slave_Ctrl> synthesized.
 
 Synthesizing Unit <spi_slave>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\Total_link\spi_slave.vhd".
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\Total_link\spi_slave.vhd".
     Found 1-bit register for signal <SCLK_old>.
     Found 1-bit register for signal <SCLK_latched>.
     Found 1-bit register for signal <SS_old>.
@@ -331,15 +330,17 @@ Synthesizing Unit <spi_slave>.
     Found 3-bit register for signal <index>.
     Found 8-bit register for signal <TxData>.
     Found 8-bit register for signal <RxdData>.
-    Found 3-bit subtractor for signal <GND_23_o_GND_23_o_sub_4_OUT<2:0>> created at line 74.
+    Found 1-bit register for signal <Data_holding>.
+    Found 8-bit register for signal <Tx_hold_reg>.
+    Found 3-bit subtractor for signal <GND_23_o_GND_23_o_sub_5_OUT<2:0>> created at line 87.
     Summary:
 	inferred   1 Adder/Subtractor(s).
-	inferred  25 D-type flip-flop(s).
+	inferred  34 D-type flip-flop(s).
 	inferred   8 Multiplexer(s).
 Unit <spi_slave> synthesized.
 
 Synthesizing Unit <Wireless_Ctrl>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\Wireless_Ctrl.v".
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\Wireless_Ctrl.v".
 WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl', is tied to its initial value (1).
     Found 1-bit register for signal <spi_op_fifo_flag>.
     Found 3-bit register for signal <spi_cmd>.
@@ -347,12 +348,21 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     Found 5-bit register for signal <spi_return_len>.
     Found 128-bit register for signal <spi_cmd_data>.
     Found 6-bit register for signal <Spi_Current_State>.
+    Found 4-bit register for signal <Irq_Current_State>.
+    Found 4-bit register for signal <Recv_Current_State>.
     Found 1-bit register for signal <spi_start>.
     Found 1-bit register for signal <spi_Using>.
     Found 1-bit register for signal <spi_op_done>.
     Found 1-bit register for signal <GetCTS_flag>.
     Found 1-bit register for signal <Byte_flag>.
     Found 1-bit register for signal <Ended_flag>.
+    Found 1-bit register for signal <rx_flag>.
+    Found 1-bit register for signal <tx_flag>.
+    Found 1-bit register for signal <tx_done>.
+    Found 1-bit register for signal <irq_dealing>.
+    Found 1-bit register for signal <rx_start>.
+    Found 1-bit register for signal <Int_start>.
+    Found 1-bit register for signal <packet_incoming>.
     Found 1-bit register for signal <delay_int>.
     Found 16-bit register for signal <Data_to_master>.
     Found 3-bit register for signal <master_mem_addr>.
@@ -511,13 +521,6 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     Found 1-bit register for signal <led<2>>.
     Found 1-bit register for signal <enable_irq_sending>.
     Found 8-bit register for signal <Data_Len_to_Send>.
-    Found 1-bit register for signal <irq_dealing>.
-    Found 4-bit register for signal <Irq_Current_State>.
-    Found 1-bit register for signal <tx_flag>.
-    Found 1-bit register for signal <tx_done>.
-    Found 1-bit register for signal <packet_incoming>.
-    Found 1-bit register for signal <rx_start>.
-    Found 1-bit register for signal <Int_start>.
     Found 1-bit register for signal <Int_Cmd_Data<31>>.
     Found 1-bit register for signal <Int_Cmd_Data<30>>.
     Found 1-bit register for signal <Int_Cmd_Data<29>>.
@@ -555,9 +558,6 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     Found 4-bit register for signal <Int_Return_len>.
     Found 1-bit register for signal <led<1>>.
     Found 1-bit register for signal <led<0>>.
-    Found 1-bit register for signal <rx_flag>.
-    Found 4-bit register for signal <Recv_Current_State>.
-    Found 1-bit register for signal <frame_recved_int>.
     Found 32-bit register for signal <delay_count>.
     Found finite state machine <FSM_2> for signal <Spi_Current_State>.
     -----------------------------------------------------------------------
@@ -572,59 +572,65 @@ WARNING:Xst:2935 - Signal 'master_reset_n', unconnected in block 'Wireless_Ctrl'
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_5> for signal <Recv_Current_State>.
+    Found finite state machine <FSM_4> for signal <Recv_Current_State>.
     -----------------------------------------------------------------------
     | States             | 4                                              |
     | Transitions        | 6                                              |
     | Inputs             | 3                                              |
     | Outputs            | 4                                              |
     | Clock              | clk (rising_edge)                              |
+    | Reset              | reset_n (negative)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0000                                           |
     | Power Up State     | 0000                                           |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_3> for signal <Main_Current_State>.
+    Found finite state machine <FSM_3> for signal <Irq_Current_State>.
+    -----------------------------------------------------------------------
+    | States             | 9                                              |
+    | Transitions        | 21                                             |
+    | Inputs             | 8                                              |
+    | Outputs            | 16                                             |
+    | Clock              | clk (rising_edge)                              |
+    | Reset              | reset_n (negative)                             |
+    | Reset type         | asynchronous                                   |
+    | Reset State        | 0000                                           |
+    | Power Up State     | 0000                                           |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found finite state machine <FSM_5> for signal <Main_Current_State>.
     -----------------------------------------------------------------------
     | States             | 158                                            |
     | Transitions        | 226                                            |
     | Inputs             | 11                                             |
-    | Outputs            | 152                                            |
+    | Outputs            | 154                                            |
     | Clock              | clk (rising_edge)                              |
     | Power Up State     | 00000000                                       |
     | Encoding           | auto                                           |
     | Implementation     | LUT                                            |
     -----------------------------------------------------------------------
-    Found finite state machine <FSM_4> for signal <Irq_Current_State>.
-    -----------------------------------------------------------------------
-    | States             | 9                                              |
-    | Transitions        | 20                                             |
-    | Inputs             | 8                                              |
-    | Outputs            | 17                                             |
-    | Clock              | clk (rising_edge)                              |
-    | Power Up State     | 0000                                           |
-    | Encoding           | auto                                           |
-    | Implementation     | LUT                                            |
-    -----------------------------------------------------------------------
     Found 32-bit adder for signal <delay_count[31]_GND_25_o_add_2_OUT> created at line 105.
-    Found 8-bit adder for signal <Sended_count[7]_GND_25_o_add_85_OUT> created at line 673.
-    Found 8-bit adder for signal <Data_Len_to_Send[7]_GND_25_o_add_246_OUT> created at line 2439.
+    Found 8-bit adder for signal <Sended_count[7]_GND_25_o_add_88_OUT> created at line 673.
+    Found 8-bit adder for signal <Data_Len_to_Send[7]_GND_25_o_add_249_OUT> created at line 2452.
     Found 8x15-bit multiplier for signal <delay_mtime[7]_PWR_11_o_MuLt_3_OUT> created at line 106.
     Found 32-bit comparator equal for signal <delay_count[31]_GND_25_o_equal_5_o> created at line 106
-    Found 8-bit comparator greater for signal <Sended_count[7]_GND_25_o_LessThan_58_o> created at line 566
-    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_87_o> created at line 674
-    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_100_o> created at line 711
-    Found 12-bit comparator greater for signal <n0402> created at line 2333
+    Found 8-bit comparator greater for signal <Sended_count[7]_GND_25_o_LessThan_61_o> created at line 566
+    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_90_o> created at line 674
+    Found 8-bit comparator greater for signal <Sended_count[7]_spi_data_len[7]_LessThan_103_o> created at line 711
+    Found 12-bit comparator greater for signal <n0402> created at line 2346
     Summary:
 	inferred   1 Multiplier(s).
 	inferred   3 Adder/Subtractor(s).
-	inferred 678 D-type flip-flop(s).
+	inferred 677 D-type flip-flop(s).
 	inferred   5 Comparator(s).
-	inferred 221 Multiplexer(s).
+	inferred 224 Multiplexer(s).
 	inferred   4 Finite State Machine(s).
 Unit <Wireless_Ctrl> synthesized.
 
 Synthesizing Unit <spi_master>.
-    Related source file is "C:\Users\TM\Desktop\FPGA\Total\spi_master.v".
+    Related source file is "C:\Users\TM\Desktop\DE2\Total\Total\spi_master.v".
     Found 1-bit register for signal <stateZero>.
     Found 1-bit register for signal <data_rd_strobe>.
     Found 1-bit register for signal <wr_strobe>.
@@ -654,11 +660,11 @@ Synthesizing Unit <spi_master>.
     Found 16-bit register for signal <endofpacketvalue_reg>.
     Found 16-bit register for signal <data_to_cpu>.
     Found 5-bit register for signal <state>.
-    Found 9-bit adder for signal <n0216[8:0]> created at line 268.
-    Found 5-bit adder for signal <state[4]_GND_28_o_add_43_OUT> created at line 325.
-    Found 16-bit 7-to-1 multiplexer for signal <p1_data_to_cpu> created at line 116.
-    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_52_o> created at line 375
-    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_53_o> created at line 375
+    Found 9-bit adder for signal <n0216[8:0]> created at line 270.
+    Found 5-bit adder for signal <state[4]_GND_28_o_add_43_OUT> created at line 327.
+    Found 16-bit 7-to-1 multiplexer for signal <p1_data_to_cpu> created at line 118.
+    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_52_o> created at line 377
+    Found 16-bit comparator equal for signal <GND_28_o_endofpacketvalue_reg[15]_equal_53_o> created at line 377
     Summary:
 	inferred   2 Adder/Subtractor(s).
 	inferred 121 D-type flip-flop(s).
@@ -681,7 +687,7 @@ Macro Statistics
  8-bit adder                                           : 3
  9-bit adder                                           : 2
  9-bit subtractor                                      : 1
-# Registers                                            : 295
+# Registers                                            : 296
  1-bit register                                        : 240
  11-bit register                                       : 2
  128-bit register                                      : 1
@@ -692,7 +698,7 @@ Macro Statistics
  4-bit register                                        : 2
  5-bit register                                        : 3
  6-bit register                                        : 1
- 8-bit register                                        : 17
+ 8-bit register                                        : 18
  80-bit register                                       : 2
 # Comparators                                          : 15
  12-bit comparator greater                             : 1
@@ -725,27 +731,27 @@ Macro Statistics
 *                       Advanced HDL Synthesis                          *
 =========================================================================
 
-INFO:Xst:2261 - The FF/Latch <delay_mtime_0> in Unit <wireless> is equivalent to the following 3 FFs/Latches, which will be removed : <delay_mtime_5> <delay_mtime_6> <delay_mtime_7> 
-INFO:Xst:2261 - The FF/Latch <Main_Return_len_2> in Unit <wireless> is equivalent to the following FF/Latch, which will be removed : <Main_Return_len_4> 
 INFO:Xst:2261 - The FF/Latch <Int_Data_len_1> in Unit <wireless> is equivalent to the following 8 FFs/Latches, which will be removed : <Int_Data_len_3> <Int_Data_len_4> <Int_Data_len_5> <Int_Data_len_6> <Int_Data_len_7> <Int_Return_len_0> <Int_Return_len_2> <Int_Return_len_3> 
+INFO:Xst:2261 - The FF/Latch <Main_Return_len_2> in Unit <wireless> is equivalent to the following FF/Latch, which will be removed : <Main_Return_len_4> 
+INFO:Xst:2261 - The FF/Latch <delay_mtime_0> in Unit <wireless> is equivalent to the following 3 FFs/Latches, which will be removed : <delay_mtime_5> <delay_mtime_6> <delay_mtime_7> 
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_26> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_25> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_22> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_21> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_20> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_17> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_19> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_18> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_15> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_17> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_16> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_15> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_14> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_13> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_12> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_11> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_8> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_9> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <delay_mtime_0> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Data_len_1> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Main_Return_len_2> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1293 - FF/Latch <tx_state_2> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_8> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1293 - FF/Latch <LB_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1293 - FF/Latch <CE_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1293 - FF/Latch <UB_n> has a constant value of 0 in block <sram>. This FF/Latch will be trimmed during the optimization process.
@@ -753,16 +759,16 @@ WARNING:Xst:1710 - FF/Latch <SS_latched> (without init value) has a constant val
 WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_29> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <delay_mtime_0> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Data_len_1> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Main_Return_len_2> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1293 - FF/Latch <tx_state_2> has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_31> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_30> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_29> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_28> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_27> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_26> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_25> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_22> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_24> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <wireless>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <SS_old> (without init value) has a constant value of 0 in block <slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:2677 - Node <Data_from_sram_reg_8> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <Data_from_sram_reg_9> of sequential type is unconnected in block <wireless>.
@@ -915,8 +921,8 @@ WARNING:Xst:2677 - Node <Int_Return_Data_78> of sequential type is unconnected i
 WARNING:Xst:2677 - Node <Int_Return_Data_79> of sequential type is unconnected in block <wireless>.
 WARNING:Xst:2677 - Node <data_to_cpu_10> of sequential type is unconnected in block <spi>.
 WARNING:Xst:2404 -  FFs/Latches <Main_Return_len<4:4>> (without init value) have a constant value of 0 in block <Wireless_Ctrl>.
-WARNING:Xst:2404 -  FFs/Latches <Int_Return_len<3:2>> (without init value) have a constant value of 0 in block <Wireless_Ctrl>.
 WARNING:Xst:2404 -  FFs/Latches <Int_Data_len<7:3>> (without init value) have a constant value of 0 in block <Wireless_Ctrl>.
+WARNING:Xst:2404 -  FFs/Latches <Int_Return_len<3:2>> (without init value) have a constant value of 0 in block <Wireless_Ctrl>.
 
 Synthesizing (advanced) Unit <SRAM_ctrl>.
 The following registers are absorbed into counter <fifo_i_count>: 1 register on signal <fifo_i_count>.
@@ -1115,8 +1121,8 @@ Macro Statistics
  18-bit up counter                                     : 2
  32-bit up counter                                     : 1
  5-bit up counter                                      : 1
-# Registers                                            : 830
- Flip-Flops                                            : 830
+# Registers                                            : 838
+ Flip-Flops                                            : 838
 # Comparators                                          : 15
  12-bit comparator greater                             : 1
  16-bit comparator equal                               : 2
@@ -1124,8 +1130,8 @@ Macro Statistics
  32-bit comparator equal                               : 1
  32-bit comparator greater                             : 1
  8-bit comparator greater                              : 6
-# Multiplexers                                         : 391
- 1-bit 2-to-1 multiplexer                              : 291
+# Multiplexers                                         : 398
+ 1-bit 2-to-1 multiplexer                              : 299
  128-bit 2-to-1 multiplexer                            : 10
  16-bit 2-to-1 multiplexer                             : 11
  16-bit 7-to-1 multiplexer                             : 1
@@ -1134,7 +1140,7 @@ Macro Statistics
  4-bit 2-to-1 multiplexer                              : 16
  5-bit 2-to-1 multiplexer                              : 2
  6-bit 2-to-1 multiplexer                              : 19
- 8-bit 2-to-1 multiplexer                              : 23
+ 8-bit 2-to-1 multiplexer                              : 22
 # FSMs                                                 : 6
 # Xors                                                 : 2
  32-bit xor2                                           : 2
@@ -1147,26 +1153,34 @@ Macro Statistics
 WARNING:Xst:1293 - FF/Latch <CE_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <LB_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <UB_n> has a constant value of 0 in block <SRAM_ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_17> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <Int_Cmd_Data_22> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_24> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_19> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_21> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_20> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_16> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_18> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_17> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_15> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_14> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_13> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_12> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_11> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_8> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_9> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_11> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_10> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_8> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_0> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_5> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_6> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <delay_mtime_7> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Data_len_1> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Return_len_0> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <tx_state_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Return_len_2> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_108> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_107> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Main_Cmd_Data_104> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_29> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_31> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_30> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
@@ -1174,14 +1188,6 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_28> (w
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_27> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_26> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_25> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_22> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_24> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_23> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_21> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_20> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_19> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_18> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <Int_Cmd_Data_15> (without init value) has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1710 - FF/Latch <SS_latched> (without init value) has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <SS_old> (without init value) has a constant value of 0 in block <spi_slave>. This FF/Latch will be trimmed during the optimization process.
 Analyzing FSM <MFsm> for best encoding.
@@ -1192,7 +1198,7 @@ Optimizing FSM <slave/FSM_1> on signal <Spi_Current_State[1:5]> with user encodi
  00000 | 00000
  00011 | 00011
  00100 | 00100
- 10000 | 10000
+ 11000 | 11000
  00110 | 00110
  00111 | 00111
  01000 | 01000
@@ -1209,6 +1215,8 @@ Optimizing FSM <slave/FSM_1> on signal <Spi_Current_State[1:5]> with user encodi
  10101 | 10101
  10110 | 10110
  10111 | 10111
+ 11001 | 11001
+ 10000 | 10000
 -------------------
 Analyzing FSM <MFsm> for best encoding.
 Optimizing FSM <slave/FSM_0> on signal <Irq_Current_State[1:3]> with user encoding.
@@ -1223,22 +1231,22 @@ Optimizing FSM <slave/FSM_0> on signal <Irq_Current_State[1:3]> with user encodi
  101   | 101
 -------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <wireless/FSM_4> on signal <Irq_Current_State[1:4]> with user encoding.
+Optimizing FSM <wireless/FSM_3> on signal <Irq_Current_State[1:4]> with user encoding.
 -------------------
  State | Encoding
 -------------------
  0000  | 0000
  0001  | 0001
+ 0100  | 0100
  0010  | 0010
  0011  | 0011
- 0100  | 0100
  0101  | 0101
  0110  | 0110
  0111  | 0111
  1000  | 1000
 -------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <wireless/FSM_3> on signal <Main_Current_State[1:158]> with one-hot encoding.
+Optimizing FSM <wireless/FSM_5> on signal <Main_Current_State[1:158]> with one-hot encoding.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  State    | Encoding
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1402,7 +1410,7 @@ Optimizing FSM <wireless/FSM_3> on signal <Main_Current_State[1:158]> with one-h
  00000001 | 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Analyzing FSM <MFsm> for best encoding.
-Optimizing FSM <wireless/FSM_5> on signal <Recv_Current_State[1:4]> with one-hot encoding.
+Optimizing FSM <wireless/FSM_4> on signal <Recv_Current_State[1:4]> with one-hot encoding.
 -------------------
  State | Encoding
 -------------------
@@ -1467,10 +1475,10 @@ WARNING:Xst:1293 - FF/Latch <master_mem_addr_2> has a constant value of 0 in blo
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <spi_return_len_2> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1896 - Due to other FF/Latch trimming, FF/Latch <spi_return_len_4> has a constant value of 0 in block <Wireless_Ctrl>. This FF/Latch will be trimmed during the optimization process.
 INFO:Xst:2261 - The FF/Latch <Int_Cmd_Data_6> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Int_Cmd_Data_4> 
-INFO:Xst:2261 - The FF/Latch <Int_Return_len_1> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Int_Data_len_0> 
+INFO:Xst:2261 - The FF/Latch <Int_Data_len_0> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Int_Return_len_1> 
 INFO:Xst:2261 - The FF/Latch <Main_Return_len_0> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Return_len_3> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_77> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_79> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_127> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_125> <Main_Cmd_Data_109> <Main_Cmd_Data_106> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_125> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_127> <Main_Cmd_Data_109> <Main_Cmd_Data_106> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_79> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_77> 
 WARNING:Xst:3002 - This design contains one or more registers/latches that are directly
    incompatible with the Spartan6 architecture. The two primary causes of this is
    either a register or latch described with both an asynchronous set and
@@ -1524,15 +1532,15 @@ Optimizing unit <Slave_Ctrl> ...
 Optimizing unit <spi_slave> ...
 
 Optimizing unit <Wireless_Ctrl> ...
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_113> <Main_Cmd_Data_114> <Main_Cmd_Data_112> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_118> <Main_Cmd_Data_117> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_112> <Main_Cmd_Data_114> <Main_Cmd_Data_113> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
-INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_113> <Main_Cmd_Data_114> <Main_Cmd_Data_112> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_119> in Unit <Wireless_Ctrl> is equivalent to the following 2 FFs/Latches, which will be removed : <Main_Cmd_Data_115> <Main_Cmd_Data_110> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_123> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_121> <Main_Cmd_Data_118> <Main_Cmd_Data_117> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_94> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_91> 
+INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_116> in Unit <Wireless_Ctrl> is equivalent to the following 3 FFs/Latches, which will be removed : <Main_Cmd_Data_112> <Main_Cmd_Data_114> <Main_Cmd_Data_113> 
 INFO:Xst:2261 - The FF/Latch <Main_Cmd_Data_126> in Unit <Wireless_Ctrl> is equivalent to the following FF/Latch, which will be removed : <Main_Cmd_Data_105> 
 
 Optimizing unit <spi_master> ...
@@ -1567,7 +1575,6 @@ WARNING:Xst:2677 - Node <wireless/Data_to_master_12> of sequential type is uncon
 WARNING:Xst:2677 - Node <wireless/Data_to_master_11> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_9> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/Data_to_master_8> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:2677 - Node <wireless/frame_recved_int> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_15> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_14> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <wireless/master_control_reg_13> of sequential type is unconnected in block <total_link>.
@@ -1610,8 +1617,7 @@ WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_11> of sequential type
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_10> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_9> of sequential type is unconnected in block <total_link>.
 WARNING:Xst:2677 - Node <spi/spi_slave_select_holding_reg_8> of sequential type is unconnected in block <total_link>.
-WARNING:Xst:1710 - FF/Latch <spi/slowcount_0> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
-WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_1> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
+WARNING:Xst:1710 - FF/Latch <spi/slowcount_1> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_2> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_3> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <spi/slowcount_4> (without init value) has a constant value of 0 in block <total_link>. This FF/Latch will be trimmed during the optimization process.
@@ -1650,9 +1656,9 @@ Building and optimizing final netlist ...
 Found area constraint ratio of 100 (+ 5) on block total_link, actual ratio is 35.
 WARNING:Xst:1426 - The value init of the FF/Latch wireless/spi_op_fifo_flag_LD hinder the constant cleaning in the block total_link.
    You should achieve better results by setting this init to 1.
-FlipFlop wireless/Int_start has been replicated 6 time(s)
+FlipFlop wireless/Int_start has been replicated 5 time(s)
 FlipFlop wireless/Main_start has been replicated 4 time(s)
-FlipFlop wireless/spi_Using has been replicated 5 time(s)
+FlipFlop wireless/spi_Using has been replicated 4 time(s)
 
 Final Macro Processing ...
 
@@ -1672,8 +1678,8 @@ Unit <total_link> processed.
 Final Register Report
 
 Macro Statistics
-# Registers                                            : 921
- Flip-Flops                                            : 921
+# Registers                                            : 929
+ Flip-Flops                                            : 929
 # Shift Registers                                      : 9
  2-bit shift register                                  : 9
 
@@ -1698,24 +1704,24 @@ Top Level Output File Name         : total_link.ngc
 
 Primitive and Black Box Usage:
 ------------------------------
-# BELS                             : 2062
+# BELS                             : 2056
 #      GND                         : 1
 #      INV                         : 17
 #      LUT1                        : 97
-#      LUT2                        : 138
-#      LUT3                        : 216
-#      LUT4                        : 199
+#      LUT2                        : 150
+#      LUT3                        : 212
+#      LUT4                        : 184
 #      LUT5                        : 320
-#      LUT6                        : 762
-#      MUXCY                       : 154
-#      MUXF7                       : 25
+#      LUT6                        : 756
+#      MUXCY                       : 153
+#      MUXF7                       : 33
 #      VCC                         : 1
 #      XORCY                       : 132
-# FlipFlops/Latches                : 931
-#      FD                          : 265
-#      FDC                         : 162
-#      FDE                         : 443
-#      FDP                         : 1
+# FlipFlops/Latches                : 939
+#      FD                          : 242
+#      FDC                         : 179
+#      FDE                         : 456
+#      FDP                         : 2
 #      FDR                         : 33
 #      FDRE                        : 26
 #      LD                          : 1
@@ -1737,17 +1743,17 @@ Selected Device : 6slx9tqg144-3
 
 
 Slice Logic Utilization: 
- Number of Slice Registers:             931  out of  11440     8%  
- Number of Slice LUTs:                 1758  out of   5720    30%  
-    Number used as Logic:              1749  out of   5720    30%  
+ Number of Slice Registers:             939  out of  11440     8%  
+ Number of Slice LUTs:                 1745  out of   5720    30%  
+    Number used as Logic:              1736  out of   5720    30%  
     Number used as Memory:                9  out of   1440     0%  
        Number used as SRL:                9
 
 Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:   1965
-   Number with an unused Flip Flop:    1034  out of   1965    52%  
-   Number with an unused LUT:           207  out of   1965    10%  
-   Number of fully used LUT-FF pairs:   724  out of   1965    36%  
+ Number of LUT Flip Flop pairs used:   1959
+   Number with an unused Flip Flop:    1020  out of   1959    52%  
+   Number with an unused LUT:           214  out of   1959    10%  
+   Number of fully used LUT-FF pairs:   725  out of   1959    37%  
    Number of unique control sets:        58
 
 IO Utilization: 
@@ -1779,7 +1785,7 @@ Clock Information:
 -----------------------------------+-----------------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)             | Load  |
 -----------------------------------+-----------------------------------+-------+
-clk                                | BUFGP                             | 940   |
+clk                                | BUFGP                             | 948   |
 wireless/reset_n                   | NONE(wireless/spi_op_fifo_flag_LD)| 1     |
 -----------------------------------+-----------------------------------+-------+
 INFO:Xst:2169 - HDL ADVISOR - Some clock signals were not automatically buffered by XST with BUFG/BUFR resources. Please use the buffer_type constraint in order to insert these buffers to the clock signals to help prevent skew problems.
@@ -1792,9 +1798,9 @@ Timing Summary:
 ---------------
 Speed Grade: -3
 
-   Minimum period: 7.793ns (Maximum Frequency: 128.319MHz)
-   Minimum input arrival time before clock: 4.173ns
-   Maximum output required time after clock: 5.524ns
+   Minimum period: 8.659ns (Maximum Frequency: 115.481MHz)
+   Minimum input arrival time before clock: 4.562ns
+   Maximum output required time after clock: 5.478ns
    Maximum combinational path delay: No path found
 
 Timing Details:
@@ -1803,58 +1809,60 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clk'
-  Clock period: 7.793ns (frequency: 128.319MHz)
-  Total number of paths / destination ports: 128944 / 1626
+  Clock period: 8.659ns (frequency: 115.481MHz)
+  Total number of paths / destination ports: 131089 / 1665
 -------------------------------------------------------------------------
-Delay:               7.793ns (Levels of Logic = 6)
-  Source:            wireless/spi_cmd_1 (FF)
-  Destination:       wireless/Data_to_master_10 (FF)
+Delay:               8.659ns (Levels of Logic = 7)
+  Source:            wireless/spi_start (FF)
+  Destination:       wireless/Spi_Current_State_FSM_FFd2 (FF)
   Source Clock:      clk rising
   Destination Clock: clk rising
 
-  Data Path: wireless/spi_cmd_1 to wireless/Data_to_master_10
+  Data Path: wireless/spi_start to wireless/Spi_Current_State_FSM_FFd2
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDC:C->Q              2   0.447   0.981  wireless/spi_cmd_1 (wireless/spi_cmd_1)
-     LUT6:I0->O           10   0.203   1.201  wireless/Mmux__n145521_1 (wireless/Mmux__n145521)
-     LUT6:I1->O            6   0.203   0.745  wireless/mux1111_3 (wireless/mux1111_1)
-     LUT3:I2->O            2   0.205   0.845  wireless/Spi_Current_State_FSM_FFd4-In11 (wireless/Spi_Current_State_FSM_FFd4-In1)
-     LUT6:I3->O            1   0.205   0.580  wireless/_n2199_inv22 (wireless/_n2199_inv22)
-     LUT6:I5->O            2   0.205   0.617  wireless/_n2199_inv23 (wireless/_n2199_inv2)
-     LUT6:I5->O            9   0.205   0.829  wireless/_n2199_inv5 (wireless/_n2199_inv)
-     FDE:CE                    0.322          wireless/Data_to_master_0
+     FDC:C->Q             17   0.447   1.028  wireless/spi_start (wireless/spi_start)
+     LUT4:I3->O           15   0.205   1.086  wireless/spi_Using_spi_start_AND_244_o1 (wireless/spi_Using_spi_start_AND_244_o)
+     LUT6:I4->O          131   0.203   1.958  wireless/mux61 (wireless/Spi_Current_State[5]_Spi_Current_State[5]_mux_25_OUT<0>)
+     MUXF7:S->O            1   0.148   0.684  wireless/Sended_count[7]_spi_data_len[7]_LessThan_90_o21_SW1 (N298)
+     LUT6:I4->O            2   0.203   0.617  wireless/Spi_Current_State_FSM_FFd2-In21511 (wireless/Spi_Current_State_FSM_FFd2-In2151)
+     LUT6:I5->O            1   0.205   0.684  wireless/Spi_Current_State_FSM_FFd2-In15_SW0_F (N300)
+     LUT3:I1->O            1   0.203   0.684  wireless/Spi_Current_State_FSM_FFd2-In15_SW01 (N265)
+     LUT6:I4->O            1   0.203   0.000  wireless/Spi_Current_State_FSM_FFd2-In18 (wireless/Spi_Current_State_FSM_FFd2-In)
+     FDC:D                     0.102          wireless/Spi_Current_State_FSM_FFd2
     ----------------------------------------
-    Total                      7.793ns (1.995ns logic, 5.798ns route)
-                                       (25.6% logic, 74.4% route)
+    Total                      8.659ns (1.919ns logic, 6.740ns route)
+                                       (22.2% logic, 77.8% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clk'
-  Total number of paths / destination ports: 26 / 24
+  Total number of paths / destination ports: 28 / 26
 -------------------------------------------------------------------------
-Offset:              4.173ns (Levels of Logic = 4)
+Offset:              4.562ns (Levels of Logic = 5)
   Source:            si4463_irq (PAD)
-  Destination:       wireless/Irq_Current_State_FSM_FFd4 (FF)
+  Destination:       wireless/irq_dealing (FF)
   Destination Clock: clk rising
 
-  Data Path: si4463_irq to wireless/Irq_Current_State_FSM_FFd4
+  Data Path: si4463_irq to wireless/irq_dealing
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             6   1.222   0.973  si4463_irq_IBUF (si4463_irq_IBUF)
-     LUT4:I1->O            1   0.205   0.684  wireless/Irq_Current_State_FSM_FFd4-In1 (wireless/Irq_Current_State_FSM_FFd4-In1)
-     LUT6:I4->O            1   0.203   0.580  wireless/Irq_Current_State_FSM_FFd4-In2 (wireless/Irq_Current_State_FSM_FFd4-In2)
-     LUT6:I5->O            1   0.205   0.000  wireless/Irq_Current_State_FSM_FFd4-In3 (wireless/Irq_Current_State_FSM_FFd4-In)
-     FD:D                      0.102          wireless/Irq_Current_State_FSM_FFd4
+     IBUF:I->O             5   1.222   0.943  si4463_irq_IBUF (si4463_irq_IBUF)
+     LUT6:I3->O            5   0.205   0.715  wireless/_n2231_inv31 (wireless/_n2231_inv3)
+     LUT6:I5->O            1   0.205   0.000  wireless/_n2231_inv3_G (N419)
+     MUXF7:I1->O           1   0.140   0.827  wireless/_n2231_inv3 (wireless/_n2231_inv)
+     LUT4:I0->O            1   0.203   0.000  wireless/irq_dealing_rstpot (wireless/irq_dealing_rstpot)
+     FDC:D                     0.102          wireless/irq_dealing
     ----------------------------------------
-    Total                      4.173ns (1.937ns logic, 2.236ns route)
-                                       (46.4% logic, 53.6% route)
+    Total                      4.562ns (2.077ns logic, 2.485ns route)
+                                       (45.5% logic, 54.5% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
   Total number of paths / destination ports: 63 / 45
 -------------------------------------------------------------------------
-Offset:              5.524ns (Levels of Logic = 2)
+Offset:              5.478ns (Levels of Logic = 2)
   Source:            spi/transmitting (FF)
   Destination:       si4463_ss_n (PAD)
   Source Clock:      clk rising
@@ -1863,12 +1871,12 @@ Offset:              5.524ns (Levels of Logic = 2)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FD:C->Q              61   0.447   1.725  spi/transmitting (spi/transmitting)
+     FD:C->Q              54   0.447   1.678  spi/transmitting (spi/transmitting)
      LUT3:I1->O            1   0.203   0.579  spi/Mmux_n018211 (si4463_ss_n_OBUF)
      OBUF:I->O                 2.571          si4463_ss_n_OBUF (si4463_ss_n)
     ----------------------------------------
-    Total                      5.524ns (3.221ns logic, 2.303ns route)
-                                       (58.3% logic, 41.7% route)
+    Total                      5.478ns (3.221ns logic, 2.257ns route)
+                                       (58.8% logic, 41.2% route)
 
 =========================================================================
 
@@ -1880,21 +1888,21 @@ Clock to Setup on destination clock clk
                 | Src:Rise| Src:Fall| Src:Rise| Src:Fall|
 Source Clock    |Dest:Rise|Dest:Rise|Dest:Fall|Dest:Fall|
 ----------------+---------+---------+---------+---------+
-clk             |    7.793|         |         |         |
-wireless/reset_n|    6.255|         |         |         |
+clk             |    8.659|         |         |         |
+wireless/reset_n|    6.043|         |         |         |
 ----------------+---------+---------+---------+---------+
 
 =========================================================================
 
 
-Total REAL time to Xst completion: 85.00 secs
-Total CPU time to Xst completion: 84.72 secs
+Total REAL time to Xst completion: 83.00 secs
+Total CPU time to Xst completion: 82.83 secs
  
 --> 
 
 Total memory usage is 374296 kilobytes
 
 Number of errors   :    0 (   0 filtered)
-Number of warnings :  550 (   0 filtered)
-Number of infos    :   37 (   0 filtered)
+Number of warnings :  546 (   0 filtered)
+Number of infos    :   38 (   0 filtered)
 

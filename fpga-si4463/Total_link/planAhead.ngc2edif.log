@@ -233,3 +233,56 @@ WARNING:NetListWriters:306 - Signal bus
 Writing EDIF netlist file total_link.edif ...
 ngc2edif: Total memory usage is 86432 kilobytes
 
+Release 14.7 - ngc2edif P.20131013 (nt64)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+Reading design total_link.ngc ...
+WARNING:NetListWriters:298 - No output is written to total_link.xncf, ignored.
+Processing design ...
+   Preping design's networks ...
+   Preping design's macros ...
+WARNING:NetListWriters:306 - Signal bus wireless/Data_to_master[10 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   sram/fifo_o_rd_ptr[17]_GND_2_o_mux_18_OUT[12 : 0] on block total_link is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   sram/fifo_o_wr_ptr[17]_GND_2_o_mux_22_OUT[12 : 0] on block total_link is not
+   reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus sram/fifo_o_rd_ptr[12 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus sram/fifo_o_wr_ptr[12 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Spi_Current_State[5]_GND_25_o_wide_mux_105_OUT[7 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/spi_cmd_data[127]_Spi_Current_State[5]_mux_139_OUT[127 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/_n2764[31 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State[7]_Main_Cmd_Data[127]_wide_mux_261_OUT[63 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Int_Data_len[2 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Int_Return_Data[12 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus wireless/Main_Data_Check[31 : 0] on
+   block total_link is not reconstructed, because there are some missing bus
+   signals.
+WARNING:NetListWriters:306 - Signal bus wireless/spi_cmd_data[127 : 0] on block
+   total_link is not reconstructed, because there are some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State_Main_Current_State[7]_Main_Cmd_Data[127]_wide_mux
+   _261_OUT[41 : 12] on block total_link is not reconstructed, because there are
+   some missing bus signals.
+WARNING:NetListWriters:306 - Signal bus
+   wireless/Main_Current_State_Main_Current_State[7]_Main_Data_len[7]_wide_mux_2
+   62_OUT[4 : 1] on block total_link is not reconstructed, because there are
+   some missing bus signals.
+  finished :Prep
+Writing EDIF netlist file total_link.edif ...
+ngc2edif: Total memory usage is 86368 kilobytes
+

@@ -4,7 +4,7 @@
 #include <linux/netdevice.h>
 #include <linux/spi/spi.h>
 
-#define SPI_SPEED 9000000//7000000//
+#define SPI_SPEED 7000000//
 #define BITS_PER_WORD 8
 
 #define PACKETLEN_BITS	1

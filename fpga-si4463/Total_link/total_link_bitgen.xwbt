@@ -1,8 +1,8 @@
 INTSTYLE=ise
-INFILE=C:\Users\TM\Desktop\FPGA\Total\Total_link\total_link.ncd
-OUTFILE=C:\Users\TM\Desktop\FPGA\Total\Total_link\total_link.bit
+INFILE=C:\Users\TM\Desktop\DE2\Total\Total\Total_link\total_link.ncd
+OUTFILE=C:\Users\TM\Desktop\DE2\Total\Total\Total_link\total_link.bit
 FAMILY=Spartan6
 PART=xc6slx9-3tqg144
-WORKINGDIR=C:\Users\TM\Desktop\FPGA\Total\Total_link
+WORKINGDIR=C:\Users\TM\Desktop\DE2\Total\Total\Total_link
 LICENSE=WebPack
 USER_INFO=__0_0_0

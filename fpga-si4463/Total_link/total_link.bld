@@ -5,7 +5,8 @@ Command Line: C:\Xilinx\14.7\ISE_DS\ISE\bin\nt64\unwrapped\ngdbuild.exe
 -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3
 total_link.ngc total_link.ngd
 
-Reading NGO file "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.ngc" ...
+Reading NGO file "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.ngc"
+...
 Gathering constraint information from source properties...
 Done.
 
@@ -27,7 +28,7 @@ NGDBUILD Design Results Summary:
   Number of errors:     0
   Number of warnings:   0
 
-Total memory usage is 170088 kilobytes
+Total memory usage is 170472 kilobytes
 
 Writing NGD file "total_link.ngd" ...
 Total REAL time to NGDBUILD completion:  5 sec

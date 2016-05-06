@@ -30,7 +30,7 @@ module Wireless_Ctrl(
 	master_spi_sel,
 	
 	//接收完一个帧后的脉冲信号
-	frame_recved_int,
+	//frame_recved_int,
 	
 	//用于指示当前状态的LED
 	led,
@@ -50,7 +50,7 @@ input	SRAM_empty;
 input[10:0]	SRAM_count;
 output[15:0]	Data_to_sram;
 input[15:0]	Data_from_sram;
-output reg frame_recved_int=0;
+//output reg frame_recved_int=0;
 	
 	//Si4463接口
 input	Si4463_int;
@@ -803,11 +803,24 @@ reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
 `define TX_TUNE 3'b010
 `define TX 3'b011
 
+
+/**
+ * 主函数()，程序开始时先配置射频模块 状态为0-130
+ * 配置完成后，开始循环发送数据 状态为130-145
+ **/
 always@(posedge clk)
 begin
 		case(Main_Current_State) 
 		0:
 		begin
+			led[2]=1'b0;
+			led[3]=1'b0;
+			enable_irq=0;
+			enable_irq_sending=1'b1;
+			tx_state=3'b000;
+			Main_start=0;
+			delay_start_2=0;
+			
 			Si4463_reset=1;
 			delay_start=1;
 			delay_mtime=10;
@@ -2504,13 +2517,16 @@ end
 				Main_Current_State=130;
 			end
 			/*
-			delay_start_2=1;
-			delay_mtime_2=30;
-			if(delay_int_2)
-			begin
-				tx_state=`RX;
-				delay_start_2=0;
-				Main_Current_State=0;
+			else
+				begin
+				delay_start_2=1;
+				delay_mtime_2=30;
+				if(delay_int_2)
+				begin
+					tx_state=`RX;
+					delay_start_2=0;
+					Main_Current_State=0;
+				end
 			end*/
 		end
 		
@@ -2526,285 +2542,314 @@ end
 
 
 /////中断处理程序///////////
-always@(posedge clk)
+/*
+ *包括中断的检测和接收处理函数
+ *中断函数负责检测中断，查询中断状态，以及给发送函数和接收处理函数信号，通知其中断到达，
+ *接收函数，负责接收数据，只有一条接收数据的命令
+*/
+always@(posedge clk or negedge reset_n)
 begin
-	case (Irq_Current_State)		
-		/////等待中断到来
-		0:
-		begin
-			if(enable_irq&&enable_irq_sending&&!Si4463_int)
+	if(!reset_n)
+	begin
+		Irq_Current_State=0;
+		Recv_Current_State=0;
+		rx_flag=0;
+		tx_flag=0;
+		tx_done=0;
+		irq_dealing=0;
+		rx_start=0;
+		Int_start=0;
+		//led[0]=1'b0;
+		//led[1]=1'b0;
+		packet_incoming=0;
+	end
+	else
+	begin
+		case (Irq_Current_State)		
+			/////等待中断到来
+			0:
 			begin
-				rx_flag=0;  ///这里可能出现问题
-				tx_flag=0;
-				irq_dealing=1;
-				Irq_Current_State=1;
-			end
-		end
-		/*
-		9:
-		begin
-			if(!spi_Using)
-			begin
-				Int_Cmd_Data[7:0]=8'h20;
-				Int_Cmd_Data[15:8]=8'hFB;
-				Int_Cmd_Data[23:16]=8'h7F;
-				Int_Cmd_Data[31:24]=8'h7F;
-				Int_start=1;
-				Int_Cmd=4;
-				Int_Data_len=4;
-				Int_Return_len=8;
-				Irq_Current_State=10;
-			end
-		end
-		10:
-		begin
-			Int_start=0;
-			Irq_Current_State=11;
-		end
-		11:
-		begin
-			if(spi_op_done)
-			begin
-				Si4463_Ph_Status=Int_Return_Data[47:40];
-				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
+				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
 				begin
-					tx_flag=1;
+					rx_flag=0;  ///这里可能出现问题
+					tx_flag=0;
+					irq_dealing=1;
 					Irq_Current_State=1;
-				end
-				if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
-				begin
-					Irq_Current_State=1;
-					rx_flag=1;
-				end
-				else
-				begin
-					Irq_Current_State=1;
+					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
+					begin
+						led[0]=~led[0];
+						tx_flag=1;
+						Irq_Current_State=4;
+					end
 				end
 			end
-		end*/
-		//////读取中断状态，判断中断源
-		1:
-		begin
-			if(!spi_Using)
+			/*
+			9:
 			begin
-				Int_Cmd_Data[7:0]=8'h50;
-				Int_start=1;
-				Int_Cmd=6;
-				Int_Data_len=1;
-				Int_Return_len=2;
-				Irq_Current_State=2;
+				if(!spi_Using)
+				begin
+					Int_Cmd_Data[7:0]=8'h20;
+					Int_Cmd_Data[15:8]=8'hFB;
+					Int_Cmd_Data[23:16]=8'h7F;
+					Int_Cmd_Data[31:24]=8'h7F;
+					Int_start=1;
+					Int_Cmd=4;
+					Int_Data_len=4;
+					Int_Return_len=8;
+					Irq_Current_State=10;
+				end
 			end
-		end
-		2:
-		begin
-			Int_start=0;
-			Irq_Current_State=3;
-		end
-		3:
-		begin
-			if(spi_op_done)
+			10:
 			begin
-				
-				Si4463_Ph_Status=Int_Return_Data[15:8];
-				Si4463_Modem_Status=Int_Return_Data[7:0];
-				//Si4463_Ph_Status_1=Si4463_Ph_Status;
-				/*
-				if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
+				Int_start=0;
+				Irq_Current_State=11;
+			end
+			11:
+			begin
+				if(spi_op_done)
 				begin
-					led[0]=~led[0];
-					tx_flag=1;
-					Irq_Current_State=4;
-				end*/
-				if(tx_state==`TX)
-				begin
-					led[0]=~led[0];
-					tx_flag=1;
-					Irq_Current_State=4;
+					Si4463_Ph_Status=Int_Return_Data[47:40];
+					if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
+					begin
+						tx_flag=1;
+						Irq_Current_State=1;
+					end
+					if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+					begin
+						Irq_Current_State=1;
+						rx_flag=1;
+					end
+					else
+					begin
+						Irq_Current_State=1;
+					end
 				end
-				else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+			end*/
+			//////读取中断状态，判断中断源
+			1:
+			begin
+				if(!spi_Using)
 				begin
-					led[1]=~led[1];
-					Irq_Current_State=4;
-					rx_flag=1;
-				end
-				else if((Si4463_Modem_Status&8'h03)==8'h03)
-				begin
-					packet_incoming=1;
-					Irq_Current_State=4;
-				end
-				else
-				begin
-					Irq_Current_State=4;
+					Int_Cmd_Data[7:0]=8'h50;
+					Int_start=1;
+					Int_Cmd=6;
+					Int_Data_len=1;
+					Int_Return_len=2;
+					Irq_Current_State=2;
 				end
 			end
-		end
+			2:
+			begin
+				Int_start=0;
+				Irq_Current_State=3;
+			end
+			3:
+			begin
+				if(spi_op_done)
+				begin
+					
+					Si4463_Ph_Status=Int_Return_Data[15:8]; //PH_PEND状态
+					Si4463_Modem_Status=Int_Return_Data[7:0];
+					//Si4463_Ph_Status_1=Si4463_Ph_Status;
+					/*
+					if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
+					begin
+						led[0]=~led[0];
+						tx_flag=1;
+						Irq_Current_State=4;
+					end*/
+					/*
+					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
+					begin
+						//led[0]=~led[0];
+						tx_flag=1;
+						Irq_Current_State=4;
+					end*/
+					if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+					begin
+						led[1]=~led[1];
+						Irq_Current_State=4;
+						rx_flag=1;
+					end
+					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
+					begin
+						packet_incoming=1;
+						Irq_Current_State=4;
+					end
+					else
+					begin
+						Irq_Current_State=4;
+					end
+				end
+			end
+			
+			4: //清除中断
+			begin
+				if(!spi_Using)
+				begin
+					Int_Cmd_Data[7:0]=8'h20;
+					Int_Cmd_Data[15:8]=8'h00;
+					Int_Cmd_Data[23:16]=8'h00;
+					Int_Cmd_Data[31:24]=8'h00;
+					Int_start=1;
+					Int_Cmd=4;
+					Int_Data_len=4;
+					Int_Return_len=0;
+					Irq_Current_State=5;
+				end
+			end
+			5:
+			begin
+				Int_start=0;
+				Irq_Current_State=6;
+			end
+			6:
+			begin
+				if(spi_op_done)
+				begin
+					if(!Si4463_int) //如果中断没有清除，那么循环清除中断
+						Irq_Current_State=4;
+					else
+					begin
+						Irq_Current_State=7;
+					end
+				end
+			end
+			7:
+			begin
+				if(rx_flag)  //如果是接收数据中断
+				begin
+					packet_incoming=0;
+					rx_start=1;
+					irq_dealing=0;
+					Irq_Current_State=0;
+				end
+				else if(tx_flag) //如果是发送完成中断
+				begin
+					tx_done=1;
+					Irq_Current_State=8;
+				end
+				else //其他中断及中断错误
+				begin
+					irq_dealing=0;
+					Irq_Current_State=0;
+				end
+			end
+			8:
+			begin
+				if(tx_state!=`TX) //等待主函数切换为其他状态
+				begin
+					tx_flag=0;
+					tx_done=0;
+					irq_dealing=0;
+					Irq_Current_State=0;
+				end
+			end
+			///如果是发送中断，置tx_done 为1
+			///如果是接收中断，提示用户开始接收数据,置rx_start为1,接收完成后，置为0/////////
+			default:
+			begin
+				irq_dealing=0;
+				Irq_Current_State=0;
+			end
+		endcase
 		
-		4: //清除中断
-		begin
-			if(!spi_Using)
+		
+		///////接收数据帧程序/////////////////
+		case (Recv_Current_State)
+			0:
 			begin
-				Int_Cmd_Data[7:0]=8'h20;
-				Int_Cmd_Data[15:8]=8'h00;
-				Int_Cmd_Data[23:16]=8'h00;
-				Int_Cmd_Data[31:24]=8'h00;
-				Int_start=1;
-				Int_Cmd=4;
-				Int_Data_len=4;
-				Int_Return_len=0;
-				Irq_Current_State=5;
-			end
-		end
-		5:
-		begin
-			Int_start=0;
-			Irq_Current_State=6;
-		end
-		6:
-		begin
-			if(spi_op_done)
-			begin
-				if(!Si4463_int)
-					Irq_Current_State=4;
-				else
+				if(rx_start) //当接收数据中断到达时，rx_start信号置1
 				begin
-					Irq_Current_State=7;
+					Recv_Current_State=4;
 				end
 			end
-		end
-		7:
-		begin
-			if(rx_flag)
+			/*
+			1:
 			begin
-				packet_incoming=0;
-				rx_start=1;
-				irq_dealing=0;
-				Irq_Current_State=0;
+				if(!spi_Using)
+				begin
+					Int_Cmd_Data[7:0]=8'h15;
+					Int_Cmd_Data[15:8]=8'h00; 
+					Int_Data_len=2;
+					Int_Return_len=2;
+					Int_start=1;
+					Int_Cmd=4;
+					Recv_Current_State=2;
+				end
 			end
-			else if(tx_flag)
+			2:
 			begin
-				tx_done=1;
-				Irq_Current_State=8;
+				Int_start=0;
+				Recv_Current_State=3;
 			end
-			else
+			3:
 			begin
-				irq_dealing=0;
-				Irq_Current_State=0;
-			end
-		end
-		8:
-		begin
-			if(tx_state!=`TX)
+				if(spi_op_done)
+				begin			
+					//rx_flag=0;
+					Si4463_Ph_Status_1=Int_Return_Data[15:8];
+					Recv_Current_State=4;
+				end
+			end*/
+			4: //发送接收命令   ，如果不行的话，可以将这个命令放在SPI中
 			begin
-				tx_flag=0;
-				tx_done=0;
-				irq_dealing=0;
-				Irq_Current_State=0;
-			end
-		end
-		///如果是发送中断，置tx_done 为1
-		///如果是接收中断，提示用户开始接收数据,置rx_start为1,接收完成后，置为0/////////
-		default:
-		begin
-			irq_dealing=0;
-			Irq_Current_State=0;
-		end
-	endcase
-	
-	
-	///////接收数据帧程序/////////////////
-	case (Recv_Current_State)
-		0:
-		begin
-			if(rx_start)
-			begin
-				Recv_Current_State=4;
-			end
-		end
-		/*
-		1:
-		begin
-			if(!spi_Using)
-			begin
-				Int_Cmd_Data[7:0]=8'h15;
-				Int_Cmd_Data[15:8]=8'h00; 
-				Int_Data_len=2;
-				Int_Return_len=2;
-				Int_start=1;
-				Int_Cmd=4;
-				Recv_Current_State=2;
-			end
-		end
-		2:
-		begin
-			Int_start=0;
-			Recv_Current_State=3;
-		end
-		3:
-		begin
-			if(spi_op_done)
-			begin			
-				//rx_flag=0;
-				Si4463_Ph_Status_1=Int_Return_Data[15:8];
-				Recv_Current_State=4;
-			end
-		end*/
-		4: //发送接收命令   ，如果不行的话，可以将这个命令放在SPI中
-		begin
-			Int_Data_len=0;
-			Int_Return_len=0;
-			Int_start=1;
-			Int_Cmd=3;
-			Recv_Current_State=5;
-		end
-		5:
-		begin
-			Int_start=0;
-			Recv_Current_State=6;
-		end
-		6:
-		begin
-			if(spi_op_done)
-			begin			
-				rx_start=0;
-				frame_recved_int=1;
-				Recv_Current_State=0;
-			end
-		end
-		/*
-		7: //重置FIFO
-		begin
-			frame_recved_int=0;
-			if(!spi_Using)
-			begin
-				Int_Cmd_Data[7:0]=8'h15;
-				Int_Cmd_Data[15:8]=8'h03; //这里原来是03，但是我认为02会更好一点
-				Int_Data_len=2;
+				Int_Data_len=0;
 				Int_Return_len=0;
 				Int_start=1;
-				Int_Cmd=4;
-				Recv_Current_State=8;
+				Int_Cmd=3;
+				Recv_Current_State=5;
 			end
-		end
-		8:
-		begin
-			Int_start=0;
-			Recv_Current_State=9;
-		end
-		9:
-		begin
-			if(spi_op_done)
+			5:
+			begin
+				Int_start=0;
+				Recv_Current_State=6;
+			end
+			6:
+			begin
+				if(spi_op_done)
+				begin			
+					rx_start=0;
+					//frame_recved_int=1;
+					Recv_Current_State=0;
+				end
+			end
+			/*
+			7: //重置FIFO
+			begin
+				frame_recved_int=0;
+				if(!spi_Using)
+				begin
+					Int_Cmd_Data[7:0]=8'h15;
+					Int_Cmd_Data[15:8]=8'h03; //这里原来是03，但是我认为02会更好一点
+					Int_Data_len=2;
+					Int_Return_len=0;
+					Int_start=1;
+					Int_Cmd=4;
+					Recv_Current_State=8;
+				end
+			end
+			8:
+			begin
+				Int_start=0;
+				Recv_Current_State=9;
+			end
+			9:
+			begin
+				if(spi_op_done)
+				begin
+					rx_start=0;
+					Recv_Current_State=0;
+				end
+			end*/
+			default:
 			begin
 				rx_start=0;
+				tx_done=0;
 				Recv_Current_State=0;
 			end
-		end*/
-		default:
-		begin
-			rx_start=0;
-			tx_done=0;
-			Recv_Current_State=0;
-		end
-	endcase
+		endcase
+	end
 end
 
 

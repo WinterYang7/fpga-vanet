@@ -38,6 +38,8 @@
 //EXTRADELAY: 0
 //TARGETSSDELAY: 0
 
+`define SPI_FRE_DIV 8'h01    //可以通过这里修改spi的速度，spi速率=clk/4x; x就是前面的值
+
 module spi_master (
                     // inputs:
                      MISO,
@@ -263,7 +265,7 @@ module spi_master (
 
   // slowclock is active once every 196 system clock pulses.
 //slowclock的周期为196个系统周期
-  assign slowclock = slowcount == 8'h0;
+  assign slowclock = slowcount == `SPI_FRE_DIV; 
 
   assign p1_slowcount = ({8 {(transmitting && !slowclock)}} & (slowcount + 1)) |
     ({8 {(~((transmitting && !slowclock)))}} & 0);

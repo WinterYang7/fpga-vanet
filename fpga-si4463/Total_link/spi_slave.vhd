@@ -14,7 +14,9 @@ entity spi_slave is
     DataToTx    : in std_logic_vector(7 downto 0);
     DataToTxLoad: in std_logic;
     DataRxd     : out std_logic_vector(7 downto 0);
-    index1		: out natural range 0 to 7
+    index1		: out natural range 0 to 7;
+    readyfordata : out std_logic;
+    outdata :out std_logic_vector(7 downto 0)
     );
 end spi_slave;
 
@@ -26,6 +28,9 @@ architecture Behavioral of spi_slave is
     signal TxData : std_logic_vector(7 downto 0):="00000000";
     signal index: natural range 0 to 7:=7;
     signal RxdData : std_logic_vector(7 downto 0);
+    signal Tx_hold_reg : std_logic_vector(7 downto 0);
+    signal Data_holding :std_logic :='0';
+    signal test :std_logic_vector(7 downto 0):="00000000";
 
 begin
 
@@ -58,7 +63,8 @@ begin
       MOSI_latched <= SPI_MOSI;
 
       if(DataToTxLoad = '1') then
-          TxData <= DataToTx;
+		  Data_holding<='1';
+          Tx_hold_reg <= DataToTx;
       end if;
 
       if (SS_old = '1' and SS_latched = '0') then
@@ -69,11 +75,18 @@ begin
          if(SCLK_old = '0' and SCLK_latched = '1') then
             RxdData <= RxdData(6 downto 0) & MOSI_latched;
             if(index = 0) then -- cycle ended
-               index <= 7;
+				if(Data_holding = '1') then
+					TxData<=Tx_hold_reg;
+					Data_holding<='0';
+				else
+					TxData<="00000000";
+				end if;
+               index <= 7; 
             else
+				TxData <= TxData(6 downto 0) & '0';
                index <= index-1;
             end if;
-            TxData <= TxData(6 downto 0) & '0';
+            
          elsif(SCLK_old = '1' and SCLK_latched = '0') then
             if( index = 7 ) then
                SPI_DONE <= '1';
@@ -92,5 +105,7 @@ end process;
    SPI_MISO <= TxData(7);
    DataRxd <= RxdData;
    index1<=index;
+   readyfordata<=NOT Data_holding;
+   outdata<=TxData;
 
 end Behavioral;

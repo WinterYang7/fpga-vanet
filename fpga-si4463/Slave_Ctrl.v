@@ -18,7 +18,7 @@ module Slave_Ctrl(
 	SRAM_count,
 	
 	//帧接收中断,与wireless_ctrl连接
-	frame_recved_int,
+	//frame_recved_int,
 	
 	//与CPU连接的中断
 	cpu_recv_int,
@@ -34,8 +34,8 @@ output Data_from_spi;
 output Spi_trdy;
 output Spi_rrdy;
 input	clk;
-input frame_recved_int;
-output reg cpu_recv_int;
+//input frame_recved_int;
+output reg cpu_recv_int=1'b1;
 output  [7:0] Spi_Current_State_1;	
 assign Spi_Current_State_1={3'b000,Spi_Current_State};
 	//与CPU的接口
@@ -66,6 +66,7 @@ reg[7:0] slave_data_to_spi;
 wire[7:0] slave_data_from_spi;
 reg[7:0] slave_data_from_spi_reg;
 reg slave_write;
+wire slave_trdy;
 
 	spi_slave slave(
 	.RESET_in(slave_reset_n),
@@ -77,7 +78,8 @@ reg slave_write;
     .SPI_DONE(slave_irq),
     .DataToTx(slave_data_to_spi),
     .DataToTxLoad(slave_write),
-    .DataRxd(slave_data_from_spi)
+    .DataRxd(slave_data_from_spi),
+	 .readyfordata(slave_trdy)
     //.index1		: out natural range 0 to 7
     );
 
@@ -135,9 +137,7 @@ begin
 					irq_noted=1;
 					Sended_count=0;
 					spi_send_end=0;
-					slave_write=1;
-					slave_data_to_spi=packet_len;
-					Spi_Current_State=16; 
+					Spi_Current_State=24; 
 				end
 				default:
 				begin
@@ -261,10 +261,24 @@ begin
 		
 		////////用于向CPU发送数据/////////////////
 		///从SRAM中取出数据
-		16:
+		24:
+		begin
+			if(slave_trdy)
+			begin
+				slave_write=1;
+				slave_data_to_spi=packet_len;
+				Spi_Current_State=25;
+			end
+		end
+		25:
 		begin
 			slave_write=0;
-			if(slave_irq)
+			Spi_Current_State=16;
+		end
+		16:
+		begin
+			
+			if(slave_trdy)
 			begin
 				slave_write=1;
 				slave_data_to_spi=Data_from_sram_reg[7:0];
@@ -300,7 +314,7 @@ begin
 		end
 		20:
 		begin
-			if(slave_irq)
+			if(slave_trdy)
 			begin
 				slave_write=1;
 				slave_data_to_spi=Data_from_sram_reg[15:8];
@@ -322,7 +336,7 @@ begin
 		end
 		22:
 		begin
-			if(slave_irq)
+			if(slave_trdy)
 			begin
 				slave_write=1;
 				slave_data_to_spi=Data_from_sram_reg[7:0];
@@ -382,7 +396,7 @@ begin
 		begin
 			if(SRAM_count*2>=packet_len-1)
 			begin
-				cpu_recv_int=1;
+				cpu_recv_int=0;
 				Irq_Current_State=3;
 			end
 		end
@@ -390,7 +404,7 @@ begin
 		begin
 			if(irq_noted)
 			begin
-				cpu_recv_int=0;
+				cpu_recv_int=1;
 				Irq_Current_State=4;
 			end
 		end
@@ -421,7 +435,7 @@ begin
 		end
 		default:
 		begin
-			cpu_recv_int=0;
+			cpu_recv_int=1;
 			Irq_Current_State=0;
 		end
 	endcase

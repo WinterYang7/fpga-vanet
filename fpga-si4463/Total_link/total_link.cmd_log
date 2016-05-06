@@ -212,3 +212,92 @@ map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -reg
 par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
 trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
 bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/FPGA/Total/Total_link/total_link.syr" 
+xst -intstyle ise -ifn "G:/Total/Total/Total_link/total_link.xst" -ofn "G:/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "G:/Total/Total/Total_link/total_link.xst" -ofn "G:/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "G:/Total/Total/Total_link/total_link.xst" -ofn "G:/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "G:/Total/Total/Total_link/total_link.xst" -ofn "G:/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
+xst -intstyle ise -ifn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.xst" -ofn "C:/Users/TM/Desktop/DE2/Total/Total/Total_link/total_link.syr" 
+ngdbuild -intstyle ise -dd _ngo -nt timestamp -uc total_link.ucf -p xc6slx9-tqg144-3 total_link.ngc total_link.ngd  
+map -intstyle ise -p xc6slx9-tqg144-3 -w -logic_opt off -ol high -t 1 -xt 0 -register_duplication off -r 4 -global_opt off -mt off -ir off -pr off -lc off -power off -o total_link_map.ncd total_link.ngd total_link.pcf 
+par -w -intstyle ise -ol high -mt off total_link_map.ncd total_link.ncd total_link.pcf 
+trce -intstyle ise -v 3 -s 3 -n 3 -fastpaths -xml total_link.twx total_link.ncd -o total_link.twr total_link.pcf -ucf total_link.ucf 
+bitgen -intstyle ise -f total_link.ut total_link.ncd 
