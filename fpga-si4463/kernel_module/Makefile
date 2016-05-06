@@ -1,5 +1,5 @@
 obj-m := si4463_fpga.o
-si4463_fpga-objs := main.o
+si4463_fpga-objs := main.o ringbuffer.o
 
 KDIR :=/home/wu/Desktop/galileo/802.11p-linux
 

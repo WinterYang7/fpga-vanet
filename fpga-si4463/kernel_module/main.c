@@ -32,7 +32,7 @@
 #include <linux/timer.h>
 
 #include "main.h"
-#include "spimsg_ring.h"
+#include "ringbuffer.h"
 /* Bit masks for spi_device.mode management.  Note that incorrect
  * settings for some settings can cause *lots* of trouble for other
  * devices on a shared bus:
@@ -57,6 +57,7 @@ struct {
 	int position;
 } data_sending;
 
+rbuf_t global_buf_queue;
 u8 global_reader[MAXPACKETLEN];
 /**
  * CONST Commands
@@ -343,6 +344,7 @@ static void si4463_handle_rx(struct work_struct *work)
 	skb = dev_alloc_skb(len+2);
 	skb_reserve(skb, 2);
 	memcpy(skb_put(skb, len), data, len);
+	rbuf_enqueue(&global_buf_queue);
 //	printk(KERN_ALERT "spi_complete_recv\n");
 //int j;
 //for(j=0;j<20;j++)
@@ -368,12 +370,14 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 {
 	struct spi_transfer	t;
 	int status;
-
+	struct bufunit* ubuf;
 	struct spi_message m;
 	struct rx_work *work;
 	struct module_priv *priv;
 	priv = netdev_priv(global_net_devs);
 
+	ubuf = rbuf_get_avail_msg(&global_buf_queue);
+	ubuf->len_ = len;
 	spi_message_init(&m);
 
 	if(len > MAXPACKETLEN){
@@ -383,9 +387,9 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 
 //	printk(KERN_ALERT "spi_recv_packet: len: %d\n", len);
 
-	t.rx_buf = global_reader;//
+	t.rx_buf = ubuf->buf_;//
 	t.cs_change = 0;
-	t.len = len;
+	t.len = ubuf->len_;
 	spi_message_add_tail(&t, &m);
 	spidev_sync(spidev, &m);
 
@@ -403,9 +407,9 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 		return -1;
 
 	INIT_WORK(&work->work, si4463_handle_rx);
-	work->data = global_reader;
+	work->data = ubuf->buf_;
 	work->dev = global_net_devs;
-	work->len = len;
+	work->len = ubuf->len_;
 	queue_work(priv->dev_workqueue, &work->work);
 
 
@@ -697,6 +701,8 @@ static int si4463_probe(struct spi_device *spi)
 	tx_withdraw_timer.data = 0;
 
 	INIT_WORK(&devrec->irqwork, si4463_isrwork);
+
+	rbuf_init(&global_buf_queue);
 
 	return 0;
 
