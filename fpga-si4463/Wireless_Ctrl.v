@@ -79,7 +79,7 @@ reg tx_done=0; //置1表示发送完成
 reg rx_start=0;
 reg tx_flag=0; //是发送完成中断
 reg rx_flag=0;
-reg packet_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
+reg [7:0] packet_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
 reg [7:0] Si4463_Ph_Status=0;
 reg [7:0] Si4463_Modem_Status=0;
 reg [7:0] frame_len;
@@ -2180,16 +2180,16 @@ end
 			Main_Cmd_Data[31:24]=8'h00;
 			Main_Cmd_Data[39:32]=8'haa;//1
 			Main_Cmd_Data[47:40]=8'hff;
-			Main_Cmd_Data[55:48]=8'h40;
+			Main_Cmd_Data[55:48]=8'h41;
 			Main_Cmd_Data[63:56]=8'h0F;//2
 			Main_Cmd_Data[71:64]=8'hff;
-			Main_Cmd_Data[79:72]=8'h01;
+			Main_Cmd_Data[79:72]=8'h02;
 			Main_Cmd_Data[87:80]=8'h55;//3
 			Main_Cmd_Data[95:88]=8'hff;
-			Main_Cmd_Data[103:96]=8'h02;
+			Main_Cmd_Data[103:96]=8'h03;
 			Main_Cmd_Data[111:104]=8'hf0;//4
 			Main_Cmd_Data[119:112]=8'hff;
-			Main_Cmd_Data[127:120]=8'h03;
+			Main_Cmd_Data[127:120]=8'h04;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=16;
@@ -2423,7 +2423,7 @@ end
 		////切换状态0x34 05 TX_TUNE
 		133:
 		begin
-			if(!spi_Using&&!irq_dealing&&!rx_start&&!packet_incoming)
+			if(!spi_Using&&!irq_dealing&&!rx_start&&packet_incoming==0)
 			begin
 				enable_irq_sending=0;
 				Main_Cmd=1;
@@ -2740,7 +2740,7 @@ begin
 					end
 					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
 					begin
-						packet_incoming=1;
+						packet_incoming=packet_incoming+1'b1;;
 						Irq_Current_State=4;
 					end
 					else
@@ -2786,7 +2786,6 @@ begin
 			begin
 				if(rx_flag)  //如果是接收数据中断
 				begin
-					packet_incoming=0;
 					rx_start=1;
 					irq_dealing=0;
 					Irq_Current_State=0;
@@ -2878,7 +2877,14 @@ begin
 				begin		
 					//rx_start=0;
 					//frame_recved_int=1;
-					Recv_Current_State=7;
+					if(packet_incoming==1)
+					begin
+						Recv_Current_State=7;
+					end
+					else
+					begin
+						Recv_Current_State=10;
+					end
 				end
 			end
 			7:
@@ -2900,15 +2906,16 @@ begin
 				if(spi_op_done)
 				begin			
 					rx_start=0;
+					packet_incoming=0;
 					//frame_recved_int=1;
 					Recv_Current_State=0;
 				end
 			end
 			
-			/*
-			7: //重置FIFO
+			
+			10: //重置FIFO
 			begin
-				frame_recved_int=0;
+				
 				if(!spi_Using)
 				begin
 					Int_Cmd_Data[7:0]=8'h15;
@@ -2917,22 +2924,21 @@ begin
 					Int_Return_len=0;
 					Int_start=1;
 					Int_Cmd=4;
-					Recv_Current_State=8;
+					Recv_Current_State=11;
 				end
 			end
-			8:
+			11:
 			begin
 				Int_start=0;
-				Recv_Current_State=9;
+				Recv_Current_State=12;
 			end
-			9:
+			12:
 			begin
 				if(spi_op_done)
 				begin
-					rx_start=0;
-					Recv_Current_State=0;
+					Recv_Current_State=7;
 				end
-			end*/
+			end
 			default:
 			begin
 				rx_start=0;
