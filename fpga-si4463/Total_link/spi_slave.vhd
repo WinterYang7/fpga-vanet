@@ -30,7 +30,7 @@ architecture Behavioral of spi_slave is
     signal RxdData : std_logic_vector(7 downto 0);
     signal Tx_hold_reg : std_logic_vector(7 downto 0);
     signal Data_holding :std_logic :='0';
-    signal test :std_logic_vector(7 downto 0):="00000000";
+    signal Rx_holding_reg : std_logic_vector(7 downto 0);  -----updated by erlang on 2016.5.9
 
 begin
 
@@ -89,6 +89,7 @@ begin
             
          elsif(SCLK_old = '1' and SCLK_latched = '0') then
             if( index = 7 ) then
+					Rx_holding_reg<=RxdData;  -----updated by erlang on 2016.5.9
                SPI_DONE <= '1';
             end if; 
             
@@ -103,7 +104,7 @@ end process;
    --
 
    SPI_MISO <= TxData(7);
-   DataRxd <= RxdData;
+   DataRxd <= Rx_holding_reg;    -----updated by erlang on 2016.5.9
    index1<=index;
    readyfordata<=NOT Data_holding;
    outdata<=TxData;

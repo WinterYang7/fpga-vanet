@@ -2019,7 +2019,7 @@ end
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h00;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'ha0;
+			Main_Cmd_Data[63:56]=8'ha2;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=8;
@@ -2047,7 +2047,7 @@ end
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'h01;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h80;
+			Main_Cmd_Data[63:56]=8'h82;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=8;
@@ -2075,7 +2075,7 @@ end
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'hfa;
 			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h00;
+			Main_Cmd_Data[63:56]=8'h0a;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=8;
@@ -2142,9 +2142,72 @@ end
 		begin
 			if(spi_op_done)
 			begin
+				Main_Current_State=154;
+			end
+		end
+		154: //循环校验
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h00;
+			Main_Cmd_Data[39:32]=8'h83;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=155;
+		end
+		155:
+		begin
+			Main_start=0;
+			Main_Current_State=156;
+		end
+		156:
+		begin
+			if(spi_op_done)
+			begin
 				Main_Current_State=160;
 			end
 		end
+		
+		/*
+		157:
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h30;
+			Main_Cmd_Data[23:16]=8'h0c;
+			Main_Cmd_Data[31:24]=8'h00;
+			Main_Cmd_Data[39:32]=8'haa;//1
+			Main_Cmd_Data[47:40]=8'hff;
+			Main_Cmd_Data[55:48]=8'h40;
+			Main_Cmd_Data[63:56]=8'h0F;//2
+			Main_Cmd_Data[71:64]=8'hff;
+			Main_Cmd_Data[79:72]=8'h01;
+			Main_Cmd_Data[87:80]=8'h55;//3
+			Main_Cmd_Data[95:88]=8'hff;
+			Main_Cmd_Data[103:96]=8'h02;
+			Main_Cmd_Data[111:104]=8'hf0;//4
+			Main_Cmd_Data[119:112]=8'hff;
+			Main_Cmd_Data[127:120]=8'h03;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=16;
+			Main_Return_len=0;
+			Main_Current_State=158;
+		end
+		158:
+		begin
+			Main_start=0;
+			Main_Current_State=159;
+		end
+		159:
+		begin
+			if(spi_op_done)
+			begin
+				Main_Current_State=160;
+			end
+		end*/
 
 		
 		//需要重置FIFO
@@ -2212,8 +2275,8 @@ end
 				Main_Cmd_Data[31:24]=8'h00;
 				Main_Cmd_Data[39:32]=8'h00;
 				Main_Cmd_Data[47:40]=8'h00;
-				Main_Cmd_Data[55:48]=8'h08;
-				Main_Cmd_Data[63:56]=8'h08;
+				Main_Cmd_Data[55:48]=8'h06;
+				Main_Cmd_Data[63:56]=8'h06;
 				Main_Data_len=8;
 				Main_Return_len=0;
 				Main_Cmd=1;
@@ -2512,7 +2575,7 @@ end
 		begin
 			if(tx_done)  //增加超时判断
 			begin
-				led[3]=~led[3];
+				led[3]=led[0];
 				tx_state=`RX;
 				Main_Current_State=130;
 			end
@@ -2571,15 +2634,19 @@ begin
 			begin
 				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
 				begin
-					rx_flag=0;  ///这里可能出现问题
-					tx_flag=0;
-					irq_dealing=1;
-					Irq_Current_State=1;
 					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
 					begin
 						led[0]=~led[0];
 						tx_flag=1;
+						rx_flag=0;
 						Irq_Current_State=4;
+					end
+					else
+					begin
+						tx_flag=0;
+						rx_flag=0;  ///这里可能出现问题
+						irq_dealing=1;
+						Irq_Current_State=1;
 					end
 				end
 			end
@@ -2808,12 +2875,36 @@ begin
 			6:
 			begin
 				if(spi_op_done)
+				begin		
+					//rx_start=0;
+					//frame_recved_int=1;
+					Recv_Current_State=7;
+				end
+			end
+			7:
+			begin
+				Int_Cmd_Data[7:0]=8'h32;
+				Int_Data_len=1;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=4;
+				Recv_Current_State=8;
+			end
+			8:
+			begin
+				Int_start=0;
+				Recv_Current_State=9;
+			end
+			9:
+			begin
+				if(spi_op_done)
 				begin			
 					rx_start=0;
 					//frame_recved_int=1;
 					Recv_Current_State=0;
 				end
 			end
+			
 			/*
 			7: //重置FIFO
 			begin
