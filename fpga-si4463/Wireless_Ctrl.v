@@ -12,6 +12,7 @@ module Wireless_Ctrl(
 	SRAM_count,
 	Data_to_sram,
 	Data_from_sram,
+	SRAM_AlmostFull, //这个信号实际由TotalLink是实现，可以将其添加到SRAM中，当只剩256个字节空间时，改信号置1
 	
 	//Si4463接口
 	Si4463_int,
@@ -38,18 +39,20 @@ module Wireless_Ctrl(
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1={4'b000,Irq_Current_State};
+assign Si4463_Ph_Status_1=Recv_Current_State;
 output reg [3:0] led=4'b0000;
-
+//output [3:0] led;
+//assign led=Main_Current_State[3:0];
 	//SRAM接口
 output	SRAM_read;
 output	SRAM_write;
 input	SRAM_full;
 input	SRAM_hint;
 input	SRAM_empty;
-input[10:0]	SRAM_count;
+input[17:0]	SRAM_count;
 output[15:0]	Data_to_sram;
 input[15:0]	Data_from_sram;
+input SRAM_AlmostFull;
 //output reg frame_recved_int=0;
 	
 	//Si4463接口
@@ -74,12 +77,12 @@ reg reset_n=1;
 
 //中断处理函数的信号
 reg [3:0] Irq_Current_State=0;
-reg [3:0] Recv_Current_State=0;
+reg [4:0] Recv_Current_State=0;
 reg tx_done=0; //置1表示发送完成
 reg rx_start=0;
 reg tx_flag=0; //是发送完成中断
 reg rx_flag=0;
-reg [7:0] packet_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
+reg [7:0] packets_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
 reg [7:0] Si4463_Ph_Status=0;
 reg [7:0] Si4463_Modem_Status=0;
 reg [7:0] frame_len;
@@ -143,6 +146,7 @@ end
 				4 int 获取中断状态
 				5 main程序从SRAM中读取数据，唯一的用途是获取需要发送的数据
 				6 int读快速寄存器
+				7 int写SRAM
 	spi_Using  bool值，代表spi模块是否正在被使用
 	spi_start  bool值，设置为1，代表准备开始发送或接收数据
 */
@@ -288,6 +292,13 @@ begin
 					Spi_Current_State=1;
 					spi_Using=1;
 					spi_op_done=0;
+				end
+				7:
+				begin
+					Spi_Current_State=43;
+					spi_Using=1;
+					spi_op_done=0;
+					Sended_count=0;
 				end
 				default:
 				begin
@@ -769,7 +780,7 @@ begin
 				end
 			end
 			
-			//读取快速寄存器
+			//读取快速寄存器 cmd=6
 			40:
 			begin
 				Data_to_master={8'h00,Int_Cmd_Data[7:0]};
@@ -786,6 +797,34 @@ begin
 			begin
 				Spi_Current_State=22;
 			end
+			
+			//int写SRAM cmd=7
+			43:
+			begin
+				if(Sended_count<spi_data_len)
+				begin
+					SRAM_write=1;
+					Data_to_sram=spi_cmd_data[15:0];
+					Spi_Current_State=44;
+				end
+				else
+				begin
+					spi_Using=0;
+					spi_start=0;
+					spi_op_done=1;
+					Spi_Current_State=0;
+				end
+			end
+			44:
+			begin
+				if(SRAM_hint)
+				begin
+					SRAM_write=0;
+					Sended_count=Sended_count+2;
+					spi_cmd_data={16'h0000,spi_cmd_data[79:16]};
+					Spi_Current_State=43;
+				end
+			end
 		endcase
 	end
 end
@@ -801,7 +840,7 @@ reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
 `define RX 3'b001
 `define TX_TUNE 3'b010
-`define TX 3'b011
+`define TX 3'b100
 
 
 /**
@@ -813,7 +852,7 @@ begin
 		case(Main_Current_State) 
 		0:
 		begin
-			led[2]=1'b0;
+			
 			led[3]=1'b0;
 			enable_irq=0;
 			enable_irq_sending=1'b1;
@@ -2423,7 +2462,7 @@ end
 		////切换状态0x34 05 TX_TUNE
 		133:
 		begin
-			if(!spi_Using&&!irq_dealing&&!rx_start&&packet_incoming==0)
+			if(!spi_Using&&!irq_dealing&&!rx_start&&packets_incoming==0)
 			begin
 				enable_irq_sending=0;
 				Main_Cmd=1;
@@ -2576,21 +2615,21 @@ end
 			if(tx_done)  //增加超时判断
 			begin
 				led[3]=led[0];
+				delay_start_2=0;
 				tx_state=`RX;
 				Main_Current_State=130;
-			end
-			/*
+			end	
 			else
-				begin
+			begin
 				delay_start_2=1;
 				delay_mtime_2=30;
 				if(delay_int_2)
 				begin
-					tx_state=`RX;
+					tx_state=3'b000;
 					delay_start_2=0;
 					Main_Current_State=0;
 				end
-			end*/
+			end
 		end
 		
 		default:
@@ -2624,7 +2663,7 @@ begin
 		Int_start=0;
 		//led[0]=1'b0;
 		//led[1]=1'b0;
-		packet_incoming=0;
+		packets_incoming=0;
 	end
 	else
 	begin
@@ -2639,6 +2678,7 @@ begin
 						led[0]=~led[0];
 						tx_flag=1;
 						rx_flag=0;
+						irq_dealing=1;
 						Irq_Current_State=4;
 					end
 					else
@@ -2740,7 +2780,7 @@ begin
 					end
 					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
 					begin
-						packet_incoming=packet_incoming+1'b1;;
+						packets_incoming=packets_incoming+1'b1;;
 						Irq_Current_State=4;
 					end
 					else
@@ -2803,8 +2843,9 @@ begin
 			end
 			8:
 			begin
-				if(tx_state!=`TX) //等待主函数切换为其他状态
+				if(tx_state==`RX) //等待主函数切换为其他状态
 				begin
+
 					tx_flag=0;
 					tx_done=0;
 					irq_dealing=0;
@@ -2820,13 +2861,42 @@ begin
 			end
 		endcase
 		
-		
 		///////接收数据帧程序/////////////////
 		case (Recv_Current_State)
 			0:
 			begin
 				if(rx_start) //当接收数据中断到达时，rx_start信号置1
 				begin
+					if(!SRAM_AlmostFull) //剩余的SRAM空间足以容纳一个数据包
+					begin
+						Recv_Current_State=16;
+					end
+					else //否则直接放弃改数据包，首先清空FIFO
+					begin
+							Recv_Current_State=7;
+					end
+				end
+			end
+			
+			16:
+			begin
+				Int_Cmd_Data[7:0]=8'hd4;
+				Int_Cmd_Data[15:8]=8'h2d; 
+				Int_Data_len=2;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=7;
+				Recv_Current_State=17;
+			end
+			17:
+			begin
+				Int_start=0;
+				Recv_Current_State=18;
+			end
+			18:
+			begin
+				if(spi_op_done)
+				begin	
 					Recv_Current_State=4;
 				end
 			end
@@ -2858,8 +2928,8 @@ begin
 					Recv_Current_State=4;
 				end
 			end*/
-			4: //发送接收命令   ，如果不行的话，可以将这个命令放在SPI中
-			begin
+			4: //发送接收命令，但是如果直接读取数据，可能会出错，因为如果SRAM已经满则，可能会导致阻塞到接收数据的模块，导致用户无法发送数据。
+			begin    //这里涉及缓冲区已满时接收数据的丢弃策略
 				Int_Data_len=0;
 				Int_Return_len=0;
 				Int_start=1;
@@ -2877,9 +2947,9 @@ begin
 				begin		
 					//rx_start=0;
 					//frame_recved_int=1;
-					if(packet_incoming==1)
+					if(packets_incoming==1)
 					begin
-						Recv_Current_State=7;
+						Recv_Current_State=10;
 					end
 					else
 					begin
@@ -2889,7 +2959,7 @@ begin
 			end
 			7:
 			begin
-				Int_Cmd_Data[7:0]=8'h32;
+				Int_Cmd_Data[7:0]=8'h32; //转换到Rx状态
 				Int_Data_len=1;
 				Int_Return_len=0;
 				Int_start=1;
@@ -2905,21 +2975,20 @@ begin
 			begin
 				if(spi_op_done)
 				begin			
-					rx_start=0;
-					packet_incoming=0;
+					//rx_start=0;
+					//packets_incoming=0;
 					//frame_recved_int=1;
-					Recv_Current_State=0;
+					Recv_Current_State=13;
 				end
 			end
 			
 			
 			10: //重置FIFO
-			begin
-				
+			begin			
 				if(!spi_Using)
 				begin
 					Int_Cmd_Data[7:0]=8'h15;
-					Int_Cmd_Data[15:8]=8'h03; //这里原来是03，但是我认为02会更好一点
+					Int_Cmd_Data[15:8]=8'h03; 
 					Int_Data_len=2;
 					Int_Return_len=0;
 					Int_start=1;
@@ -2939,6 +3008,40 @@ begin
 					Recv_Current_State=7;
 				end
 			end
+			
+			13://查看状态转化是否成功
+			begin
+				Int_Cmd_Data[7:0]=8'h33;
+				Int_Data_len=1;
+				Int_Return_len=2;
+				Int_start=1;
+				Int_Cmd=4;
+				Recv_Current_State=14;
+			end
+			14:
+			begin
+				Int_start=0;
+				Recv_Current_State=15;
+			end
+			15:
+			begin
+				if(spi_op_done)
+				begin				
+					if(Int_Return_Data[15:8]==8'h08)
+					begin
+						rx_start=0;
+						packets_incoming=0;
+						//frame_recved_int=1;
+						Recv_Current_State=0;
+					end
+					else
+					begin
+						Recv_Current_State=7;
+					end		
+				end
+			end
+		
+		
 			default:
 			begin
 				rx_start=0;

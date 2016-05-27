@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 
 
-`define MAX_FIFO_I_PTR 18'b000000100000000000
+`define MAX_FIFO_I_PTR 18'b011111111111111111
 `define MIN_FIFO_I_PTR 18'b000000000000000000
 `define FIFO_I_SIZE (`MAX_FIFO_I_PTR-`MIN_FIFO_I_PTR+1)
 
-`define MAX_FIFO_O_PTR 18'b000001000000000000
-`define MIN_FIFO_O_PTR 18'b000000100000000001
+`define MAX_FIFO_O_PTR 18'b111111111111111111
+`define MIN_FIFO_O_PTR 18'b100000000000000000
 `define FIFO_O_SIZE (`MAX_FIFO_O_PTR-`MIN_FIFO_O_PTR+1)
 
 module SRAM_ctrl(
@@ -84,11 +84,11 @@ output reg	UB_n=0;
 	//指示缓冲区大小和状态
 output reg	fifo_i_empty=1;
 output reg	fifo_i_full=0;
-output reg[10:0]	fifo_i_count=0;
+output reg[17:0]	fifo_i_count=0;
 	
 output reg	fifo_o_empty=1;
 output reg	fifo_o_full=0;
-output reg[10:0]	fifo_o_count=0;
+output reg[17:0]	fifo_o_count=0;
 
 //FIFO_i缓冲区指针
 

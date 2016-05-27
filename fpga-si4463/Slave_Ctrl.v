@@ -53,7 +53,7 @@ input[15:0]	Data_from_sram;
 reg[15:0] Data_from_sram_reg;
 input	SRAM_full;
 input	SRAM_empty;
-input[10:0]	SRAM_count;
+input[17:0]	SRAM_count;
 
 //与spi的连线
 wire slave_reset_n;
@@ -372,6 +372,26 @@ always@(posedge clk)
 begin
 	case (Irq_Current_State)
 		0:
+		begin
+			if(!SRAM_empty)
+			begin
+				SRAM_read=1;
+				Irq_Current_State=6;
+			end
+		end
+		6:
+		begin
+			if(SRAM_hint)
+			begin
+				SRAM_read=0;
+				Data_from_sram_reg=Data_from_sram;
+				if(Data_from_sram_reg==16'h2DD4)
+					Irq_Current_State=7;
+				else
+					Irq_Current_State=0;
+			end
+		end
+		7:
 		begin
 			if(!SRAM_empty)
 			begin

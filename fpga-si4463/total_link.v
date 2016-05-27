@@ -52,8 +52,9 @@ output	cpu_miso;
 input	cpu_sclk;
 output	cpu_irq_recv;
 output cpu_irq_full;
-assign cpu_irq_full=sram_full_to_slave;
-	
+assign cpu_irq_full=(sram_count_to_master>18'h1FF80)?1:0; //当FIFO_I还剩255个字节时，提示cpu可以将正在发送的发送过来，但不能发送下一个数据
+//	assign cpu_irq_full=sram_full_to_slave;                //这样做还有一个好处，就是不用担心因为SRAM已满，导致数据无法写入而出错，最终数据包的长度与实际写入SRAM中的数据个数不一致。
+																			//如果数据个数不一致，那么SPI_ctrl会阻塞到获取数据的地方，因此必须伽利略必须发送更多数据来填充前一个数据的空白。
 	//wireless_ctrl引脚
 output	si4463_mosi;
 input	si4463_miso;
@@ -77,7 +78,7 @@ wire slave_write_sram;
 wire sram_full_to_slave;
 wire sram_empty_to_slave;
 wire sram_hint_to_slave;
-wire[10:0] sram_count_to_slave;
+wire[17:0] sram_count_to_slave;
 wire[15:0] sram_data_from_slave;
 wire[15:0] sram_data_to_slave;
 
@@ -87,9 +88,11 @@ wire master_write_sram;
 wire sram_full_to_master;
 wire sram_empty_to_master;
 wire sram_hint_to_master;
-wire[10:0] sram_count_to_master;
+wire[17:0] sram_count_to_master;
 wire[15:0] sram_data_from_master;
 wire[15:0] sram_data_to_master;
+wire SRAM_AlmostFull_to_master;
+assign SRAM_AlmostFull_to_master=(sram_count_to_slave>18'h1FF80)?1:0;
 
 //Wireless_Ctrl与spi_master的连线
 wire master_rd_n;
@@ -188,6 +191,7 @@ Wireless_Ctrl wireless(
 	.SRAM_count(sram_count_to_master),
 	.Data_to_sram(sram_data_from_master),
 	.Data_from_sram(sram_data_to_master),
+	.SRAM_AlmostFull(SRAM_AlmostFull_to_master),
 	
 	//Si4463接口
 	.Si4463_int(si4463_irq),
