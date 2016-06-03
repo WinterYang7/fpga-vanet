@@ -39,7 +39,7 @@ module Wireless_Ctrl(
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1=Recv_Current_State;
+assign Si4463_Ph_Status_1=Main_Current_State;
 output reg [3:0] led=4'b0000;
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
@@ -72,7 +72,7 @@ output	master_spi_sel;
 output master_write_n;
 
 
-reg reset_n=1;
+reg reset_n=1'b1;
 
 
 //中断处理函数的信号
@@ -211,6 +211,10 @@ assign master_spi_sel=1;
 reg [5:0] Spi_Current_State;
 reg Ended_flag;
 reg frame_len_flag; //标志着接收包时第一个字节，即包的长度
+
+
+reg[31:0] CTScounter=0;
+reg CTS_error_reset_n=1;
 //分别在两个地方保证接收到的数据就是需要的数据
 // 1. CTS,由于CTS后面跟着需要的数据，所以后面的数据可以确认为需要的数据
 // 2. 只是发送命令时，返回的数据无所谓了 
@@ -232,6 +236,8 @@ if(!reset_n)
 		Byte_flag=0;
 		spi_op_fifo_flag=1;
 		Ended_flag=0;
+		CTScounter=0;
+		CTS_error_reset_n=1;
 	end
 else
 begin
@@ -312,6 +318,7 @@ begin
 			Byte_flag=0;
 			spi_op_fifo_flag=1;
 			Ended_flag=0;
+			CTScounter=0;
 		end
 	end
 	
@@ -463,11 +470,19 @@ begin
 			begin
 				if(master_trdy)
 				begin
-				
-					Data_to_master=16'h0044;
-					master_mem_addr=3'b001;
-					master_write_n=0;
-					Spi_Current_State=17;
+					CTScounter=CTScounter+1;
+					if(CTScounter>10000)
+					begin
+						CTS_error_reset_n=0;
+						Spi_Current_State=0;
+					end
+					else
+					begin
+						Data_to_master=16'h0044;
+						master_mem_addr=3'b001;
+						master_write_n=0;
+						Spi_Current_State=17;
+					end
 				end
 			end
 			17:
@@ -751,14 +766,15 @@ begin
 			36: //cmd=5;
 			begin
 				SRAM_read=1;
-				Spi_Current_State=37;
+				Spi_Current_State=39;
 			end
+			/*
 			37:
 			begin
 				if(SRAM_hint)
 				begin
 					SRAM_read=0;
-					Main_Data_Check[31:16]=Data_from_sram; //读取命令0x66 0x00
+					Main_Data_Check[31:16]=Data_from_sram; //读取命令0x2d 0xd4
 					Spi_Current_State=38;
 				end
 			end
@@ -766,13 +782,13 @@ begin
 			begin
 				SRAM_read=1;
 				Spi_Current_State=39;
-			end
+			end*/
 			39:
 			begin
 				if(SRAM_hint)
 				begin
 					SRAM_read=0;
-					Main_Data_Check[15:0]=Data_from_sram; //读取数据长度
+					Main_Data_Check[15:0]=Data_from_sram; //读取两个字节
 					spi_Using=0;
 					spi_start=0;
 					spi_op_done=1;
@@ -847,12 +863,18 @@ reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
  * 主函数()，程序开始时先配置射频模块 状态为0-130
  * 配置完成后，开始循环发送数据 状态为130-145
  **/
-always@(posedge clk)
+always@(posedge clk or negedge CTS_error_reset_n)
+begin
+if(!CTS_error_reset_n)
+begin
+	Main_Current_State=0;
+	reset_n=0;
+end
+else
 begin
 		case(Main_Current_State) 
 		0:
 		begin
-			
 			led[3]=1'b0;
 			enable_irq=0;
 			enable_irq_sending=1'b1;
@@ -863,7 +885,7 @@ begin
 			Si4463_reset=1;
 			delay_start=1;
 			delay_mtime=10;
-			reset_n=0;
+			led[2]=1'b0;
 			if(delay_int)
 			begin
 				delay_start=0;
@@ -2442,18 +2464,39 @@ end
 		begin
 			if(spi_op_done)
 			begin
-				if(Main_Data_Check[31:24]==8'h66)
+				if(Main_Data_Check[15:0]==16'h2dd4)
 				begin
-					Data_Len_to_Send=Main_Data_Check[7:0];
-					if(SRAM_count*2>=Data_Len_to_Send)
-					begin
-						Main_Current_State=133;
-					end
+					Main_Current_State=190;
 				end
 				else
 				begin
 					Main_Current_State=130;
 				end
+			end
+		end
+		190:
+		begin
+			if(!SRAM_empty&&!spi_Using)
+			begin
+				Main_Cmd=5;
+				Main_start=1;
+				Main_Current_State=191;
+			end
+		end
+		191:
+		begin
+			Main_start=0;
+			Main_Current_State=192;
+		end
+		192:
+		begin
+			if(spi_op_done)
+			begin
+				Data_Len_to_Send=Main_Data_Check[7:0];
+				if(SRAM_count*2>=Data_Len_to_Send)
+				begin
+					Main_Current_State=133;
+				end	
 			end
 		end
 		
@@ -2637,7 +2680,7 @@ end
 			Main_Current_State=8'h00;
 		end
 	endcase
-
+end
 end
 
 

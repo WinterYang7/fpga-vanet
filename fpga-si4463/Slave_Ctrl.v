@@ -125,7 +125,7 @@ begin
 			case(slave_data_from_spi_reg)
 				8'b01100110: //CPU发送数据0x66
 				begin
-					Data_to_sram[15:8]=slave_data_from_spi_reg;  //保存命令和长度，交给Wireless_Ctrl处理发送
+					Data_to_sram[15:8]=8'h2D;
 					Sended_count=0;
 					Byte_flag=0;
 					//tx_flag=1;
@@ -156,10 +156,10 @@ begin
 		6:
 		begin
 			Data_len=slave_data_from_spi_reg;
-			Data_to_sram[7:0]=8'h00;
+			Data_to_sram[7:0]=8'hD4;
 			Spi_Current_State=7;
 		end
-		//将命令写入SRAM 0x66 0x00
+		//将命令写入SRAM 0x2d 0xd4
 		7:
 		begin
 			if(!SRAM_full)
@@ -181,7 +181,7 @@ begin
 		begin
 			if(!SRAM_full)
 			begin
-				Data_to_sram={8'h00,Data_len[7:0]+1};
+				Data_to_sram={8'h00,Data_len[7:0]+1}; //+1是因为将数据长度包含在内
 				SRAM_write=1;
 				Spi_Current_State=10;
 			end
@@ -373,7 +373,7 @@ begin
 	case (Irq_Current_State)
 		0:
 		begin
-			if(!SRAM_empty)
+			if(!SRAM_empty) //读取前面的标志字节
 			begin
 				SRAM_read=1;
 				Irq_Current_State=6;
@@ -381,7 +381,7 @@ begin
 		end
 		6:
 		begin
-			if(SRAM_hint)
+			if(SRAM_hint) 
 			begin
 				SRAM_read=0;
 				Data_from_sram_reg=Data_from_sram;
@@ -393,7 +393,7 @@ begin
 		end
 		7:
 		begin
-			if(!SRAM_empty)
+			if(!SRAM_empty) //读取包长度和第一个数据
 			begin
 				SRAM_read=1;
 				Irq_Current_State=1;

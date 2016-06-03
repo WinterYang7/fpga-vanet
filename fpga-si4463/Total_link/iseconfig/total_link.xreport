@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2016-05-24T11:05:00</DateModified>
+  <DateModified>2016-06-01T14:14:58</DateModified>
   <ModuleName>total_link</ModuleName>
   <SummaryTimeStamp>2016-05-11T17:23:38</SummaryTimeStamp>
-  <SavedFilePath>C:/Users/TM/Desktop/dropbox/Total/Total_link/iseconfig/total_link.xreport</SavedFilePath>
-  <ImplementationReportsDirectory>C:/Users/TM/Desktop/dropbox/Total/Total_link\</ImplementationReportsDirectory>
+  <SavedFilePath>E:/Total/Total_link/iseconfig/total_link.xreport</SavedFilePath>
+  <ImplementationReportsDirectory>E:/Total/Total_link\</ImplementationReportsDirectory>
   <DateInitialized>2016-04-05T16:39:53</DateInitialized>
   <EnableMessageFiltering>false</EnableMessageFiltering>
  </header>

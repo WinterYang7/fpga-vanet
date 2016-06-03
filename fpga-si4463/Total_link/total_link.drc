@@ -1,12 +1,16 @@
 Release 14.7 Drc P.20131013 (nt64)
 Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-Tue May 24 15:43:19 2016
+Wed Jun 01 16:06:16 2016
 
 drc -z total_link.ncd total_link.pcf
 
+WARNING:PhysDesignRules:372 - Gated clock. Clock net
+   wireless/CTS_error_reset_n_inv is sourced by a combinatorial pin. This is not
+   good design practice. Use the CE pin to control the loading of data into the
+   flip-flop.
 WARNING:PhysDesignRules:372 - Gated clock. Clock net wireless/reset_n_inv is
    sourced by a combinatorial pin. This is not good design practice. Use the CE
    pin to control the loading of data into the flip-flop.
-DRC detected 0 errors and 1 warnings.  Please see the previously displayed
+DRC detected 0 errors and 2 warnings.  Please see the previously displayed
 individual error or warning messages for more details.
