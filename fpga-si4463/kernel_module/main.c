@@ -71,7 +71,7 @@ struct spi_device *spi_save;
 struct spidev_data spidev_global;
 struct si4463 * global_devrec;
 
-DEFINE_MUTEX(mutex_spi);
+DEFINE_MUTEX(mutex_txrx);
 /* TX withdraw timer */
 struct timer_list tx_withdraw_timer;
 
@@ -389,7 +389,7 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 
 	t.rx_buf = ubuf->buf_;//
 	t.cs_change = 0;
-	t.len = ubuf->len_;
+	t.len = len;
 	spi_message_add_tail(&t, &m);
 	spidev_sync(spidev, &m);
 
@@ -409,7 +409,7 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 	INIT_WORK(&work->work, si4463_handle_rx);
 	work->data = ubuf->buf_;
 	work->dev = global_net_devs;
-	work->len = ubuf->len_;
+	work->len = len;
 	queue_work(priv->dev_workqueue, &work->work);
 
 
@@ -462,7 +462,9 @@ static void si4463_tx_worker(struct work_struct *work)
 	struct si4463 *devrec;
 	devrec = xw->priv->spi_priv;
 	skb = xw->skb;
+	mutex_lock(&mutex_txrx);
 	spi_write_packet(&spidev_global, skb);
+	mutex_unlock(&mutex_txrx);
 }
 
 static int si4463_tx(struct sk_buff *skb, struct net_device *dev)
@@ -571,7 +573,7 @@ static irqreturn_t si4463_isr_data(int irq, void *data)
 //	printk(KERN_ALERT "=====IRQ=====\n");
 	struct si4463 *devrec = data;
 
-	disable_irq_nosync(irq);
+//	disable_irq_nosync(irq);
 	schedule_work(&devrec->irqwork);
 
 	return IRQ_HANDLED;
@@ -581,10 +583,12 @@ static void si4463_isrwork(struct work_struct *work)
 {
 	u16 len;
 	struct si4463 *devrec = container_of(work, struct si4463, irqwork);
+	mutex_lock(&mutex_txrx);
 	len = spi_recv_packetlen(&spidev_global);
 	spi_recv_packet(&spidev_global, len);
+	mutex_unlock(&mutex_txrx);
 //	spi_recv_packet(&spidev_global, 20);
-	enable_irq(devrec->spi->irq);
+//	enable_irq(devrec->spi->irq);
 }
 
 static int si4463_start(struct net_device *dev)
