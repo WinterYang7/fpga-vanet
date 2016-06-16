@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 
 
-`define MAX_FIFO_I_PTR 18'b011111111111111111
-`define MIN_FIFO_I_PTR 18'b000000000000000000
+`define MAX_FIFO_I_PTR 17'b01111111111111111
+`define MIN_FIFO_I_PTR 17'b00000000000000000
 `define FIFO_I_SIZE (`MAX_FIFO_I_PTR-`MIN_FIFO_I_PTR+1)
 
-`define MAX_FIFO_O_PTR 18'b111111111111111111
-`define MIN_FIFO_O_PTR 18'b100000000000000000
+`define MAX_FIFO_O_PTR 17'b11111111111111111
+`define MIN_FIFO_O_PTR 17'b10000000000000000
 `define FIFO_O_SIZE (`MAX_FIFO_O_PTR-`MIN_FIFO_O_PTR+1)
 
 module SRAM_ctrl(
@@ -73,7 +73,7 @@ output reg slave_hint;
 output reg master_hint;
 
 //SRAM的引脚
-output reg [17:0]	mem_addr;
+output reg [17:0]	mem_addr=0;
 inout[15:0]	   Dout;
 output reg	CE_n=0;
 output reg	OE_n=1;
@@ -92,14 +92,14 @@ output reg[17:0]	fifo_o_count=0;
 
 //FIFO_i缓冲区指针
 
-reg[17:0] fifo_i_rd_ptr=`MIN_FIFO_I_PTR;
-reg[17:0] fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
+reg[16:0] fifo_i_rd_ptr=`MIN_FIFO_I_PTR;
+reg[16:0] fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
 
 //FIFO_o缓冲区指针
 
 
-reg[17:0] fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
-reg[17:0] fifo_o_wr_ptr=`MIN_FIFO_O_PTR;
+reg[16:0] fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
+reg[16:0] fifo_o_wr_ptr=`MIN_FIFO_O_PTR;
 
 //负责同步互斥
 reg nUsing=0;
@@ -154,7 +154,7 @@ begin
 		begin
 			opcode=1;
 			data_to_sram=slave_data_to_sram;
-			mem_addr=fifo_i_wr_ptr;
+			mem_addr[16:0]=fifo_i_wr_ptr;
 			fifo_i_wr_ptr=fifo_i_wr_ptr+1;
 			fifo_i_count=fifo_i_count+1;
 			if(fifo_i_wr_ptr>`MAX_FIFO_I_PTR)
@@ -165,7 +165,7 @@ begin
 		2: //SPI_slave模块读请求
 		begin
 			opcode=2;
-			mem_addr=fifo_o_rd_ptr;
+			mem_addr[16:0]=fifo_o_rd_ptr;
 			fifo_o_rd_ptr=fifo_o_rd_ptr+1;
 			fifo_o_count=fifo_o_count-1;
 			if(fifo_o_rd_ptr>`MAX_FIFO_O_PTR)
@@ -177,7 +177,7 @@ begin
 		begin
 			opcode=3;
 			data_to_sram=master_data_to_sram;
-			mem_addr=fifo_o_wr_ptr;
+			mem_addr[16:0]=fifo_o_wr_ptr;
 			fifo_o_wr_ptr=fifo_o_wr_ptr+1;
 			fifo_o_count=fifo_o_count+1;
 			if(fifo_o_wr_ptr > `MAX_FIFO_O_PTR)
@@ -188,7 +188,7 @@ begin
 		4://SPI_master模块读请求
 		begin
 			opcode=4;
-			mem_addr=fifo_i_rd_ptr;
+			mem_addr[16:0]=fifo_i_rd_ptr;
 			fifo_i_rd_ptr=fifo_i_rd_ptr+1;
 			fifo_i_count=fifo_i_count-1;
 			if(fifo_i_rd_ptr > `MAX_FIFO_I_PTR)

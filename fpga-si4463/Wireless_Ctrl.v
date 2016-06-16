@@ -195,7 +195,7 @@ reg SRAM_read=0;
 reg SRAM_write=0;
 wire SRAM_full; //说明FIFO_o已满
 wire SRAM_empty; //说明FIFO_i已空
-wire [10:0] SRAM_count;  //说明FIFO_o中的数据个数
+wire [17:0] SRAM_count;  //说明FIFO_o中的数据个数
 reg [15:0] Data_to_sram;
 wire [15:0] Data_from_sram;
 reg [15:0] Data_from_sram_reg=0;
@@ -2633,7 +2633,7 @@ end
 				Main_Return_len=0;
 				Main_Cmd_Data[7:0]=8'h31;
 				Main_Cmd_Data[15:8]=8'h00;
-				Main_Cmd_Data[23:16]=8'h80;
+				Main_Cmd_Data[23:16]=8'h60; //RX_TUNE
 				Main_Cmd_Data[31:24]=8'h00;
 				Main_Cmd_Data[39:32]=8'h00;
 				Main_Current_State=143;
@@ -2659,19 +2659,54 @@ end
 			begin
 				led[3]=led[0];
 				delay_start_2=0;
-				tx_state=`RX;
-				Main_Current_State=130;
+				//tx_state=`RX;
+				Main_Current_State=146;
 			end	
 			else
 			begin
-				delay_start_2=1;
-				delay_mtime_2=30;
-				if(delay_int_2)
-				begin
-					tx_state=3'b000;
-					delay_start_2=0;
-					Main_Current_State=0;
-				end
+				Main_Current_State=149;
+			end
+		end
+		149:
+		begin
+		
+			delay_start_2=1;
+			delay_mtime_2=30;
+			if(delay_int_2)
+			begin
+				tx_state=3'b000;
+				delay_start_2=0;
+				Main_Current_State=0;
+			end
+			else
+			begin
+				Main_Current_State=145;
+			end
+		end
+		146:
+		begin
+			//切换到RX状态
+			if(!spi_Using)
+			begin
+				Main_Cmd_Data[7:0]=8'h32;
+				Main_Data_len=1;
+				Main_Return_len=0;
+				Main_Cmd=1;
+				Main_start=1;
+				Main_Current_State=147;
+			end
+		end
+		147:
+		begin
+			Main_start=0;
+			Main_Current_State=148;
+		end
+		148:
+		begin
+			if(spi_op_done)
+			begin
+				tx_state=`RX;
+				Main_Current_State=130;
 			end
 		end
 		
