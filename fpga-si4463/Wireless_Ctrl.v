@@ -40,6 +40,8 @@ module Wireless_Ctrl(
 input clk;
 output [7:0] Si4463_Ph_Status_1;
 assign Si4463_Ph_Status_1=Main_Current_State;
+//assign Si4463_Ph_Status_1[3:0]=Irq_Current_State[3:0];
+//assign Si4463_Ph_Status_1[7:4]=Recv_Current_State[3:0];
 output reg [3:0] led=4'b0000;
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
@@ -74,11 +76,15 @@ output master_write_n;
 
 reg reset_n=1'b1;
 
+reg [7:0] Si4463_RSSI_RecvPacket=0;
 
 //中断处理函数的信号
 reg [3:0] Irq_Current_State=0;
 reg [4:0] Recv_Current_State=0;
-reg tx_done=0; //置1表示发送完成
+reg tx_done; //置1表示发送完成
+wire tx_done_wire;
+assign tx_done_wire=tx_done;
+
 reg rx_start=0;
 reg tx_flag=0; //是发送完成中断
 reg rx_flag=0;
@@ -688,11 +694,15 @@ begin
 					Data_to_sram[15:8]=Data_from_master[7:0];
 					if(frame_len_flag) //接收到的第一个字节为长度（不包括自身）
 					begin
-						Byte_flag=~Byte_flag;
+						//Byte_flag=~Byte_flag;
 						frame_len_flag=0;
 						Sended_count=0;
 						spi_data_len=Data_from_master[7:0];
-						Spi_Current_State=22;
+						Data_to_sram[15:8]=Data_to_sram[15:8]+1'b1; //多了一个字节存RSSI，这条指令覆盖掉了前一条。
+						Data_to_sram[7:0]=Si4463_RSSI_RecvPacket;
+						//Spi_Current_State=22;
+						//SRAM_write=1;//写入SRAM
+						Spi_Current_State=50;
 					end
 					else
 					begin
@@ -729,6 +739,13 @@ begin
 						Spi_Current_State=31;
 				end								
 			end
+			
+			50:
+			begin
+				SRAM_write=1;//写入SRAM
+				Spi_Current_State=32;
+			end
+			
 			32:
 			begin
 				if(SRAM_hint)
@@ -850,7 +867,10 @@ reg GPS_sync_time=1'b1;  ////需要接GPS同步时钟
 reg [7:0] Main_Current_State=8'h00;
 reg Si4463_reset=1'b1; //当程序启动或者wireless_ctrl置位时，设置为0
 wire Si4463_int;
-reg [2:0] tx_state=3'b000;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
+reg [2:0] tx_state;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
+wire[2:0] tx_state_wire;
+assign tx_state_wire[2:0]=tx_state[2:0];
+
 reg[7:0] Data_Len_to_Send=8'h00;
 reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
 reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
@@ -1680,8 +1700,8 @@ begin
 	Main_Cmd_Data[7:0]=8'h11;
 	Main_Cmd_Data[15:8]=8'h20;
 	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h4c;
-	Main_Cmd_Data[39:32]=8'h00;
+	Main_Cmd_Data[31:24]=8'h4c; //RSSI_CONTROL
+	Main_Cmd_Data[39:32]=8'h02; //Latches RSSI at Sync Word detect.
 	Main_Cmd=1;
 	Main_start=1;
 	Main_Data_len=5;
@@ -1996,9 +2016,9 @@ end
 			Main_Cmd_Data[15:8]=8'h02;
 			Main_Cmd_Data[23:16]=8'h04;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h04;
-			Main_Cmd_Data[47:40]=8'h06;
-			Main_Cmd_Data[55:48]=8'h00;
+			Main_Cmd_Data[39:32]=8'h04; //INT_PH_PEND
+			Main_Cmd_Data[47:40]=8'h06; //INT_MODEM_PEND
+			Main_Cmd_Data[55:48]=8'h0a; //LATCHED_RSSI
 			Main_Cmd_Data[63:56]=8'h00;
 			Main_Cmd=1;
 			Main_start=1;
@@ -2655,7 +2675,7 @@ end
 		end
 		145:
 		begin
-			if(tx_done)  //增加超时判断
+			if(tx_done_wire)  //增加超时判断
 			begin
 				led[3]=~led[3];
 				delay_start_2=0;
@@ -2751,7 +2771,7 @@ begin
 			begin
 				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
 				begin
-					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
+					if(tx_state_wire==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
 					begin
 						//led[0]=~led[0];
 						tx_flag=1;
@@ -2927,7 +2947,7 @@ begin
 			end
 			8:
 			begin
-				if(tx_state==`RX) //等待主函数切换为其他状态
+				if(tx_state_wire==`RX) //等待主函数切换为其他状态
 				begin
 
 					tx_flag=0;
@@ -2953,7 +2973,7 @@ begin
 				begin
 					if(!SRAM_AlmostFull) //剩余的SRAM空间足以容纳一个数据包
 					begin
-						Recv_Current_State=16;
+						Recv_Current_State=19;
 					end
 					else //否则直接放弃改数据包，首先清空FIFO
 					begin
@@ -2962,6 +2982,31 @@ begin
 				end
 			end
 			
+			19://获取该数据包的RSSI值
+			begin
+				if(!spi_Using)
+				begin
+					Int_Cmd_Data[7:0]=8'h53; //FRR_C_READ for RSSI LATCHED of SYNC
+					Int_start=1;
+					Int_Cmd=6;
+					Int_Data_len=1;
+					Int_Return_len=1;
+					Recv_Current_State=20;
+				end
+			end
+			20:
+			begin
+				Int_start=0;
+				Recv_Current_State=21;
+			end
+			21:
+			begin
+				if(spi_op_done)
+				begin
+					Si4463_RSSI_RecvPacket=Int_Return_Data[7:0];
+					Recv_Current_State=16;
+				end
+			end
 			16:
 			begin
 				Int_Cmd_Data[7:0]=8'hd4;
@@ -3125,13 +3170,14 @@ begin
 				end
 			end
 		
-		
+/*	
 			default:
 			begin
 				rx_start=0;
 				tx_done=0;
 				Recv_Current_State=0;
 			end
+*/
 		endcase
 	end
 end
