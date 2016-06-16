@@ -526,7 +526,7 @@ begin
 			end
 			21:
 			begin
-				if(Data_from_master[7:0]==16'h00ff)
+				if(Data_from_master[7:0]==8'hff)
 				begin
 					
 					if(spi_return_len>0)
@@ -799,7 +799,7 @@ begin
 			//读取快速寄存器 cmd=6
 			40:
 			begin
-				Data_to_master={8'h00,Int_Cmd_Data[7:0]};
+				Data_to_master={8'h00,spi_cmd_data[7:0]};
 				master_write_n=0;
 				master_mem_addr=3'b001;
 				Spi_Current_State=41;
@@ -1145,7 +1145,7 @@ begin
 	Main_Cmd_Data[23:16]=8'h03;
 	Main_Cmd_Data[31:24]=8'h00;
 	Main_Cmd_Data[39:32]=8'h03;
-	Main_Cmd_Data[47:40]=8'h30;
+	Main_Cmd_Data[47:40]=8'h38;
 	Main_Cmd_Data[55:48]=8'h01;
 	Main_Cmd=1;
 	Main_start=1;
@@ -2657,7 +2657,7 @@ end
 		begin
 			if(tx_done)  //增加超时判断
 			begin
-				led[3]=led[0];
+				led[3]=~led[3];
 				delay_start_2=0;
 				//tx_state=`RX;
 				Main_Current_State=146;
@@ -2753,7 +2753,7 @@ begin
 				begin
 					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
 					begin
-						led[0]=~led[0];
+						//led[0]=~led[0];
 						tx_flag=1;
 						rx_flag=0;
 						irq_dealing=1;
@@ -2850,7 +2850,13 @@ begin
 						tx_flag=1;
 						Irq_Current_State=4;
 					end*/
-					if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+					if((Si4463_Ph_Status&8'h08)==8'b00001000) //CRC_ERROR
+					begin
+						led[0]=~led[0];
+						Recv_Current_State=10;//让recv线程重置fifo并进入RX状态
+						Irq_Current_State=4;
+					end
+					else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 					begin
 						led[1]=~led[1];
 						Irq_Current_State=4;
@@ -2858,7 +2864,7 @@ begin
 					end
 					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
 					begin
-						packets_incoming=packets_incoming+1'b1;;
+						packets_incoming=packets_incoming+1'b1;
 						Irq_Current_State=4;
 					end
 					else
