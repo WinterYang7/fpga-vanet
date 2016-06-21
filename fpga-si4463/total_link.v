@@ -27,12 +27,13 @@ module total_link(
 
 	//LED灯指示当前状态
 	led,
-	
+	debug_wire,
 	Spi_Current_State
 );
 input	clk;
 output[3:0] led;
 output[7:0] Spi_Current_State;
+output[1:0] debug_wire;
 
 /*
 assign Spi_Current_State[0]=clk;
@@ -73,6 +74,9 @@ output	LB_n;
 output	UB_n;
 
 //SRAM与spi_slave的连线
+wire config_write_sram;
+wire config_write_sram_done;
+
 wire slave_read_sram;
 wire slave_write_sram;
 wire sram_full_to_slave;
@@ -83,6 +87,11 @@ wire[15:0] sram_data_from_slave;
 wire[15:0] sram_data_to_slave;
 
 //SRAM与wireless的连线
+wire wireless_control_need_reset_wire;
+
+wire config_read_sram;
+wire config_read_sram_done;
+
 wire master_read_sram;
 wire master_write_sram;
 wire sram_full_to_master;
@@ -113,12 +122,20 @@ wire signal_for_recved_irq;
 
 SRAM_ctrl sram(
 	.clk(clk),
-	
+	//重置信号
+	.wireless_control_need_reset(wireless_control_need_reset_wire),
+
 	//对SRAM读写的控制信号
 	.slave_read(slave_read_sram),
 	.slave_write(slave_write_sram),
 	.master_read(master_read_sram),
 	.master_write(master_write_sram),
+	
+	.config_read(config_read_sram),//for wireless control
+	.config_read_done(config_read_sram_done),
+	
+	.config_write(config_write_sram),//for spi slave
+	.config_write_done(config_write_sram_done),
 	
 	//数据线
 	.slave_data_to_sram(sram_data_from_slave),
@@ -147,9 +164,11 @@ SRAM_ctrl sram(
 	.OE_n(OE_n),
 	.WE_n(WE_n),
 	.LB_n(LB_n),
-	.UB_n(UB_n)
+	.UB_n(UB_n)//,
 	
 	//.count(Spi_Current_State)
+		//用于输出当前状态
+	//.SRAM_Ctrl_Status(Spi_Current_State)
 );
 
 Slave_Ctrl slave(
@@ -161,6 +180,9 @@ Slave_Ctrl slave(
 	.sclk(cpu_sclk),
 	
 	//与SRAM的接口
+	.Config_write_sram(config_write_sram),//SPI slave should write the configuration space
+	.Config_write_sram_done(config_write_sram_done),
+	
 	.SRAM_read(slave_read_sram),
 	.SRAM_write(slave_write_sram),
 	.SRAM_hint(sram_hint_to_slave),
@@ -174,15 +196,21 @@ Slave_Ctrl slave(
 	//.frame_recved_int(signal_for_recved_irq), //可以删掉了
 	
 	//与CPU连接的中断
-	.cpu_recv_int(cpu_irq_recv)
+	.cpu_recv_int(cpu_irq_recv)//,
 	
 	//.Spi_Current_State_1(Spi_Current_State)
+	//用于输出当前状态
+	//.Slave_Ctrl_Status(Spi_Current_State)
 );
 
 Wireless_Ctrl wireless(
 	.clk(clk),
 	
 	//SRAM接口
+	.Config_read_sram(config_read_sram),//wireless control can only read configurations.
+	.Need_reset_from_sram(wireless_control_need_reset_wire),
+	.Config_read_sram_done(config_read_sram_done),
+	
 	.SRAM_read(master_read_sram),
 	.SRAM_write(master_write_sram),
 	.SRAM_full(sram_full_to_master),
@@ -214,7 +242,8 @@ Wireless_Ctrl wireless(
 	
 	//指示当前状态
 	.led(led),
-	.Si4463_Ph_Status_1(Spi_Current_State)
+	.Si4463_Ph_Status_1(Spi_Current_State),
+	.wireless_debug(debug_wire)//for DUBUG
 );
 
 spi_master spi(

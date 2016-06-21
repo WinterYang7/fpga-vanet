@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <report-views version="2.0" >
  <header>
-  <DateModified>2016-06-16T20:36:05</DateModified>
+  <DateModified>2016-06-21T16:53:43</DateModified>
   <ModuleName>total_link</ModuleName>
-  <SummaryTimeStamp>2016-06-16T12:02:46</SummaryTimeStamp>
+  <SummaryTimeStamp>2016-06-21T14:33:44</SummaryTimeStamp>
   <SavedFilePath>E:/work/FPGA/Workspace/0616/Total_link/iseconfig/total_link.xreport</SavedFilePath>
   <ImplementationReportsDirectory>E:/work/FPGA/Workspace/0616/Total_link\</ImplementationReportsDirectory>
   <DateInitialized>2016-04-05T16:39:53</DateInitialized>

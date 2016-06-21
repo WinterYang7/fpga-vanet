@@ -1,9 +1,11 @@
-
-
 module Wireless_Ctrl(
 	clk,
 	
 	//SRAM接口
+	Need_reset_from_sram,
+	Config_read_sram,
+	Config_read_sram_done,
+	
 	SRAM_read,
 	SRAM_write,
 	SRAM_full,
@@ -35,17 +37,25 @@ module Wireless_Ctrl(
 	
 	//用于指示当前状态的LED
 	led,
-	Si4463_Ph_Status_1
+	Si4463_Ph_Status_1,
+	wireless_debug//for DUBUG
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
 assign Si4463_Ph_Status_1=Main_Current_State;
-//assign Si4463_Ph_Status_1[3:0]=Irq_Current_State[3:0];
-//assign Si4463_Ph_Status_1[7:4]=Recv_Current_State[3:0];
+//assign Si4463_Ph_Status_1=Irq_Current_State;
 output reg [3:0] led=4'b0000;
+
+output [1:0] wireless_debug;//for DUBUG
+assign wireless_debug[0]=tx_done;//irq_dealing_wire;//packets_incoming[0];//;
+assign wireless_debug[1]=tx_state[0];//tx_flag;//rx_start_wire;//packets_incoming[1];//
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
-	//SRAM接口
+//SRAM接口
+input Need_reset_from_sram;
+output Config_read_sram;
+output Config_read_sram_done;
+
 output	SRAM_read;
 output	SRAM_write;
 input	SRAM_full;
@@ -76,23 +86,72 @@ output master_write_n;
 
 reg reset_n=1'b1;
 
+//RSSI：for LBT listen before send
+reg [7:0] Si4463_RSSI_Curr=0;
 reg [7:0] Si4463_RSSI_RecvPacket=0;
+`define RSSI_THRESHOLD 8'ha0
+
+//config from SRAM
+reg [15:0] config_len;
+
+reg [7:0] config_cmd_len;
+reg [7:0] config_cmd_len_next;
+reg config_cmd_start_flag;
+reg [15:0] config_count;
+reg [7:0] config_count_percmd;
 
 //中断处理函数的信号
-reg [3:0] Irq_Current_State=0;
-reg [4:0] Recv_Current_State=0;
+reg [4:0] Irq_Current_State=0;
+
+reg [2:0] Syncirq_Current_State=3;
 reg tx_done; //置1表示发送完成
 wire tx_done_wire;
 assign tx_done_wire=tx_done;
+`define SYNC_IRQ_TIMEOUT 10//ms
 
-reg rx_start=0;
-reg tx_flag=0; //是发送完成中断
-reg rx_flag=0;
-reg [7:0] packets_incoming=0; //指示射频模块收到包但还未收到接收数据包的中断
+reg tx_flag; //是发送完成中断
+
+reg [3:0] packets_incoming; //指示射频模块收到包但还未收到接收数据包的中断
+wire[3:0] packets_incoming_wire;
+assign packets_incoming_wire[3:0]=packets_incoming[3:0];
+
 reg [7:0] Si4463_Ph_Status=0;
 reg [7:0] Si4463_Modem_Status=0;
 reg [7:0] frame_len;
-reg irq_dealing=0;
+reg irq_dealing;
+wire irq_dealing_wire;
+assign irq_dealing_wire=irq_dealing;
+
+/**
+* 伪随机数产生器，255个状态
+* http://www.cnblogs.com/BitArt/archive/2012/12/22/2827005.html
+*/
+
+reg          load=1;     /*load seed to rand_num,active high */
+reg [7:0]    seed=8'b10110110;     
+reg [7:0]    rand_num;  /*random number output*/
+wire[7:0]	 rand_num_wire;
+assign rand_num_wire=rand_num;
+
+always@(posedge clk or negedge reset_n)
+begin
+    if(!reset_n)
+        rand_num    <=8'b0;
+    else if(load)
+        rand_num <=seed;    /*load the initial value when load is active*/
+    else
+        begin
+            rand_num[0] <= rand_num[7];
+            rand_num[1] <= rand_num[0];
+            rand_num[2] <= rand_num[1];
+            rand_num[3] <= rand_num[2];
+            rand_num[4] <= rand_num[3]^rand_num[7];
+            rand_num[5] <= rand_num[4]^rand_num[7];
+            rand_num[6] <= rand_num[5]^rand_num[7];
+            rand_num[7] <= rand_num[6];
+        end
+            
+end
 
 
 /////延时函数1///////////////
@@ -138,6 +197,47 @@ begin
 	end
 end
 
+/////延时函数3///////////////
+reg delay_start_3=0;
+reg[31:0] delay_count_3=0;
+reg[7:0] delay_mtime_3=8'h00;
+reg delay_int_3=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_3)
+	begin
+		delay_count_3<=0;
+		delay_int_3<=1'b0;
+	end
+	else
+	begin
+		delay_count_3<=delay_count_3+1'b1;
+		if(delay_count_3==delay_mtime_3*200) //配合随机数生成器使用
+			delay_int_3<=1'b1;
+	end
+end
+
+/////延时函数4///////////////
+reg delay_start_4=0;
+reg[31:0] delay_count_4=0;
+reg[7:0] delay_mtime_4=8'h00;
+reg delay_int_4=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_4)
+	begin
+		delay_count_4<=0;
+		delay_int_4<=1'b0;
+	end
+	else
+	begin
+		delay_count_4<=delay_count_4+1'b1;
+		if(delay_count_4==delay_mtime_4*20000) //20000可以算1ms
+			delay_int_4<=1'b1;
+	end
+end
 
 //////接口
 /*
@@ -158,8 +258,8 @@ end
 */
 reg [127:0] Main_Cmd_Data;  //主程序中的命令缓冲，包括启动配置和GetCTS
 reg [31:0] Int_Cmd_Data;   //中断程序中的命令缓冲，主要是查看寄存器状态和GetCTS
-reg [79:0] Main_Return_Data;  //返回数据的缓冲区
-reg [79:0] Int_Return_Data;   //要接收的数据长度
+reg [79:0] Main_Return_Data=0;  //返回数据的缓冲区
+reg [79:0] Int_Return_Data=0;   //要接收的数据长度
 reg [7:0] Main_Data_len;  //要发送的数据长度
 reg [4:0] Main_Return_len;  //GetCTS后返回的数据长度
 reg [7:0] Int_Data_len;
@@ -176,6 +276,9 @@ reg [7:0] spi_data_len=0;
 reg [4:0] spi_return_len=0;
 reg [2:0] spi_cmd=0;
 reg spi_Using=0;
+wire spi_Using_wire;
+assign spi_Using_wire=spi_Using;
+
 reg spi_start=0; //主要是监听Main_start和Int_start脉冲，当任意一个脉冲为1时，置1
 reg [7:0] Sended_count=0; //已经发送的字节数
 reg spi_op_done=0; //用于指示spi的操作是否已经完成
@@ -207,8 +310,12 @@ wire [15:0] Data_from_sram;
 reg [15:0] Data_from_sram_reg=0;
 wire SRAM_hint;
 reg Byte_flag=0;
+reg Byte_flag_config=0;
 reg GetCTS_flag=0;
 
+wire Need_reset_from_sram;
+reg Config_read_sram=0;
+reg Config_read_sram_done=0;
 
 reg [15:0] master_control_reg;
 
@@ -689,9 +796,9 @@ begin
 			end
 			31:
 			begin
-				if(!Byte_flag)
+				if(!Byte_flag) //由于SRAM要一次写两个字节，所以设置一个byte_flag作为调节。
 				begin
-					Data_to_sram[15:8]=Data_from_master[7:0];
+					Data_to_sram[15:8]=Data_from_master[7:0]; //注意这一行
 					if(frame_len_flag) //接收到的第一个字节为长度（不包括自身）
 					begin
 						//Byte_flag=~Byte_flag;
@@ -756,9 +863,8 @@ begin
 					else
 						Spi_Current_State=12;
 				end
-			end
-			
-			33: //发送接收数据命令，发送完之后，可能需要等待一段时间来给射频准备数据，不过测试之后再说
+			end			
+			33: //发送接收数据命令
 			begin //单数发送数据命令不需要，因为射频可以立即准备好
 				master_mem_addr=3'b001;
 				master_write_n=0;
@@ -864,7 +970,7 @@ end
 end
 
 reg GPS_sync_time=1'b1;  ////需要接GPS同步时钟
-reg [7:0] Main_Current_State=8'h00;
+reg [7:0] Main_Current_State=255;
 reg Si4463_reset=1'b1; //当程序启动或者wireless_ctrl置位时，设置为0
 wire Si4463_int;
 reg [2:0] tx_state;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
@@ -885,14 +991,19 @@ reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
  **/
 always@(posedge clk or negedge CTS_error_reset_n)
 begin
-if(!CTS_error_reset_n)
+if(!CTS_error_reset_n || Need_reset_from_sram)
 begin
 	Main_Current_State=0;
+	config_cmd_start_flag=0;
 	reset_n=0;
 end
 else
 begin
 		case(Main_Current_State) 
+		255:
+		begin
+		end
+		
 		0:
 		begin
 			led[3]=1'b0;
@@ -936,1078 +1047,128 @@ begin
 	////////////reset()函数，启动射频模块
 		250:
 		begin
-			Main_Cmd_Data[7:0]=8'h02;
-			Main_Cmd_Data[15:8]=8'h01;
-			Main_Cmd_Data[23:16]=8'h00;
-			Main_Cmd_Data[31:24]=8'h01;
-			Main_Cmd_Data[39:32]=8'hC9;
-			Main_Cmd_Data[47:40]=8'hC3;
-			Main_Cmd_Data[55:48]=8'h80;
-			Main_Data_len=7;
-			Main_Return_len=0;
-			Main_Cmd=1;
-			Main_start=1;
+			Config_read_sram=1;
+			
 			Main_Current_State=1;
+			config_count[15:0]=16'b0;
 		end
 		1:
 		begin
-			Main_start=0;
-			Main_Current_State=2;
-		end
-		2:
-		begin
-			
-			if(spi_op_done)
+			if(SRAM_hint)
 			begin
-				//delay_start=1;
-				//delay_mtime=20;
-				//if(delay_int)
-				//begin
-					//delay_start=0;
-					Main_Current_State=6;
-				//end
-				
+				Config_read_sram=0;
+				config_len[15:0]=Data_from_sram; //读取两个字节的长度（整个配置的长度）
+				Byte_flag_config=0;
+				config_cmd_start_flag=0;
+				Main_Current_State=2;
 			end
 		end
-	
-/*	
-		3:
+		2://命令循环
 		begin
-			Main_Cmd_Data[7:0]=8'h02;
-			Main_Cmd_Data[15:8]=8'h01;
-			Main_Cmd_Data[23:16]=8'h00;
-			Main_Cmd_Data[31:24]=8'h01;
-			Main_Cmd_Data[39:32]=8'hC9;
-			Main_Cmd_Data[47:40]=8'hC3;
-			Main_Cmd_Data[55:48]=8'h80;
-			Main_Data_len=7;
-			Main_Return_len=1;
+			Config_read_sram=1;
+			Main_Current_State=3;
+		end
+		3://1.判断一条命令是否完毕并发送；
+		begin
+			if(SRAM_hint)
+			begin
+				Config_read_sram=0;
+				if(!config_cmd_start_flag)
+				begin
+					config_cmd_len=Data_from_sram[15:8];//第一个字节是长度
+					config_cmd_start_flag=1;
+					Main_Cmd_Data[7:0]=Data_from_sram[7:0];
+					config_count_percmd=1'b1;//已有一个字节
+					Byte_flag_config=0;
+					if(config_cmd_len==1'b1)
+					begin
+						config_cmd_start_flag=0;
+						Main_Current_State=4;//发送已经取出的命令
+					end
+					else
+					begin
+						Main_Current_State=2;//取出后续字节
+					end
+
+				end
+				else //if(!config_cmd_start_flag)
+				begin
+					//一条命令还没有完毕，只需判断是有一个字节还是二个字节
+					//Main_Cmd_Data[(config_count_percmd*8+7):(config_count_percmd*8)]=Data_from_sram[15:8];
+					Main_Cmd_Data[(config_count_percmd*8) +:8]=Data_from_sram[15:8];
+					config_count_percmd=config_count_percmd+1'b1;
+					if(config_count_percmd==config_cmd_len)
+					begin
+						//一条命令完毕，第二个字节是下一条命令的长度
+						Byte_flag_config=~Byte_flag_config;
+						config_cmd_len_next=Data_from_sram[7:0];
+						config_cmd_start_flag=1;
+						Main_Current_State=4;//发送已经取出的命令
+					end
+					else
+					begin
+						//这次取出的两个字节都是本条命令的
+						//Main_Cmd_Data[(config_count_percmd*8+7):(config_count_percmd*8)]=Data_from_sram[7:0];
+						Main_Cmd_Data[(config_count_percmd*8) +:8]=Data_from_sram[7:0];
+						config_count_percmd=config_count_percmd+1'b1;
+						Byte_flag_config=0;
+						if(config_count_percmd==config_cmd_len)
+						begin
+							//一条命令完毕
+							
+							config_cmd_start_flag=0;
+							Main_Current_State=4;//发送已经取出的命令
+						end
+						else
+						begin
+							Main_Current_State=2;//本命令还未结束，取下两个字节。
+						end
+					end ////end else		
+				end  ////end else
+			end ////end if(!config_cmd_start_flag)
+		end ////end case
+		4: //1.先发送已经完成的命令 2.判断整个配置是否读取完毕。
+		begin
+			Main_Data_len=config_cmd_len;
+			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Current_State=4;
-		end
-		
-		4:
-		begin
-			Main_start=0;
 			Main_Current_State=5;
 		end
 		5:
 		begin
-			if(spi_op_done)
-			begin
-				
-				Main_Current_State=6;
-			end
-		end*/
-		
+			Main_start=0;
+			Main_Current_State=6;
+		end
 		6:
 		begin
-			Main_Cmd_Data[7:0]=8'h01;
-			Main_Data_len=1;
-			Main_Return_len=9;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Current_State=7;
+			if(spi_op_done)
+			begin
+				config_count_percmd=0;
+				if(Byte_flag_config==1'b1)
+				begin
+					config_cmd_len=config_cmd_len_next;
+				end
+				//config_len=config_len-config_cmd_len-1'b1;//发完了一条命令（还有1字节的长度，所以要加1）
+				config_count=config_count+config_cmd_len+1'b1;
+				//if(!config_len)
+				if(config_count>=config_len)
+				begin
+					//读取配置文件完毕，提示SRAM重置config读取指针
+					Config_read_sram_done=1;
+					Main_Current_State=7;
+				end
+				else
+				begin
+					Main_Current_State=2;
+				end
+			end
 		end
 		7:
 		begin
-			Main_start=0;
-			Main_Current_State=8;
+			Config_read_sram_done=0;
+			Main_Current_State=105;
 		end
-		8:
-		begin
-			if(spi_op_done)
-			begin
-				Main_Current_State=9;
-			end
-		end
-		
-		9:
-		begin
-			Main_Cmd_Data[7:0]=8'h20;
-			Main_Cmd_Data[15:8]=8'h00;
-			Main_Cmd_Data[23:16]=8'h00;
-			Main_Cmd_Data[31:24]=8'h00;
-			Main_Data_len=4;
-			Main_Return_len=9;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Current_State=10;
-		end
-		10:
-		begin
-			Main_start=0;
-			Main_Current_State=11;
-		end
-		11:
-		begin
-		
-			if(spi_op_done)
-			begin
-				Main_Current_State=12;
-			end
-		end
-		
-	////////setRFParameters(),设置射频模块参数(初始化射频模块上的各种寄存器)
-	
-//===setRFParameters(void)====
-12:
-begin
-	Main_Cmd_Data[7:0]=8'h02;
-	Main_Cmd_Data[15:8]=8'h01;
-	Main_Cmd_Data[23:16]=8'h00;
-	Main_Cmd_Data[31:24]=8'h01;
-	Main_Cmd_Data[39:32]=8'hc9;
-	Main_Cmd_Data[47:40]=8'hc3;
-	Main_Cmd_Data[55:48]=8'h80;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=7;
-	Main_Return_len=0;
-	Main_Current_State=13;
-end
-13:
-begin
-	Main_start=0;
-	Main_Current_State=14;
-end
-14:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=15;
-	end
-end
-15:
-begin
-	Main_Cmd_Data[7:0]=8'h13;
-	Main_Cmd_Data[15:8]=8'h1b;
-	Main_Cmd_Data[23:16]=8'h23;
-	Main_Cmd_Data[31:24]=8'h21;
-	Main_Cmd_Data[39:32]=8'h20;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=8;
-	Main_Return_len=0;
-	Main_Current_State=16;
-end
-16:
-begin
-	Main_start=0;
-	Main_Current_State=17;
-end
-17:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=18;
-	end
-end
-18:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h00;
-	Main_Cmd_Data[23:16]=8'h02;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h52;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=6;
-	Main_Return_len=0;
-	Main_Current_State=19;
-end
-19:
-begin
-	Main_start=0;
-	Main_Current_State=20;
-end
-20:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=21;
-	end
-end
-21:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h00;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h03;
-	Main_Cmd_Data[39:32]=8'h60;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=22;
-end
-22:
-begin
-	Main_start=0;
-	Main_Current_State=23;
-end
-23:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=24;
-	end
-end
-24:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h01;
-	Main_Cmd_Data[23:16]=8'h03;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h03;
-	Main_Cmd_Data[47:40]=8'h38;
-	Main_Cmd_Data[55:48]=8'h01;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=6;
-	Main_Return_len=0;
-	Main_Current_State=25;
-end
-25:
-begin
-	Main_start=0;
-	Main_Current_State=26;
-end
-26:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=27;
-	end
-end
-27:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h02;
-	Main_Cmd_Data[23:16]=8'h04;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h04;
-	Main_Cmd_Data[47:40]=8'h06;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=8;
-	Main_Return_len=0;
-	Main_Current_State=28;
-end
-28:
-begin
-	Main_start=0;
-	Main_Current_State=29;
-end
-29:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=30;
-	end
-end
-30:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h10;
-	Main_Cmd_Data[23:16]=8'h09;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h08;
-	Main_Cmd_Data[47:40]=8'h14;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h0f;
-	Main_Cmd_Data[71:64]=8'h31;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=13;
-	Main_Return_len=0;
-	Main_Current_State=31;
-end
-31:
-begin
-	Main_start=0;
-	Main_Current_State=32;
-end
-32:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=33;
-	end
-end
-33:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h11;
-	Main_Cmd_Data[23:16]=8'h05;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h01;
-	Main_Cmd_Data[47:40]=8'hb4;
-	Main_Cmd_Data[55:48]=8'h2b;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=9;
-	Main_Return_len=0;
-	Main_Current_State=34;
-end
-34:
-begin
-	Main_start=0;
-	Main_Current_State=35;
-end
-35:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=36;
-	end
-end
-36:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h12;
-	Main_Cmd_Data[23:16]=8'h07;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h84;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h30;
-	Main_Cmd_Data[63:56]=8'hff;
-	Main_Cmd_Data[71:64]=8'hff;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h02;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=11;
-	Main_Return_len=0;
-	Main_Current_State=37;
-end
-37:
-begin
-	Main_start=0;
-	Main_Current_State=38;
-end
-38:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=39;
-	end
-end
-39:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h12;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h08;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h40;
-	Main_Cmd_Data[71:64]=8'h40;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h40;
-	Main_Cmd_Data[95:88]=8'h04;
-	Main_Cmd_Data[103:96]=8'h80;
-	Main_Cmd_Data[111:104]=8'h00;
-	Main_Cmd_Data[119:112]=8'h00;
-	Main_Cmd_Data[127:120]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=40;
-end
-40:
-begin
-	Main_start=0;
-	Main_Current_State=41;
-end
-41:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=42;
-	end
-end
-42:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h12;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h14;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd_Data[111:104]=8'h00;
-	Main_Cmd_Data[119:112]=8'h00;
-	Main_Cmd_Data[127:120]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=43;
-end
-43:
-begin
-	Main_start=0;
-	Main_Current_State=44;
-end
-44:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=45;
-	end
-end
-45:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h12;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h20;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd_Data[111:104]=8'h00;
-	Main_Cmd_Data[119:112]=8'h00;
-	Main_Cmd_Data[127:120]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=46;
-end
-46:
-begin
-	Main_start=0;
-	Main_Current_State=47;
-end
-47:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=48;
-	end
-end
-48:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h12;
-	Main_Cmd_Data[23:16]=8'h09;
-	Main_Cmd_Data[31:24]=8'h2c;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=13;
-	Main_Return_len=0;
-	Main_Current_State=49;
-end
-49:
-begin
-	Main_start=0;
-	Main_Current_State=50;
-end
-50:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=51;
-	end
-end
-51:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h03;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h07;
-	Main_Cmd_Data[63:56]=8'h3d;
-	Main_Cmd_Data[71:64]=8'h09;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h01;
-	Main_Cmd_Data[95:88]=8'hc9;
-	Main_Cmd_Data[103:96]=8'hc3;
-	Main_Cmd_Data[111:104]=8'h80;
-	Main_Cmd_Data[119:112]=8'h00;
-	Main_Cmd_Data[127:120]=8'h05;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=52;
-end
-52:
-begin
-	Main_start=0;
-	Main_Current_State=53;
-end
-53:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=54;
-	end
-end
-54:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h0c;
-	Main_Cmd_Data[39:32]=8'h76;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=55;
-end
-55:
-begin
-	Main_start=0;
-	Main_Current_State=56;
-end
-56:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=57;
-	end
-end
-57:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h08;
-	Main_Cmd_Data[31:24]=8'h18;
-	Main_Cmd_Data[39:32]=8'h01;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h08;
-	Main_Cmd_Data[63:56]=8'h03;
-	Main_Cmd_Data[71:64]=8'h80;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h30;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=12;
-	Main_Return_len=0;
-	Main_Current_State=58;
-end
-58:
-begin
-	Main_start=0;
-	Main_Current_State=59;
-end
-59:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=60;
-	end
-end
-60:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h09;
-	Main_Cmd_Data[31:24]=8'h22;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h4b;
-	Main_Cmd_Data[55:48]=8'h06;
-	Main_Cmd_Data[63:56]=8'hd3;
-	Main_Cmd_Data[71:64]=8'ha0;
-	Main_Cmd_Data[79:72]=8'h07;
-	Main_Cmd_Data[87:80]=8'hff;
-	Main_Cmd_Data[95:88]=8'h02;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=13;
-	Main_Return_len=0;
-	Main_Current_State=61;
-end
-61:
-begin
-	Main_start=0;
-	Main_Current_State=62;
-end
-62:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=63;
-	end
-end
-63:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h07;
-	Main_Cmd_Data[31:24]=8'h2c;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h23;
-	Main_Cmd_Data[55:48]=8'h8f;
-	Main_Cmd_Data[63:56]=8'hff;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'hb7;
-	Main_Cmd_Data[87:80]=8'he0;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=11;
-	Main_Return_len=0;
-	Main_Current_State=64;
-end
-64:
-begin
-	Main_start=0;
-	Main_Current_State=65;
-end
-65:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=66;
-	end
-end
-66:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h35;
-	Main_Cmd_Data[39:32]=8'he2;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=67;
-end
-67:
-begin
-	Main_start=0;
-	Main_Current_State=68;
-end
-68:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=69;
-	end
-end
-69:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h09;
-	Main_Cmd_Data[31:24]=8'h38;
-	Main_Cmd_Data[39:32]=8'h22;
-	Main_Cmd_Data[47:40]=8'h08;
-	Main_Cmd_Data[55:48]=8'h08;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h1a;
-	Main_Cmd_Data[79:72]=8'h06;
-	Main_Cmd_Data[87:80]=8'h66;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h28;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=13;
-	Main_Return_len=0;
-	Main_Current_State=70;
-end
-70:
-begin
-	Main_start=0;
-	Main_Current_State=71;
-end
-71:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=72;
-	end
-end
-72:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h09;
-	Main_Cmd_Data[31:24]=8'h42;
-	Main_Cmd_Data[39:32]=8'ha4;
-	Main_Cmd_Data[47:40]=8'h03;
-	Main_Cmd_Data[55:48]=8'hd6;
-	Main_Cmd_Data[63:56]=8'h03;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'h1a;
-	Main_Cmd_Data[87:80]=8'h01;
-	Main_Cmd_Data[95:88]=8'h80;
-	Main_Cmd_Data[103:96]=8'h55;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=13;
-	Main_Return_len=0;
-	Main_Current_State=73;
-end
-73:
-begin
-	Main_start=0;
-	Main_Current_State=74;
-end
-74:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=75;
-	end
-end
-75:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h4c; //RSSI_CONTROL
-	Main_Cmd_Data[39:32]=8'h02; //Latches RSSI at Sync Word detect.
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=76;
-end
-76:
-begin
-	Main_start=0;
-	Main_Current_State=77;
-end
-77:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=78;
-	end
-end
-78:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h4e;
-	Main_Cmd_Data[39:32]=8'h40;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=79;
-end
-79:
-begin
-	Main_start=0;
-	Main_Current_State=80;
-end
-80:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=81;
-	end
-end
-81:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h20;
-	Main_Cmd_Data[23:16]=8'h01;
-	Main_Cmd_Data[31:24]=8'h51;
-	Main_Cmd_Data[39:32]=8'h0a;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=5;
-	Main_Return_len=0;
-	Main_Current_State=82;
-end
-82:
-begin
-	Main_start=0;
-	Main_Current_State=83;
-end
-83:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=84;
-	end
-end
-84:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h21;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h23;
-	Main_Cmd_Data[47:40]=8'h17;
-	Main_Cmd_Data[55:48]=8'hf4;
-	Main_Cmd_Data[63:56]=8'hc2;
-	Main_Cmd_Data[71:64]=8'h88;
-	Main_Cmd_Data[79:72]=8'h50;
-	Main_Cmd_Data[87:80]=8'h21;
-	Main_Cmd_Data[95:88]=8'hff;
-	Main_Cmd_Data[103:96]=8'hec;
-	Main_Cmd_Data[111:104]=8'he6;
-	Main_Cmd_Data[119:112]=8'he8;
-	Main_Cmd_Data[127:120]=8'hee;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=85;
-end
-85:
-begin
-	Main_start=0;
-	Main_Current_State=86;
-end
-86:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=87;
-	end
-end
-87:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h21;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h0c;
-	Main_Cmd_Data[39:32]=8'hf6;
-	Main_Cmd_Data[47:40]=8'hfb;
-	Main_Cmd_Data[55:48]=8'h05;
-	Main_Cmd_Data[63:56]=8'hc0;
-	Main_Cmd_Data[71:64]=8'hff;
-	Main_Cmd_Data[79:72]=8'h0f;
-	Main_Cmd_Data[87:80]=8'h23;
-	Main_Cmd_Data[95:88]=8'h17;
-	Main_Cmd_Data[103:96]=8'hf4;
-	Main_Cmd_Data[111:104]=8'hc2;
-	Main_Cmd_Data[119:112]=8'h88;
-	Main_Cmd_Data[127:120]=8'h50;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=88;
-end
-88:
-begin
-	Main_start=0;
-	Main_Current_State=89;
-end
-89:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=90;
-	end
-end
-90:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h21;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h18;
-	Main_Cmd_Data[39:32]=8'h21;
-	Main_Cmd_Data[47:40]=8'hff;
-	Main_Cmd_Data[55:48]=8'hec;
-	Main_Cmd_Data[63:56]=8'he6;
-	Main_Cmd_Data[71:64]=8'he8;
-	Main_Cmd_Data[79:72]=8'hee;
-	Main_Cmd_Data[87:80]=8'hf6;
-	Main_Cmd_Data[95:88]=8'hfb;
-	Main_Cmd_Data[103:96]=8'h05;
-	Main_Cmd_Data[111:104]=8'hc0;
-	Main_Cmd_Data[119:112]=8'hff;
-	Main_Cmd_Data[127:120]=8'h0f;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=91;
-end
-91:
-begin
-	Main_start=0;
-	Main_Current_State=92;
-end
-92:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=93;
-	end
-end
-93:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h22;
-	Main_Cmd_Data[23:16]=8'h04;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h08;
-	Main_Cmd_Data[47:40]=8'h7f;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h5d;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=8;
-	Main_Return_len=0;
-	Main_Current_State=94;
-end
-94:
-begin
-	Main_start=0;
-	Main_Current_State=95;
-end
-95:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=96;
-	end
-end
-96:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h23;
-	Main_Cmd_Data[23:16]=8'h07;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h01;
-	Main_Cmd_Data[47:40]=8'h05;
-	Main_Cmd_Data[55:48]=8'h0b;
-	Main_Cmd_Data[63:56]=8'h05;
-	Main_Cmd_Data[71:64]=8'h02;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h03;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=11;
-	Main_Return_len=0;
-	Main_Current_State=97;
-end
-97:
-begin
-	Main_start=0;
-	Main_Current_State=98;
-end
-98:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=99;
-	end
-end
-99:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h30;
-	Main_Cmd_Data[23:16]=8'h0c;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h00;
-	Main_Cmd_Data[47:40]=8'h00;
-	Main_Cmd_Data[55:48]=8'h00;
-	Main_Cmd_Data[63:56]=8'h00;
-	Main_Cmd_Data[71:64]=8'h00;
-	Main_Cmd_Data[79:72]=8'h00;
-	Main_Cmd_Data[87:80]=8'h00;
-	Main_Cmd_Data[95:88]=8'h00;
-	Main_Cmd_Data[103:96]=8'h00;
-	Main_Cmd_Data[111:104]=8'h00;
-	Main_Cmd_Data[119:112]=8'h00;
-	Main_Cmd_Data[127:120]=8'h00;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=16;
-	Main_Return_len=0;
-	Main_Current_State=100;
-end
-100:
-begin
-	Main_start=0;
-	Main_Current_State=101;
-end
-101:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=102;
-	end
-end
-102:
-begin
-	Main_Cmd_Data[7:0]=8'h11;
-	Main_Cmd_Data[15:8]=8'h40;
-	Main_Cmd_Data[23:16]=8'h08;
-	Main_Cmd_Data[31:24]=8'h00;
-	Main_Cmd_Data[39:32]=8'h38;
-	Main_Cmd_Data[47:40]=8'h0d;
-	Main_Cmd_Data[55:48]=8'hdd;
-	Main_Cmd_Data[63:56]=8'hdd;
-	Main_Cmd_Data[71:64]=8'h44;
-	Main_Cmd_Data[79:72]=8'h44;
-	Main_Cmd_Data[87:80]=8'h20;
-	Main_Cmd_Data[95:88]=8'hfe;
-	Main_Cmd=1;
-	Main_start=1;
-	Main_Data_len=12;
-	Main_Return_len=0;
-	Main_Current_State=103;
-end
-103:
-begin
-	Main_start=0;
-	Main_Current_State=104;
-end
-104:
-begin
-	if(spi_op_done)
-	begin
-		Main_Current_State=105;
-	end
-end
-
-
-
 
 		//===set_frr_ctl(void)====
 		105:
@@ -2226,7 +1387,7 @@ end
 				Main_Current_State=154;
 			end
 		end
-		154: //循环校验
+		154: //循环校验 CRC
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -2341,14 +1502,25 @@ end
 					tx_state=3'b000;
 					Main_Current_State=180;
 				end
+				else
+				begin
+					Main_Current_State=173;
+					config_cmd_start_flag=0;
+					Config_read_sram_done=1;
+				end
 			end
 		end
-		
+		173:
+		begin
+			Config_read_sram_done=0;
+			reset_n=0;
+			Main_Current_State=0;
+		end
 		
 		//状态转化为RX
 		180:
 		begin
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd_Data[7:0]=8'h32;
 				Main_Cmd_Data[15:8]=8'h00;
@@ -2468,7 +1640,7 @@ end
 		130:
 		begin
 			led[2]=1;
-			if(!SRAM_empty&&!spi_Using)
+			if(!SRAM_empty&&!spi_Using_wire)
 			begin
 				Main_Cmd=5;
 				Main_start=1;
@@ -2496,7 +1668,7 @@ end
 		end
 		190:
 		begin
-			if(!SRAM_empty&&!spi_Using)
+			if(!SRAM_empty&&!spi_Using_wire)
 			begin
 				Main_Cmd=5;
 				Main_start=1;
@@ -2515,17 +1687,62 @@ end
 				Data_Len_to_Send=Main_Data_Check[7:0];
 				if(SRAM_count*2>=Data_Len_to_Send)
 				begin
-					Main_Current_State=133;
+					Main_Current_State=193;
 				end	
 			end
 		end
-		
+
+		//CCA,LBT,...//
+		193:
+		begin
+			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
+			begin
+				Main_Cmd=1;
+				Main_Cmd_Data[7:0]=8'h22; //GET_MODEM_STATUS
+				Main_Cmd_Data[15:8]=8'hff;
+				Main_Data_len=2;
+				Main_Return_len=3;//only needs 3byte (third is CURR_RSSI)
+				Main_start=1;
+				Main_Current_State=194;	
+			end
+		end
+		194:
+		begin
+			Main_start=0;
+			Main_Current_State=195;
+		end
+		195:
+		begin
+			if(spi_op_done)
+			begin
+				Si4463_RSSI_Curr=Main_Return_Data[7:0]; //CURR_RSSI (Reverse sequence of addr 返回3字节，用[7:0]取得最后一个字节)
+				if(Si4463_RSSI_Curr>`RSSI_THRESHOLD)
+				begin
+					delay_mtime_3=rand_num_wire;
+					delay_start_3=1;
+					Main_Current_State=196;
+				end
+				else
+				begin
+					Main_Current_State=133;
+				end
+			end
+		end
+		196:
+		begin
+			if(delay_int_3)
+			begin
+				delay_start_3=0;
+				Main_Current_State=193;
+			end			
+		end
+				
 		/////如果SPI正在被使用则等待，否则发送命令切换状态为tx_tune///////
 		
 		////切换状态0x34 05 TX_TUNE
 		133:
 		begin
-			if(!spi_Using&&!irq_dealing&&!rx_start&&packets_incoming==0)
+			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
 				enable_irq_sending=0;
 				Main_Cmd=1;
@@ -2553,7 +1770,7 @@ end
 		///重置FIFO
 		136: //0x15 03
 		begin
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd=1;
 				Main_Cmd_Data[7:0]=8'h15;
@@ -2579,7 +1796,7 @@ end
 		//设置需要发送的数据包的长度
 		200:
 		begin
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd_Data[7:0]=8'h11;
 				Main_Cmd_Data[15:8]=8'h12;
@@ -2611,7 +1828,7 @@ end
 		
 		139:
 		begin
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd=2;
 				Main_Data_len=Data_Len_to_Send+1;  //+1是因为要发送0x66命令，导致最大包长度为126,再去掉包长度，则只剩125字节
@@ -2645,7 +1862,7 @@ end
 		/////////发送命令，开始发送数据///////////
 		142:
 		begin
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd=1;
 				Main_start=1;
@@ -2662,6 +1879,7 @@ end
 		143:
 		begin
 			Main_start=0;
+			tx_state=`TX;
 			Main_Current_State=144;
 		end
 		144:
@@ -2669,7 +1887,7 @@ end
 			if(spi_op_done)
 			begin
 				enable_irq_sending=1;
-				tx_state=`TX;
+				
 				Main_Current_State=145;
 			end
 		end
@@ -2706,7 +1924,7 @@ end
 		146:
 		begin
 			//切换到RX状态
-			if(!spi_Using)
+			if(!spi_Using_wire)
 			begin
 				Main_Cmd_Data[7:0]=8'h32;
 				Main_Data_len=1;
@@ -2752,12 +1970,13 @@ begin
 	if(!reset_n)
 	begin
 		Irq_Current_State=0;
-		Recv_Current_State=0;
-		rx_flag=0;
+
+		Syncirq_Current_State=3;
+
 		tx_flag=0;
 		tx_done=0;
 		irq_dealing=0;
-		rx_start=0;
+
 		Int_start=0;
 		//led[0]=1'b0;
 		//led[1]=1'b0;
@@ -2775,65 +1994,316 @@ begin
 					begin
 						//led[0]=~led[0];
 						tx_flag=1;
-						rx_flag=0;
+					end
+					else
+					begin
+						tx_flag=0;
+					end
+					irq_dealing=1;
+					Irq_Current_State=1;
+				end
+			end
+			1://获取中断码同时清中断
+			begin
+				if(!spi_Using_wire)
+				begin
+					Int_Cmd_Data[7:0]=8'h20;
+					Int_Cmd_Data[15:8]=8'h00;
+					Int_Cmd_Data[23:16]=8'h00;
+					Int_Cmd_Data[31:24]=8'h00;
+					Int_start=1;
+					Int_Cmd=4;
+					Int_Data_len=4;
+					Int_Return_len=8;
+					Irq_Current_State=2;
+				end
+			end
+			2:
+			begin
+				Int_start=0;
+				Irq_Current_State=3;
+			end
+			3:
+			begin
+				if(spi_op_done)
+				begin
+					Si4463_Ph_Status=Int_Return_Data[47:40];//PH_PEND
+					Si4463_Modem_Status=Int_Return_Data[31:24];
+					if(tx_flag==1)
+					begin
+						Irq_Current_State=4;//默认发送后给发送完成中断
+					end
+					else if((Si4463_Ph_Status&8'h08)==8'b00001000) //CRC_ERROR
+					begin
+						led[0]=~led[0];
+						//重置fifo并进入RX状态
+						//最后irq_dealing=0;
+						Irq_Current_State=16;
+					end
+					else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
+					begin
+						led[1]=~led[1];
+						Irq_Current_State=6;
+					end
+					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
+					begin
+						packets_incoming=packets_incoming+1'b1;
+						Syncirq_Current_State=0;
+						
+						Irq_Current_State=0;
+					end
+					else
+					begin
+						Irq_Current_State=0;
+						irq_dealing=0;
+					end
+				end
+			end
+			4://处理发送中断
+			begin
+				tx_done=1;
+				Irq_Current_State=5;
+			end
+			5:
+			begin
+				if(tx_state_wire==`RX) //等待主函数切换为RX状态
+				begin
+					tx_flag=0;
+					tx_done=0;
+					irq_dealing=0;
+					Irq_Current_State=0;
+				end
+			end			
+			6://处理接收中断：
+			begin
+				if(!SRAM_AlmostFull) //剩余的SRAM空间足以容纳一个数据包
+				begin
+					Irq_Current_State=7;
+				end
+				else //否则直接放弃改数据包，首先清空FIFO
+				begin
+					Irq_Current_State=16;
+				end
+			end
+			7://获取该数据包的RSSI值
+			begin
+				if(!spi_Using_wire)
+				begin
+					Int_Cmd_Data[7:0]=8'h53; //FRR_C_READ for RSSI LATCHED of SYNC
+					Int_start=1;
+					Int_Cmd=6;
+					Int_Data_len=1;
+					Int_Return_len=1;
+					Irq_Current_State=8;
+				end
+			end
+			8:
+			begin
+				Int_start=0;
+				Irq_Current_State=9;
+			end
+			9:
+			begin
+				if(spi_op_done)
+				begin
+					Si4463_RSSI_RecvPacket=Int_Return_Data[7:0];
+					Irq_Current_State=10;
+				end
+			end
+			10://写入两个字节的标志位
+			begin
+				Int_Cmd_Data[7:0]=8'hd4;
+				Int_Cmd_Data[15:8]=8'h2d; 
+				Int_Data_len=2;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=7;
+				Irq_Current_State=11;
+			end
+			11:
+			begin
+				Int_start=0;
+				Irq_Current_State=12;
+			end
+			12:
+			begin
+				if(spi_op_done)
+				begin	
+					Irq_Current_State=13;
+				end
+			end
+			13: //发送接收命令，但是如果直接读取数据，可能会出错，因为如果SRAM已经满则，可能会导致阻塞到接收数据的模块，导致用户无法发送数据。
+			begin    //这里涉及缓冲区已满时接收数据的丢弃策略
+				Int_Data_len=0;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=3;
+				Irq_Current_State=14;
+			end
+			14:
+			begin
+				Int_start=0;
+				Irq_Current_State=15;
+			end
+			15:
+			begin
+				if(spi_op_done)
+				begin		
+					//rx_start=0;
+					//frame_recved_int=1;
+					if(packets_incoming==1)
+					begin
+						Irq_Current_State=16;
+					end
+					else
+					begin
+						Irq_Current_State=16;
+					end
+				end
+			end
+			
+			16: //重置FIFO
+			begin			
+				if(!spi_Using_wire)
+				begin
+					Int_Cmd_Data[7:0]=8'h15;
+					Int_Cmd_Data[15:8]=8'h03; 
+					Int_Data_len=2;
+					Int_Return_len=0;
+					Int_start=1;
+					Int_Cmd=4;
+					Irq_Current_State=17;
+				end
+			end
+			17:
+			begin
+				Int_start=0;
+				Irq_Current_State=18;
+			end
+			18:
+			begin
+				if(spi_op_done)
+				begin
+					Irq_Current_State=19;
+				end
+			end
+			19://转换到Rx状态
+			begin
+				Int_Cmd_Data[7:0]=8'h32; 
+				Int_Data_len=1;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=4;
+				Irq_Current_State=20;
+			end
+			20:
+			begin
+				Int_start=0;
+				Irq_Current_State=21;
+			end
+			21:
+			begin
+				if(spi_op_done)
+				begin			
+					//rx_start=0;
+					//packets_incoming=0;
+					//frame_recved_int=1;
+					Irq_Current_State=22;
+				end
+			end
+			22://查看状态转化是否成功
+			begin
+				Int_Cmd_Data[7:0]=8'h33;
+				Int_Data_len=1;
+				Int_Return_len=2;
+				Int_start=1;
+				Int_Cmd=4;
+				Irq_Current_State=23;
+			end
+			23:
+			begin
+				Int_start=0;
+				Irq_Current_State=24;
+			end
+			24:
+			begin
+				if(spi_op_done)
+				begin				
+					if(Int_Return_Data[15:8]==8'h08)
+					begin
+						packets_incoming=0;
+						//frame_recved_int=1;
+						Syncirq_Current_State=3;
+						irq_dealing=0;//完成中断流程
+						Irq_Current_State=0;
+					end
+					else
+					begin
+						Irq_Current_State=19;
+					end		
+				end
+			end
+		endcase
+		
+		///////检测同步头中断后没有收包中断/////
+		/* 清空FIFO，重新进入RX状态，最后清除packets_incoming*/
+		case (Syncirq_Current_State)
+			0:
+			begin
+				if(packets_incoming)
+				begin
+					delay_start_4=1;
+					delay_mtime_4=`SYNC_IRQ_TIMEOUT;
+					if(delay_int_4)
+					begin
+						
+						delay_start_4=0;
+						Syncirq_Current_State=1;
+					end
+				end
+			end
+			1://恢复状态
+			begin
+				Irq_Current_State=16;
+				Syncirq_Current_State=3;
+			end
+			3:
+			begin
+				delay_start_4=0;
+			end
+		endcase
+	end//if(!reset_n)
+end
+endmodule
+
+/*	
+			
+			0:
+			begin
+				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
+				begin
+					if(tx_state_wire==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
+					begin
+						//led[0]=~led[0];
+						tx_flag=1;
+						rx_flag=~tx_flag;
 						irq_dealing=1;
 						Irq_Current_State=4;
 					end
 					else
 					begin
 						tx_flag=0;
-						rx_flag=0;  ///这里可能出现问题
+						rx_flag=tx_flag;  ///这里可能出现问题
 						irq_dealing=1;
 						Irq_Current_State=1;
 					end
 				end
 			end
-			/*
-			9:
-			begin
-				if(!spi_Using)
-				begin
-					Int_Cmd_Data[7:0]=8'h20;
-					Int_Cmd_Data[15:8]=8'hFB;
-					Int_Cmd_Data[23:16]=8'h7F;
-					Int_Cmd_Data[31:24]=8'h7F;
-					Int_start=1;
-					Int_Cmd=4;
-					Int_Data_len=4;
-					Int_Return_len=8;
-					Irq_Current_State=10;
-				end
-			end
-			10:
-			begin
-				Int_start=0;
-				Irq_Current_State=11;
-			end
-			11:
-			begin
-				if(spi_op_done)
-				begin
-					Si4463_Ph_Status=Int_Return_Data[47:40];
-					if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
-					begin
-						tx_flag=1;
-						Irq_Current_State=1;
-					end
-					if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
-					begin
-						Irq_Current_State=1;
-						rx_flag=1;
-					end
-					else
-					begin
-						Irq_Current_State=1;
-					end
-				end
-			end*/
+	
 			//////读取中断状态，判断中断源
 			1:
 			begin
-				if(!spi_Using)
+				if(!spi_Using_wire)
 				begin
 					Int_Cmd_Data[7:0]=8'h50;
 					Int_start=1;
@@ -2856,25 +2326,12 @@ begin
 					Si4463_Ph_Status=Int_Return_Data[15:8]; //PH_PEND状态
 					Si4463_Modem_Status=Int_Return_Data[7:0];
 					//Si4463_Ph_Status_1=Si4463_Ph_Status;
-					/*
-					if((Si4463_Ph_Status &8'h22)==8'b00100010 || (Si4463_Ph_Status&8'h22)==8'b00100000) //发送完成中断
-					begin
-						led[0]=~led[0];
-						tx_flag=1;
-						Irq_Current_State=4;
-					end*/
-					/*
-					if(tx_state==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
-					begin
-						//led[0]=~led[0];
-						tx_flag=1;
-						Irq_Current_State=4;
-					end*/
+	
 					if((Si4463_Ph_Status&8'h08)==8'b00001000) //CRC_ERROR
 					begin
 						led[0]=~led[0];
-						Recv_Current_State=10;//让recv线程重置fifo并进入RX状态
-						Irq_Current_State=4;
+						
+						Irq_Current_State=9;
 					end
 					else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 					begin
@@ -2885,6 +2342,7 @@ begin
 					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
 					begin
 						packets_incoming=packets_incoming+1'b1;
+						Syncirq_Current_State=0;
 						Irq_Current_State=4;
 					end
 					else
@@ -2896,7 +2354,7 @@ begin
 			
 			4: //清除中断
 			begin
-				if(!spi_Using)
+				if(!spi_Using_wire)
 				begin
 					Int_Cmd_Data[7:0]=8'h20;
 					Int_Cmd_Data[15:8]=8'h00;
@@ -2956,231 +2414,17 @@ begin
 					Irq_Current_State=0;
 				end
 			end
+			
+			9://CRC ERROR! 清中断，清FIFO，重新进入RX
+			
+			
+			
 			///如果是发送中断，置tx_done 为1
 			///如果是接收中断，提示用户开始接收数据,置rx_start为1,接收完成后，置为0/////////
-			default:
-			begin
-				irq_dealing=0;
-				Irq_Current_State=0;
-			end
+//			default:
+//			begin
+//				irq_dealing=0;
+//				Irq_Current_State=0;
+//			end
 		endcase
-		
-		///////接收数据帧程序/////////////////
-		case (Recv_Current_State)
-			0:
-			begin
-				if(rx_start) //当接收数据中断到达时，rx_start信号置1
-				begin
-					if(!SRAM_AlmostFull) //剩余的SRAM空间足以容纳一个数据包
-					begin
-						Recv_Current_State=19;
-					end
-					else //否则直接放弃改数据包，首先清空FIFO
-					begin
-							Recv_Current_State=7;
-					end
-				end
-			end
-			
-			19://获取该数据包的RSSI值
-			begin
-				if(!spi_Using)
-				begin
-					Int_Cmd_Data[7:0]=8'h53; //FRR_C_READ for RSSI LATCHED of SYNC
-					Int_start=1;
-					Int_Cmd=6;
-					Int_Data_len=1;
-					Int_Return_len=1;
-					Recv_Current_State=20;
-				end
-			end
-			20:
-			begin
-				Int_start=0;
-				Recv_Current_State=21;
-			end
-			21:
-			begin
-				if(spi_op_done)
-				begin
-					Si4463_RSSI_RecvPacket=Int_Return_Data[7:0];
-					Recv_Current_State=16;
-				end
-			end
-			16:
-			begin
-				Int_Cmd_Data[7:0]=8'hd4;
-				Int_Cmd_Data[15:8]=8'h2d; 
-				Int_Data_len=2;
-				Int_Return_len=0;
-				Int_start=1;
-				Int_Cmd=7;
-				Recv_Current_State=17;
-			end
-			17:
-			begin
-				Int_start=0;
-				Recv_Current_State=18;
-			end
-			18:
-			begin
-				if(spi_op_done)
-				begin	
-					Recv_Current_State=4;
-				end
-			end
-			/*
-			1:
-			begin
-				if(!spi_Using)
-				begin
-					Int_Cmd_Data[7:0]=8'h15;
-					Int_Cmd_Data[15:8]=8'h00; 
-					Int_Data_len=2;
-					Int_Return_len=2;
-					Int_start=1;
-					Int_Cmd=4;
-					Recv_Current_State=2;
-				end
-			end
-			2:
-			begin
-				Int_start=0;
-				Recv_Current_State=3;
-			end
-			3:
-			begin
-				if(spi_op_done)
-				begin			
-					//rx_flag=0;
-					Si4463_Ph_Status_1=Int_Return_Data[15:8];
-					Recv_Current_State=4;
-				end
-			end*/
-			4: //发送接收命令，但是如果直接读取数据，可能会出错，因为如果SRAM已经满则，可能会导致阻塞到接收数据的模块，导致用户无法发送数据。
-			begin    //这里涉及缓冲区已满时接收数据的丢弃策略
-				Int_Data_len=0;
-				Int_Return_len=0;
-				Int_start=1;
-				Int_Cmd=3;
-				Recv_Current_State=5;
-			end
-			5:
-			begin
-				Int_start=0;
-				Recv_Current_State=6;
-			end
-			6:
-			begin
-				if(spi_op_done)
-				begin		
-					//rx_start=0;
-					//frame_recved_int=1;
-					if(packets_incoming==1)
-					begin
-						Recv_Current_State=10;
-					end
-					else
-					begin
-						Recv_Current_State=10;
-					end
-				end
-			end
-			7:
-			begin
-				Int_Cmd_Data[7:0]=8'h32; //转换到Rx状态
-				Int_Data_len=1;
-				Int_Return_len=0;
-				Int_start=1;
-				Int_Cmd=4;
-				Recv_Current_State=8;
-			end
-			8:
-			begin
-				Int_start=0;
-				Recv_Current_State=9;
-			end
-			9:
-			begin
-				if(spi_op_done)
-				begin			
-					//rx_start=0;
-					//packets_incoming=0;
-					//frame_recved_int=1;
-					Recv_Current_State=13;
-				end
-			end
-			
-			
-			10: //重置FIFO
-			begin			
-				if(!spi_Using)
-				begin
-					Int_Cmd_Data[7:0]=8'h15;
-					Int_Cmd_Data[15:8]=8'h03; 
-					Int_Data_len=2;
-					Int_Return_len=0;
-					Int_start=1;
-					Int_Cmd=4;
-					Recv_Current_State=11;
-				end
-			end
-			11:
-			begin
-				Int_start=0;
-				Recv_Current_State=12;
-			end
-			12:
-			begin
-				if(spi_op_done)
-				begin
-					Recv_Current_State=7;
-				end
-			end
-			
-			13://查看状态转化是否成功
-			begin
-				Int_Cmd_Data[7:0]=8'h33;
-				Int_Data_len=1;
-				Int_Return_len=2;
-				Int_start=1;
-				Int_Cmd=4;
-				Recv_Current_State=14;
-			end
-			14:
-			begin
-				Int_start=0;
-				Recv_Current_State=15;
-			end
-			15:
-			begin
-				if(spi_op_done)
-				begin				
-					if(Int_Return_Data[15:8]==8'h08)
-					begin
-						rx_start=0;
-						packets_incoming=0;
-						//frame_recved_int=1;
-						Recv_Current_State=0;
-					end
-					else
-					begin
-						Recv_Current_State=7;
-					end		
-				end
-			end
-		
-/*	
-			default:
-			begin
-				rx_start=0;
-				tx_done=0;
-				Recv_Current_State=0;
-			end
 */
-		endcase
-	end
-end
-
-
-endmodule

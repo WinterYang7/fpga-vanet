@@ -17,6 +17,10 @@ module Slave_Ctrl(
 	SRAM_empty,
 	SRAM_count,
 	
+	Config_write_sram,
+	Config_write_sram_done,	
+
+	
 	//帧接收中断,与wireless_ctrl连接
 	//frame_recved_int,
 	
@@ -26,10 +30,14 @@ module Slave_Ctrl(
 	Spi_Current_State_1,
 	Spi_rrdy,
 	Spi_trdy,
-	Data_from_spi
+	Data_from_spi,
 	
-	
+	//用于输出当前状态
+	Slave_Ctrl_Status
 );
+output [7:0] Slave_Ctrl_Status;
+assign Slave_Ctrl_Status=Spi_Current_State;
+
 output Data_from_spi;
 output Spi_trdy;
 output Spi_rrdy;
@@ -44,9 +52,12 @@ output	miso;
 input	sclk;
 //output	signal_int;
 	
-	//与SRAM的接口
-output reg	SRAM_read;
-output reg  SRAM_write;
+//与SRAM的接口
+output reg Config_write_sram=0;
+output reg Config_write_sram_done=0;	
+
+output reg	SRAM_read=0;
+output reg  SRAM_write=0;
 input	SRAM_hint;
 output reg [15:0]	Data_to_sram;
 input[15:0]	Data_from_sram;
@@ -61,8 +72,8 @@ assign slave_reset_n=0;
 wire slave_ss_n;
 assign slave_ss_n=0;
 
-wire slave_irq;
-reg[7:0] slave_data_to_spi;
+wire slave_irq; //SPI slave接到一个字节给一个脉冲
+reg[7:0] slave_data_to_spi; //FPGA提供给Galileo的数据
 wire[7:0] slave_data_from_spi;
 reg[7:0] slave_data_from_spi_reg;
 reg slave_write;
@@ -96,18 +107,26 @@ wire slave_trdy;
 
 
 */
-reg[4:0] Spi_Current_State=0;
+reg[6:0] Spi_Current_State=0;
 reg[7:0] Data_len=0;
 reg[7:0] Sended_count=0;
 reg Byte_flag=0;
 reg irq_noted=0;
 //reg tx_flag=0;
 //reg rx_flag=0;
+reg[15:0] Config_len=0;
+reg[15:0] Config_count=0;
 
 //中断决策
 reg[7:0] packet_len=0;
 reg spi_send_end=0; //发送给CPU的数据已经发送完，说明准备接收下一个中断
 reg spi_read_sram=0; //spi读取SRAM的使能信号
+
+
+//reset_n
+reg reset_n=1;
+wire reset_n_wire;
+assign reset_n_wire=reset_n;
 
 always@(posedge clk)
 begin
@@ -123,6 +142,14 @@ begin
 		3:
 		begin
 			case(slave_data_from_spi_reg)
+				8'b00010001: //写配置文件命令0x11
+				begin
+					Sended_count=0;
+					Byte_flag=0;
+					Config_len[15:0]=16'b0;
+					Config_count[15:0]=16'b0;
+					Spi_Current_State=30;
+				end
 				8'b01100110: //CPU发送数据0x66
 				begin
 					Data_to_sram[15:8]=8'h2D;
@@ -144,6 +171,127 @@ begin
 					Spi_Current_State=0;
 				end
 			endcase
+		end
+		/**
+		 * 接收配置文件，配置文件第一个字节为整个配置的字节长度（两个字节宽）
+		 * 30~
+		 */
+		30://接收配置长度
+		begin
+			if(slave_irq)
+			begin
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=31;
+			end
+		end
+		31://接收配置长度
+		begin
+			if(!Byte_flag)
+			begin
+				Config_len[15:8]=slave_data_from_spi_reg;//长度第一个字节
+				Byte_flag=~Byte_flag;
+				Spi_Current_State=30;//接收第二个字节
+			end
+			else
+			begin
+				Config_len[7:0]=slave_data_from_spi_reg;//长度第二个字节
+				Spi_Current_State=32;//开始接收配置数据
+				Byte_flag=~Byte_flag;
+			end
+		end
+		32://配置长度写入sram
+		begin
+			Data_to_sram[15:0]=Config_len[15:0];
+			Config_write_sram=1;
+			Spi_Current_State=33;
+		end
+		33:
+		begin
+			Config_write_sram=0;
+			if(SRAM_hint)
+			begin
+				
+				Spi_Current_State=34;
+			end
+		end
+		34://接收配置数据
+		begin
+			if(slave_irq)
+			begin
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=35;
+			end
+		end
+		35:
+		begin
+			if(!Byte_flag)
+			begin
+				Data_to_sram[15:8]=slave_data_from_spi_reg;
+				Byte_flag=~Byte_flag;
+				Config_count=Config_count+1'b1;
+				if(Config_count>=Config_len)
+				begin
+					Data_to_sram[7:0]=8'b000;
+					Byte_flag=~Byte_flag;
+					Spi_Current_State=36;//接收完毕
+				end
+				else
+				begin
+					Spi_Current_State=34;//继续接收
+				end
+			end
+			else
+			begin
+				Data_to_sram[7:0]=slave_data_from_spi_reg;
+				Byte_flag=~Byte_flag;
+				Config_count=Config_count+1'b1;
+				Spi_Current_State=36;//接收了2个字节，写入sram
+			end
+		end
+		36://配置数据写入sram
+		begin
+			Config_write_sram=1;
+			Spi_Current_State=37;
+		end
+		37:
+		begin
+			if(SRAM_hint)
+			begin
+				Config_write_sram=0;
+				if(Config_count<Config_len)
+				begin
+					Spi_Current_State=34; //配置数据还没有接收完毕
+				end
+				else
+				begin
+					Spi_Current_State=38;
+				end
+			end
+		end
+		38://配置文件接收完毕，给SRAM control一个复位信号，复位给Galileo的中断信号
+		begin
+			Config_write_sram_done=1;
+			Spi_Current_State=39;
+		end
+		39:
+		begin
+			Config_write_sram_done=0;
+			Spi_Current_State=40;//0;
+		end
+		40:
+		begin
+			irq_noted=0;
+			Spi_Current_State=41;
+		end
+		41:
+		begin
+			reset_n=0;
+			Spi_Current_State=42;
+		end
+		42:
+		begin
+			reset_n=1;
+			Spi_Current_State=0;
 		end
 		4:
 		begin
@@ -177,7 +325,7 @@ begin
 			end
 		end
 		//将数据长度写入SRAM
-		9:
+		9: /*一个第一个长度是给控制程序识别的整体长度，第二个长度是要发送出去的数据包长度*/
 		begin
 			if(!SRAM_full)
 			begin
@@ -370,6 +518,13 @@ reg[2:0] Irq_Current_State=0;
 
 always@(posedge clk)
 begin
+	if(!reset_n_wire)
+	begin
+		Irq_Current_State=0;
+		SRAM_read=0;
+		cpu_recv_int=1;
+	end
+
 	case (Irq_Current_State)
 		0:
 		begin
@@ -442,7 +597,9 @@ begin
 				end
 			end
 			else
+			begin
 					Irq_Current_State=0;
+			end
 		end
 		5:
 		begin

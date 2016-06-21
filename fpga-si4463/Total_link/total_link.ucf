@@ -71,3 +71,8 @@ NET "Spi_Current_State[4]" LOC = P5;
 NET "Spi_Current_State[5]" LOC = P117;
 NET "Spi_Current_State[6]" LOC = P121;
 NET "Spi_Current_State[7]" LOC = P127;
+
+# PlanAhead Generated physical constraints 
+
+NET "debug_wire[0]" LOC = P141;
+NET "debug_wire[1]" LOC = P1;
