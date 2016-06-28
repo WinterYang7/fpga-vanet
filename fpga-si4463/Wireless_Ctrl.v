@@ -35,6 +35,9 @@ module Wireless_Ctrl(
 	//接收完一个帧后的脉冲信号
 	//frame_recved_int,
 	
+	//FLAGS
+	
+	
 	//用于指示当前状态的LED
 	led,
 	Si4463_Ph_Status_1,
@@ -48,7 +51,7 @@ output reg [3:0] led=4'b0000;
 
 output [1:0] wireless_debug;//for DUBUG
 assign wireless_debug[0]=tx_done;//irq_dealing_wire;//packets_incoming[0];//;
-assign wireless_debug[1]=tx_state[0];//tx_flag;//rx_start_wire;//packets_incoming[1];//
+assign wireless_debug[1]=tx_flag;//tx_state[0];//;//rx_start_wire;//packets_incoming[1];//
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
 //SRAM接口
@@ -157,7 +160,7 @@ end
 /////延时函数1///////////////
 reg delay_start=0;
 reg[31:0] delay_count=0;
-reg[7:0] delay_mtime=8'h00;
+reg[7:0] delay_mtime=0;
 reg delay_int=0;
 
 
@@ -179,7 +182,7 @@ end
 /////延时函数2///////////////
 reg delay_start_2=0;
 reg[31:0] delay_count_2=0;
-reg[7:0] delay_mtime_2=8'h00;
+reg[7:0] delay_mtime_2=0;
 reg delay_int_2=0;
 
 always@(posedge clk)
@@ -200,7 +203,7 @@ end
 /////延时函数3///////////////
 reg delay_start_3=0;
 reg[31:0] delay_count_3=0;
-reg[7:0] delay_mtime_3=8'h00;
+reg[7:0] delay_mtime_3=0;
 reg delay_int_3=0;
 
 always@(posedge clk)
@@ -221,7 +224,7 @@ end
 /////延时函数4///////////////
 reg delay_start_4=0;
 reg[31:0] delay_count_4=0;
-reg[7:0] delay_mtime_4=8'h00;
+reg[7:0] delay_mtime_4=0;
 reg delay_int_4=0;
 
 always@(posedge clk)
@@ -256,18 +259,18 @@ end
 	spi_Using  bool值，代表spi模块是否正在被使用
 	spi_start  bool值，设置为1，代表准备开始发送或接收数据
 */
-reg [127:0] Main_Cmd_Data;  //主程序中的命令缓冲，包括启动配置和GetCTS
-reg [31:0] Int_Cmd_Data;   //中断程序中的命令缓冲，主要是查看寄存器状态和GetCTS
+reg [127:0] Main_Cmd_Data=0;  //主程序中的命令缓冲，包括启动配置和GetCTS
+reg [31:0] Int_Cmd_Data=0;   //中断程序中的命令缓冲，主要是查看寄存器状态和GetCTS
 reg [79:0] Main_Return_Data=0;  //返回数据的缓冲区
 reg [79:0] Int_Return_Data=0;   //要接收的数据长度
-reg [7:0] Main_Data_len;  //要发送的数据长度
-reg [4:0] Main_Return_len;  //GetCTS后返回的数据长度
-reg [7:0] Int_Data_len;
-reg [3:0] Int_Return_len;
+reg [7:0] Main_Data_len=0;  //要发送的数据长度
+reg [4:0] Main_Return_len=0;  //GetCTS后返回的数据长度
+reg [7:0] Int_Data_len=0;
+reg [3:0] Int_Return_len=0;
 reg [2:0] Main_Cmd;   //主函数中的命令
 reg [2:0] Int_Cmd;	//中断函数中的命令
-reg Main_start;  //Main表示想要开始发送数据，需要提前检查Spi_Using
-reg Int_start;   //Int表示想要开始发送数据，需要提前检查Spi_Using
+reg Main_start=0;  //Main表示想要开始发送数据，需要提前检查Spi_Using
+reg Int_start=0;   //Int表示想要开始发送数据，需要提前检查Spi_Using
 reg[31:0] Main_Data_Check=0;
 
 
@@ -1167,11 +1170,11 @@ begin
 		7:
 		begin
 			Config_read_sram_done=0;
-			Main_Current_State=105;
+			Main_Current_State=8;
 		end
 
 		//===set_frr_ctl(void)====
-		105:
+		8:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h02;
@@ -1185,22 +1188,22 @@ begin
 			Main_start=1;
 			Main_Data_len=8;
 			Main_Return_len=0;
-			Main_Current_State=106;
+			Main_Current_State=9;
 		end
-		106:
+		9:
 		begin
 			Main_start=0;
-			Main_Current_State=107;
+			Main_Current_State=10;
 		end
-		107:
+		10:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=108;
+				Main_Current_State=11;
 			end
 		end
 		//===Function_set_tran_property()====
-		108:
+		11:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1211,21 +1214,21 @@ begin
 			Main_start=1;
 			Main_Data_len=5;
 			Main_Return_len=0;
-			Main_Current_State=109;
+			Main_Current_State=12;
 		end
-		109:
+		12:
 		begin
 			Main_start=0;
-			Main_Current_State=110;
+			Main_Current_State=13;
 		end
-		110:
+		13:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=111;
+				Main_Current_State=14;
 			end
 		end
-		111:
+		14:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1238,21 +1241,21 @@ begin
 			Main_start=1;
 			Main_Data_len=7;
 			Main_Return_len=0;
-			Main_Current_State=112;
+			Main_Current_State=15;
 		end
-		112:
+		15:
 		begin
 			Main_start=0;
-			Main_Current_State=113;
+			Main_Current_State=16;
 		end
-		113:
+		16:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=114;
+				Main_Current_State=17;
 			end
 		end
-		114:
+		17:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1266,21 +1269,21 @@ begin
 			Main_start=1;
 			Main_Data_len=8;
 			Main_Return_len=0;
-			Main_Current_State=115;
+			Main_Current_State=18;
 		end
-		115:
+		18:
 		begin
 			Main_start=0;
-			Main_Current_State=116;
+			Main_Current_State=19;
 		end
-		116:
+		19:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=117;
+				Main_Current_State=20;
 			end
 		end
-		117:
+		20:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1294,21 +1297,21 @@ begin
 			Main_start=1;
 			Main_Data_len=8;
 			Main_Return_len=0;
-			Main_Current_State=118;
+			Main_Current_State=21;
 		end
-		118:
+		21:
 		begin
 			Main_start=0;
-			Main_Current_State=119;
+			Main_Current_State=22;
 		end
-		119:
+		22:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=120;
+				Main_Current_State=23;
 			end
 		end
-		120:
+		23:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1322,21 +1325,21 @@ begin
 			Main_start=1;
 			Main_Data_len=8;
 			Main_Return_len=0;
-			Main_Current_State=121;
+			Main_Current_State=24;
 		end
-		121:
+		24:
 		begin
 			Main_start=0;
-			Main_Current_State=122;
+			Main_Current_State=25;
 		end
-		122:
+		25:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=123;
+				Main_Current_State=26;
 			end
 		end
-		123:
+		26:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1348,21 +1351,21 @@ begin
 			Main_start=1;
 			Main_Data_len=6;
 			Main_Return_len=0;
-			Main_Current_State=124;
+			Main_Current_State=27;
 		end
-		124:
+		27:
 		begin
 			Main_start=0;
-			Main_Current_State=125;
+			Main_Current_State=28;
 		end
-		125:
+		28:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=126;
+				Main_Current_State=29;
 			end
 		end
-		126:
+		29:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h00;
@@ -1373,21 +1376,21 @@ begin
 			Main_start=1;
 			Main_Data_len=5;
 			Main_Return_len=0;
-			Main_Current_State=127;
+			Main_Current_State=30;
 		end
-		127:
+		30:
 		begin
 			Main_start=0;
-			Main_Current_State=128;
+			Main_Current_State=31;
 		end
-		128:
+		31:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=154;
+				Main_Current_State=32;
 			end
 		end
-		154: //循环校验 CRC
+		32: //循环校验 CRC
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1398,18 +1401,18 @@ begin
 			Main_start=1;
 			Main_Data_len=5;
 			Main_Return_len=0;
-			Main_Current_State=155;
+			Main_Current_State=33;
 		end
-		155:
+		33:
 		begin
 			Main_start=0;
-			Main_Current_State=156;
+			Main_Current_State=34;
 		end
-		156:
+		34:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=160;
+				Main_Current_State=40;
 			end
 		end
 		
@@ -1453,7 +1456,7 @@ begin
 
 		
 		//需要重置FIFO
-		160:
+		40:
 		begin
 			Main_Cmd_Data[7:0]=8'h15;
 			Main_Cmd_Data[15:8]=8'h03;
@@ -1461,23 +1464,23 @@ begin
 			Main_Return_len=0;
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Current_State=161;
+			Main_Current_State=41;
 		end
-		161:
+		41:
 		begin
 			Main_start=0;
-			Main_Current_State=162;
+			Main_Current_State=42;
 		end
-		162:
+		42:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=170;
+				Main_Current_State=50;
 			end
 		end
 		
 		//检查当前状态
-		170:
+		50:
 		begin
 			Main_Cmd_Data[7:0]=8'h33;
 			Main_Cmd_Data[15:8]=8'h00;
@@ -1485,14 +1488,14 @@ begin
 			Main_Return_len=2;
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Current_State=171;
+			Main_Current_State=51;
 		end
-		171:
+		51:
 		begin
 			Main_start=0;
-			Main_Current_State=172;
+			Main_Current_State=52;
 		end
-		172:
+		52:
 		begin
 			
 			if(spi_op_done)
@@ -1500,17 +1503,17 @@ begin
 				if(Main_Return_Data[15:8]==8'h03)
 				begin
 					tx_state=3'b000;
-					Main_Current_State=180;
+					Main_Current_State=54;
 				end
 				else
 				begin
-					Main_Current_State=173;
+					Main_Current_State=53;
 					config_cmd_start_flag=0;
 					Config_read_sram_done=1;
 				end
 			end
 		end
-		173:
+		53:
 		begin
 			Config_read_sram_done=0;
 			reset_n=0;
@@ -1518,7 +1521,7 @@ begin
 		end
 		
 		//状态转化为RX
-		180:
+		54:
 		begin
 			if(!spi_Using_wire)
 			begin
@@ -1534,21 +1537,21 @@ begin
 				Main_Return_len=0;
 				Main_Cmd=1;
 				Main_start=1;
-				Main_Current_State=181;
+				Main_Current_State=55;
 			end
 		end
-		181:
+		55:
 		begin
 			Main_start=0;
-			Main_Current_State=182;
+			Main_Current_State=56;
 		end
-		182:
+		56:
 		begin
 			if(spi_op_done)
 			begin
 				enable_irq=1;   //开始允许监听中断信号
 				tx_state=`RX;
-				Main_Current_State=130;
+				Main_Current_State=60;
 			end
 		end
 		
@@ -1637,63 +1640,63 @@ begin
 		
 		
 		////判断是否有数据及数据帧长度,如果想要读取数据包长度，可以另外设置一条命令，从SPI中读取SRAM
-		130:
+		60:
 		begin
 			led[2]=1;
 			if(!SRAM_empty&&!spi_Using_wire)
 			begin
-				Main_Cmd=5;
+				Main_Cmd=5; //read from sram
 				Main_start=1;
-				Main_Current_State=131;
+				Main_Current_State=61;
 			end
 		end
-		131:
+		61:
 		begin
 			Main_start=0;
-			Main_Current_State=132;
+			Main_Current_State=62;
 		end
-		132:
+		62:
 		begin
 			if(spi_op_done)
 			begin
 				if(Main_Data_Check[15:0]==16'h2dd4)
 				begin
-					Main_Current_State=190;
+					Main_Current_State=63;
 				end
 				else
 				begin
-					Main_Current_State=130;
+					Main_Current_State=60;
 				end
 			end
 		end
-		190:
+		63:
 		begin
 			if(!SRAM_empty&&!spi_Using_wire)
 			begin
 				Main_Cmd=5;
 				Main_start=1;
-				Main_Current_State=191;
+				Main_Current_State=64;
 			end
 		end
-		191:
+		64:
 		begin
 			Main_start=0;
-			Main_Current_State=192;
+			Main_Current_State=65;
 		end
-		192:
+		65:
 		begin
 			if(spi_op_done)
 			begin
 				Data_Len_to_Send=Main_Data_Check[7:0];
 				if(SRAM_count*2>=Data_Len_to_Send)
 				begin
-					Main_Current_State=193;
+					Main_Current_State=70;
 				end	
 			end
 		end
 
 		//CCA,LBT,...//
-		193:
+		70:
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
@@ -1703,15 +1706,15 @@ begin
 				Main_Data_len=2;
 				Main_Return_len=3;//only needs 3byte (third is CURR_RSSI)
 				Main_start=1;
-				Main_Current_State=194;	
+				Main_Current_State=71;	
 			end
 		end
-		194:
+		71:
 		begin
 			Main_start=0;
-			Main_Current_State=195;
+			Main_Current_State=72;
 		end
-		195:
+		72:
 		begin
 			if(spi_op_done)
 			begin
@@ -1720,27 +1723,27 @@ begin
 				begin
 					delay_mtime_3=rand_num_wire;
 					delay_start_3=1;
-					Main_Current_State=196;
+					Main_Current_State=73;
 				end
 				else
 				begin
-					Main_Current_State=133;
+					Main_Current_State=80;
 				end
 			end
 		end
-		196:
+		73:
 		begin
 			if(delay_int_3)
 			begin
 				delay_start_3=0;
-				Main_Current_State=193;
+				Main_Current_State=70;
 			end			
 		end
 				
 		/////如果SPI正在被使用则等待，否则发送命令切换状态为tx_tune///////
 		
 		////切换状态0x34 05 TX_TUNE
-		133:
+		80:
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
@@ -1751,24 +1754,24 @@ begin
 				Main_start=1;
 				Main_Data_len=2;
 				Main_Return_len=0;
-				Main_Current_State=134;
+				Main_Current_State=81;
 			end
 		end
-		134:
+		81:
 		begin
 			Main_start=0;
-			Main_Current_State=135;
+			Main_Current_State=82;
 		end
-		135:
+		82:
 		begin
 			if(spi_op_done)
 			begin
 				tx_state=`TX_TUNE;
-				Main_Current_State=136;
+				Main_Current_State=83;
 			end
 		end
 		///重置FIFO
-		136: //0x15 03
+		83: //0x15 03
 		begin
 			if(!spi_Using_wire)
 			begin
@@ -1778,23 +1781,23 @@ begin
 				Main_start=1;
 				Main_Data_len=2;
 				Main_Return_len=0;
-				Main_Current_State=137;
+				Main_Current_State=84;
 			end
 		end
-		137:
+		84:
 		begin
 			Main_start=0;
-			Main_Current_State=138;
+			Main_Current_State=85;
 		end
-		138:
+		85:
 		begin
 			if(spi_op_done)
-				Main_Current_State=200;
+				Main_Current_State=90;
 		end
 		
 		
 		//设置需要发送的数据包的长度
-		200:
+		90:
 		begin
 			if(!spi_Using_wire)
 			begin
@@ -1808,25 +1811,25 @@ begin
 				Main_Return_len=0;
 				Main_Cmd=1;
 				Main_start=1;
-				Main_Current_State=201;
+				Main_Current_State=91;
 			end
 		end
-		201:
+		91:
 		begin
 			Main_start=0;
-			Main_Current_State=202;
+			Main_Current_State=92;
 		end
-		202:
+		92:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=139;
+				Main_Current_State=93;
 			end
 		end
 		
 		//////如果SPI正在被使用则等待，否则将数据写入射频模块缓冲区、、、、
 		
-		139:
+		93:
 		begin
 			if(!spi_Using_wire)
 			begin
@@ -1834,23 +1837,23 @@ begin
 				Main_Data_len=Data_Len_to_Send+1;  //+1是因为要发送0x66命令，导致最大包长度为126,再去掉包长度，则只剩125字节
 				Main_Return_len=0;
 				Main_start=1;
-				Main_Current_State=140;
+				Main_Current_State=94;
 			end
 		end
-		140:
+		94:
 		begin
 			Main_start=0;
-			Main_Current_State=141;
+			Main_Current_State=95;
 		end
-		141:
+		95:
 		begin
 			if(spi_op_done)
 			begin
-				Main_Current_State=142;
+				Main_Current_State=100;
 			end
 		end
 		
-		
+/*
 		///等待时隙///////////
 		200:
 		begin
@@ -1859,8 +1862,9 @@ begin
 				Main_Current_State=142;
 			end
 		end
+*/
 		/////////发送命令，开始发送数据///////////
-		142:
+		100:
 		begin
 			if(!spi_Using_wire)
 			begin
@@ -1873,39 +1877,39 @@ begin
 				Main_Cmd_Data[23:16]=8'h60; //RX_TUNE
 				Main_Cmd_Data[31:24]=8'h00;
 				Main_Cmd_Data[39:32]=8'h00;
-				Main_Current_State=143;
+				Main_Current_State=101;
 			end
 		end
-		143:
+		101:
 		begin
 			Main_start=0;
 			tx_state=`TX;
-			Main_Current_State=144;
+			Main_Current_State=102;
 		end
-		144:
+		102:
 		begin
 			if(spi_op_done)
 			begin
 				enable_irq_sending=1;
 				
-				Main_Current_State=145;
+				Main_Current_State=103;
 			end
 		end
-		145:
+		103:
 		begin
 			if(tx_done_wire)  //增加超时判断
 			begin
 				led[3]=~led[3];
 				delay_start_2=0;
 				//tx_state=`RX;
-				Main_Current_State=146;
+				Main_Current_State=105;
 			end	
 			else
 			begin
-				Main_Current_State=149;
+				Main_Current_State=104;
 			end
 		end
-		149:
+		104:
 		begin
 		
 			delay_start_2=1;
@@ -1918,10 +1922,10 @@ begin
 			end
 			else
 			begin
-				Main_Current_State=145;
+				Main_Current_State=103;
 			end
 		end
-		146:
+		105:
 		begin
 			//切换到RX状态
 			if(!spi_Using_wire)
@@ -1931,27 +1935,27 @@ begin
 				Main_Return_len=0;
 				Main_Cmd=1;
 				Main_start=1;
-				Main_Current_State=147;
+				Main_Current_State=106;
 			end
 		end
-		147:
+		106:
 		begin
 			Main_start=0;
-			Main_Current_State=148;
+			Main_Current_State=107;
 		end
-		148:
+		107:
 		begin
 			if(spi_op_done)
 			begin
 				tx_state=`RX;
-				Main_Current_State=130;
+				Main_Current_State=60;
 			end
 		end
 		
-		default:
-		begin
-			Main_Current_State=8'h00;
-		end
+//		default:
+//		begin
+//			Main_Current_State=8'h00;
+//		end
 	endcase
 end
 end

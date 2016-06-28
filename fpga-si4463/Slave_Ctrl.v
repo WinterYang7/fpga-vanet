@@ -33,10 +33,15 @@ module Slave_Ctrl(
 	Data_from_spi,
 	
 	//用于输出当前状态
-	Slave_Ctrl_Status
+	Slave_Ctrl_Status,
+	Slave_Ctrl_Debug
 );
 output [7:0] Slave_Ctrl_Status;
-assign Slave_Ctrl_Status=Spi_Current_State;
+assign Slave_Ctrl_Status[5:0]=Spi_Current_State;
+assign Slave_Ctrl_Status[6]=slave_trdy;
+assign Slave_Ctrl_Status[7]=Irq_Current_State[2];
+output [1:0] Slave_Ctrl_Debug;//for DUBUG
+assign Slave_Ctrl_Debug=Irq_Current_State[1:0];
 
 output Data_from_spi;
 output Spi_trdy;
@@ -45,7 +50,7 @@ input	clk;
 //input frame_recved_int;
 output reg cpu_recv_int=1'b1;
 output  [7:0] Spi_Current_State_1;	
-assign Spi_Current_State_1={3'b000,Spi_Current_State};
+//assign Spi_Current_State_1={3'b000,Spi_Current_State};
 	//与CPU的接口
 input	mosi;
 output	miso;
@@ -107,7 +112,7 @@ wire slave_trdy;
 
 
 */
-reg[6:0] Spi_Current_State=0;
+reg[5:0] Spi_Current_State=0;
 reg[7:0] Data_len=0;
 reg[7:0] Sended_count=0;
 reg Byte_flag=0;
@@ -120,6 +125,8 @@ reg[15:0] Config_count=0;
 //中断决策
 reg[7:0] packet_len=0;
 reg spi_send_end=0; //发送给CPU的数据已经发送完，说明准备接收下一个中断
+wire spi_send_end_wire;
+assign spi_send_end_wire=spi_send_end;
 reg spi_read_sram=0; //spi读取SRAM的使能信号
 
 
@@ -512,7 +519,7 @@ begin
 end
 
 
-////中断函数//////不需要等待，用户读取之后，自动清除中断，但是这里有一个问题，，这里的中断也存在一个问题
+////中断函数//////不需要等待，用户读取之后，自动清除中断
 reg[2:0] Irq_Current_State=0;
 
 
@@ -569,7 +576,7 @@ begin
 		end
 		2:
 		begin
-			if(SRAM_count*2>=packet_len-1)
+			if(SRAM_count*2>=packet_len-1)//一次count计数是两个字节。
 			begin
 				cpu_recv_int=0;
 				Irq_Current_State=3;
@@ -585,7 +592,7 @@ begin
 		end
 		4:
 		begin
-			if(!spi_send_end)
+			if(!spi_send_end_wire)
 			begin
 				if(spi_read_sram)
 				begin

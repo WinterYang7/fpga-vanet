@@ -164,11 +164,12 @@ SRAM_ctrl sram(
 	.OE_n(OE_n),
 	.WE_n(WE_n),
 	.LB_n(LB_n),
-	.UB_n(UB_n)//,
+	.UB_n(UB_n)
 	
 	//.count(Spi_Current_State)
 		//用于输出当前状态
-	//.SRAM_Ctrl_Status(Spi_Current_State)
+	//.SRAM_Ctrl_Status(Spi_Current_State),
+
 );
 
 Slave_Ctrl slave(
@@ -195,12 +196,16 @@ Slave_Ctrl slave(
 	//帧接收中断,与wireless_ctrl连接
 	//.frame_recved_int(signal_for_recved_irq), //可以删掉了
 	
+	//用于输出当前状态
+//	.Slave_Ctrl_Status(Spi_Current_State),
+//	.Slave_Ctrl_Debug(debug_wire),
+	
 	//与CPU连接的中断
-	.cpu_recv_int(cpu_irq_recv)//,
+	.cpu_recv_int(cpu_irq_recv)
 	
 	//.Spi_Current_State_1(Spi_Current_State)
-	//用于输出当前状态
-	//.Slave_Ctrl_Status(Spi_Current_State)
+
+	
 );
 
 Wireless_Ctrl wireless(
@@ -240,10 +245,12 @@ Wireless_Ctrl wireless(
 	//接收完一个帧后的脉冲信号
 	//.frame_recved_int(signal_for_recved_irq),
 	
-	//指示当前状态
-	.led(led),
 	.Si4463_Ph_Status_1(Spi_Current_State),
-	.wireless_debug(debug_wire)//for DUBUG
+	.wireless_debug(debug_wire),//for DUBUG
+	
+	//指示当前状态
+	.led(led)
+
 );
 
 spi_master spi(
