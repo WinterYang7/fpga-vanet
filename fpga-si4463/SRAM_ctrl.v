@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 
 //126KB for Input, First 1KB for configuration space
-`define MAX_FIFO_I_PTR  17'b01111111111111111
+`define MAX_FIFO_I_PTR  17'b01111111111110000
 `define MIN_FIFO_I_PTR  17'b00000001000000010
 `define CONFIG_START_P	17'b00000000000000000
 `define CONFIG_MAXEND_P	17'b00000001000000000
 `define FIFO_I_SIZE (`MAX_FIFO_I_PTR-`MIN_FIFO_I_PTR+1)
 //127KB for Output 63K*16bit
-`define MAX_FIFO_O_PTR 	17'b11111111111111111
+`define MAX_FIFO_O_PTR 	17'b11111111111110000
 `define MIN_FIFO_O_PTR 	17'b10000000000000000
 `define FIFO_O_SIZE (`MAX_FIFO_O_PTR-`MIN_FIFO_O_PTR+1)
 
@@ -150,9 +150,9 @@ begin
 			nUsing=1;
 			Current_State=1;
 		end
-	end	
+	end
 	
-	if(!nUsing&&slave_read)
+	else if(!nUsing&&slave_read)
 	begin
 		if(!fifo_o_empty)
 		begin
@@ -161,7 +161,7 @@ begin
 		end
 	end
 	
-	if(!nUsing&&master_write)
+	else if(!nUsing&&master_write)
 	begin
 		if(!fifo_o_full)
 		begin
@@ -170,7 +170,7 @@ begin
 		end
 	end
 	
-	if(!nUsing&&master_read)
+	else if(!nUsing&&master_read)
 	begin
 		if(!fifo_i_empty)
 		begin
@@ -180,27 +180,27 @@ begin
 	end
 	
 	//configuration space
-	if(!nUsing&&config_write)
+	else if(!nUsing&&config_write)
 	begin
 		nUsing=1;
 		Current_State=5;
 	end
 	
-	if(!nUsing&&config_read)
+	else if(!nUsing&&config_read)
 	begin
 		nUsing=1;
 		Current_State=6;
 	end
 	
 	//配置文件写完，执行复位动作，同时给WirelessControl一个复位命令
-	if(!nUsing&&config_write_done)
+	else if(!nUsing&&config_write_done)
 	begin
 		nUsing=1;
 		Current_State=7;
 	end
 	
 	//配置文件读取完毕，复位读指针用于CTS错误重启设备。
-	if(!nUsing&&config_read_done)
+	else if(!nUsing&&config_read_done)
 	begin
 		nUsing=1;
 		Current_State=8;

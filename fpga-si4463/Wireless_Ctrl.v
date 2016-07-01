@@ -51,7 +51,7 @@ output reg [3:0] led=4'b0000;
 
 output [1:0] wireless_debug;//for DUBUG
 assign wireless_debug[0]=tx_done;//irq_dealing_wire;//packets_incoming[0];//;
-assign wireless_debug[1]=tx_flag;//tx_state[0];//;//rx_start_wire;//packets_incoming[1];//
+assign wireless_debug[1]=tx_state[0];//tx_flag;////;//rx_start_wire;//packets_incoming[1];//
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
 //SRAM接口
@@ -365,7 +365,7 @@ begin
 		spi_return_len=Main_Return_len;
 		spi_cmd_data=Main_Cmd_Data;
 	end
-	if(Int_start&&!spi_Using)
+	else if(Int_start&&!spi_Using)
 	begin
 		spi_start=1;
 		spi_cmd=Int_Cmd;
@@ -976,7 +976,7 @@ reg GPS_sync_time=1'b1;  ////需要接GPS同步时钟
 reg [7:0] Main_Current_State=255;
 reg Si4463_reset=1'b1; //当程序启动或者wireless_ctrl置位时，设置为0
 wire Si4463_int;
-reg [2:0] tx_state;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
+reg [2:0] tx_state;  
 wire[2:0] tx_state_wire;
 assign tx_state_wire[2:0]=tx_state[2:0];
 
