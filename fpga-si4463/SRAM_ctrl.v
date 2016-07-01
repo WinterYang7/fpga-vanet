@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 
 //126KB for Input, First 1KB for configuration space
-`define MAX_FIFO_I_PTR  17'b01111111111111111
+`define MAX_FIFO_I_PTR  17'b01111111111110000
 `define MIN_FIFO_I_PTR  17'b00000001000000010
 `define CONFIG_START_P	17'b00000000000000000
 `define CONFIG_MAXEND_P	17'b00000001000000000
 `define FIFO_I_SIZE (`MAX_FIFO_I_PTR-`MIN_FIFO_I_PTR+1)
 //127KB for Output 63K*16bit
-`define MAX_FIFO_O_PTR 	17'b11111111111111111
+`define MAX_FIFO_O_PTR 	17'b11111111111110000
 `define MIN_FIFO_O_PTR 	17'b10000000000000000
 `define FIFO_O_SIZE (`MAX_FIFO_O_PTR-`MIN_FIFO_O_PTR+1)
 
@@ -62,18 +62,23 @@ module SRAM_ctrl(
 	Current_State,
 	opcode,
 	//用于输出当前状态
-	SRAM_Ctrl_Status
+	SRAM_Ctrl_Status,
+	//开始收包标识，用于CRC错误后的回溯。
+	Pkt_Start_flag,
+	Crc_Error_Rollback
 );
 output [7:0] SRAM_Ctrl_Status;
 assign SRAM_Ctrl_Status=Current_State;
 
 output[7:0] count;
 assign count={4'b000,slave_write,slave_read,master_write,master_read};
-output nUsing;
 output Current_State;
 output opcode;
 
 input clk;
+
+input Pkt_Start_flag;
+input Crc_Error_Rollback;
 
 output wireless_control_need_reset;
 input slave_read;
@@ -98,9 +103,9 @@ output reg master_hint;
 reg wireless_control_need_reset=0;//
 
 //SRAM的引脚
-output reg [17:0]	mem_addr;
+output reg [16:0]	mem_addr;
 inout[15:0]	   Dout;
-output reg	CE_n=0;
+output reg	CE_n=0; //always selected
 output reg	OE_n=1;
 output reg	WE_n=1;
 output reg	LB_n=0;
@@ -125,15 +130,15 @@ reg[16:0] config_rd_ptr=`CONFIG_START_P;
 reg[16:0] fifo_i_rd_ptr=`MIN_FIFO_I_PTR;
 reg[16:0] fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
 
+
 //FIFO_o缓冲区指针
-
-
 reg[16:0] fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
 reg[16:0] fifo_o_wr_ptr=`MIN_FIFO_O_PTR;
+reg[16:0] fifo_o_wr_ptr_tmp;//用于CRC错误的回溯机制
 
 //负责同步互斥
-reg nUsing=0;
-reg [5:0] Current_State=0;
+output reg nUsing=0;
+reg [4:0] Current_State=0;
 reg[15:0] data_to_sram=0;
 reg link=0;
 reg [15:0] data_from_sram=0;
@@ -143,71 +148,76 @@ assign Dout=link?data_to_sram:16'hzzzz;
 
 always@(posedge clk)
 begin
-	if(!nUsing&&slave_write)
+	if(Pkt_Start_flag)
 	begin
-		if(!fifo_i_full)
-		begin
-			nUsing=1;
-			Current_State=1;
-		end
-	end	
-	
-	if(!nUsing&&slave_read)
-	begin
-		if(!fifo_o_empty)
-		begin
-			nUsing=1;
-			Current_State=2;
-		end
+		fifo_o_wr_ptr_tmp=fifo_o_wr_ptr;
 	end
-	
-	if(!nUsing&&master_write)
+	if(Crc_Error_Rollback)
 	begin
-		if(!fifo_o_full)
-		begin
-			nUsing=1;
-			Current_State=3;
-		end
+		fifo_o_wr_ptr=fifo_o_wr_ptr_tmp;
 	end
-	
-	if(!nUsing&&master_read)
-	begin
-		if(!fifo_i_empty)
-		begin
-			nUsing=1;
-			Current_State=4;
-		end
-	end
-	
-	//configuration space
-	if(!nUsing&&config_write)
-	begin
-		nUsing=1;
-		Current_State=5;
-	end
-	
-	if(!nUsing&&config_read)
-	begin
-		nUsing=1;
-		Current_State=6;
-	end
-	
-	//配置文件写完，执行复位动作，同时给WirelessControl一个复位命令
-	if(!nUsing&&config_write_done)
-	begin
-		nUsing=1;
-		Current_State=7;
-	end
-	
-	//配置文件读取完毕，复位读指针用于CTS错误重启设备。
-	if(!nUsing&&config_read_done)
-	begin
-		nUsing=1;
-		Current_State=8;
-	end
-		
-	
+
 	case (Current_State)
+		0:
+		begin
+			if(!nUsing&&slave_write)
+			begin
+				if(!fifo_i_full)
+				begin
+					nUsing=1;
+					Current_State=1;
+				end
+			end	
+			else if(!nUsing&&slave_read)
+			begin
+				if(!fifo_o_empty)
+				begin
+					nUsing=1;
+					Current_State=2;
+				end
+			end
+			else if(!nUsing&&master_write)
+			begin
+				if(!fifo_o_full)
+				begin
+					nUsing=1;
+					Current_State=3;
+				end
+			end	
+			else if(!nUsing&&master_read)
+			begin
+				if(!fifo_i_empty)
+				begin
+					nUsing=1;
+					Current_State=4;
+				end
+			end
+			//configuration space
+			else if(!nUsing&&config_write)
+			begin
+				nUsing=1;
+				Current_State=5;
+			end
+			else if(!nUsing&&config_read)
+			begin
+				nUsing=1;
+				Current_State=6;
+			end
+			//配置文件写完，执行复位动作，同时给WirelessControl一个复位命令
+			else if(!nUsing&&config_write_done)
+			begin
+				nUsing=1;
+				Current_State=7;
+			end
+			//配置文件读取完毕，复位读指针用于CTS错误重启设备。
+			else if(!nUsing&&config_read_done)
+			begin
+				nUsing=1;
+				Current_State=8;
+			end
+		end	
+	
+	
 		1:  //SPI_slave模块写请求
 		begin
 			opcode=1;
@@ -296,7 +306,7 @@ begin
 		10: //写SRAM
 		begin
 			WE_n<=0;
-			CE_n<=0;
+			//CE_n<=0;
 			LB_n<=0;
 			UB_n<=0;
 			link<=1;
@@ -306,7 +316,7 @@ begin
 		11: //读SRAM
 		begin
 			WE_n<=1;
-			CE_n<=0;
+			//CE_n<=0;
 			OE_n<=0;
 			LB_n<=0;
 			UB_n<=0;
@@ -315,16 +325,17 @@ begin
 		
 		12: //读写完成
 		begin
-			WE_n<=1;
-			CE_n<=0;
-			OE_n<=1;
 			data_from_sram<=Dout;
-			link<=0;
+			
 			Current_State=13;
 		end
 		
 		13: //设置hint信号
 		begin
+			WE_n<=1;
+			//CE_n<=0;
+			OE_n<=1;
+			link<=0;
 			case(opcode)
 				1:
 				begin
@@ -354,21 +365,18 @@ begin
 					master_hint=1;
 				end
 				
-				
-				default:
-				begin
-					slave_hint=0;
-					master_hint=0;
-				end
 			endcase
 			opcode=0;
 			Current_State=14;
 		end
-		
 		14: //等待一个周期之后，恢复hint信号，操作完成，给其他操作让出空间
 		begin
 			slave_hint=0;
 			master_hint=0;
+			Current_State=18;
+		end
+		18:
+		begin
 			Current_State=0;
 			nUsing=0;
 		end
@@ -397,7 +405,6 @@ end
 //不用担心正在写入或者正在读取的情况，因为这种情况下，即使提前更改了选项，由于其他操作不能进行，而其他操作能进行时，实际数量已经与其一致了
 always@(posedge clk)
 begin
-	
 	if(fifo_i_count==`FIFO_I_SIZE)
 		fifo_i_full=1;
 	else

@@ -36,25 +36,41 @@ module Wireless_Ctrl(
 	//frame_recved_int,
 	
 	//FLAGS
-	
+	Pkt_Start_flag,
+	Crc_Error_Rollback,
+	Pkt_Received_flag,
 	
 	//用于指示当前状态的LED
 	led,
 	Si4463_Ph_Status_1,
-	wireless_debug//for DUBUG
+	tx_done,//for DUBUG
+	wireless_debug,
+	packets_incoming
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1=Main_Current_State;
-//assign Si4463_Ph_Status_1=Irq_Current_State;
+assign Si4463_Ph_Status_1[6:0]=Main_Current_State[6:0];
+assign Si4463_Ph_Status_1[7]=spi_op_done_main;
+//assign Si4463_Ph_Status_1[4:0]=Irq_Current_State[4:0];//Spi_Current_State;
+//assign Si4463_Ph_Status_1[7:5]=packets_incoming[3:0];
+
 output reg [3:0] led=4'b0000;
 
-output [1:0] wireless_debug;//for DUBUG
-assign wireless_debug[0]=tx_done;//irq_dealing_wire;//packets_incoming[0];//;
-assign wireless_debug[1]=tx_flag;//tx_state[0];//;//rx_start_wire;//packets_incoming[1];//
+output tx_done;
+output wireless_debug;//for DUBUG
+assign wireless_debug=tx_state[0];
+
 //output [3:0] led;
 //assign led=Main_Current_State[3:0];
+output [3:0]packets_incoming;
+
+//与SPI_SLAVE的接口
+output reg Pkt_Received_flag=0;
+
 //SRAM接口
+output reg Pkt_Start_flag=0;
+output reg Crc_Error_Rollback=0;
+
 input Need_reset_from_sram;
 output Config_read_sram;
 output Config_read_sram_done;
@@ -92,6 +108,8 @@ reg reset_n=1'b1;
 //RSSI：for LBT listen before send
 reg [7:0] Si4463_RSSI_Curr=0;
 reg [7:0] Si4463_RSSI_RecvPacket=0;
+wire[7:0] Si4463_RSSI_RecvPacket_wire;
+assign Si4463_RSSI_RecvPacket_wire=Si4463_RSSI_RecvPacket;
 `define RSSI_THRESHOLD 8'ha0
 
 //config from SRAM
@@ -110,9 +128,9 @@ reg [2:0] Syncirq_Current_State=3;
 reg tx_done; //置1表示发送完成
 wire tx_done_wire;
 assign tx_done_wire=tx_done;
-`define SYNC_IRQ_TIMEOUT 10//ms
+`define SYNC_IRQ_TIMEOUT 30//ms
 
-reg tx_flag; //是发送完成中断
+//reg tx_flag; //是发送完成中断
 
 reg [3:0] packets_incoming; //指示射频模块收到包但还未收到接收数据包的中断
 wire[3:0] packets_incoming_wire;
@@ -125,122 +143,9 @@ reg irq_dealing;
 wire irq_dealing_wire;
 assign irq_dealing_wire=irq_dealing;
 
-/**
-* 伪随机数产生器，255个状态
-* http://www.cnblogs.com/BitArt/archive/2012/12/22/2827005.html
-*/
-
-reg          load=1;     /*load seed to rand_num,active high */
-reg [7:0]    seed=8'b10110110;     
-reg [7:0]    rand_num;  /*random number output*/
-wire[7:0]	 rand_num_wire;
-assign rand_num_wire=rand_num;
-
-always@(posedge clk or negedge reset_n)
-begin
-    if(!reset_n)
-        rand_num    <=8'b0;
-    else if(load)
-        rand_num <=seed;    /*load the initial value when load is active*/
-    else
-        begin
-            rand_num[0] <= rand_num[7];
-            rand_num[1] <= rand_num[0];
-            rand_num[2] <= rand_num[1];
-            rand_num[3] <= rand_num[2];
-            rand_num[4] <= rand_num[3]^rand_num[7];
-            rand_num[5] <= rand_num[4]^rand_num[7];
-            rand_num[6] <= rand_num[5]^rand_num[7];
-            rand_num[7] <= rand_num[6];
-        end
-            
-end
+reg[7:0] Data_Recv_Pos=0;
 
 
-/////延时函数1///////////////
-reg delay_start=0;
-reg[31:0] delay_count=0;
-reg[7:0] delay_mtime=0;
-reg delay_int=0;
-
-
-always@(posedge clk)
-begin
-	if(!delay_start)
-	begin
-		delay_count<=0;
-		delay_int<=1'b0;
-	end
-	else
-	begin
-		delay_count<=delay_count+1'b1;
-		if(delay_count==delay_mtime*20000) //20000可以算1ms
-			delay_int<=1'b1;
-	end
-end
-
-/////延时函数2///////////////
-reg delay_start_2=0;
-reg[31:0] delay_count_2=0;
-reg[7:0] delay_mtime_2=0;
-reg delay_int_2=0;
-
-always@(posedge clk)
-begin
-	if(!delay_start_2)
-	begin
-		delay_count_2<=0;
-		delay_int_2<=1'b0;
-	end
-	else
-	begin
-		delay_count_2<=delay_count_2+1'b1;
-		if(delay_count_2==delay_mtime_2*20000) //20000可以算1ms
-			delay_int_2<=1'b1;
-	end
-end
-
-/////延时函数3///////////////
-reg delay_start_3=0;
-reg[31:0] delay_count_3=0;
-reg[7:0] delay_mtime_3=0;
-reg delay_int_3=0;
-
-always@(posedge clk)
-begin
-	if(!delay_start_3)
-	begin
-		delay_count_3<=0;
-		delay_int_3<=1'b0;
-	end
-	else
-	begin
-		delay_count_3<=delay_count_3+1'b1;
-		if(delay_count_3==delay_mtime_3*200) //配合随机数生成器使用
-			delay_int_3<=1'b1;
-	end
-end
-
-/////延时函数4///////////////
-reg delay_start_4=0;
-reg[31:0] delay_count_4=0;
-reg[7:0] delay_mtime_4=0;
-reg delay_int_4=0;
-
-always@(posedge clk)
-begin
-	if(!delay_start_4)
-	begin
-		delay_count_4<=0;
-		delay_int_4<=1'b0;
-	end
-	else
-	begin
-		delay_count_4<=delay_count_4+1'b1;
-		if(delay_count_4==delay_mtime_4*20000) //20000可以算1ms
-			delay_int_4<=1'b1;
-	end
-end
 
 //////接口
 /*
@@ -250,12 +155,13 @@ end
 	Main_Start_data[79:0]  启动配置的数组
 	spi_cmd[]   需要进行的操作
 				1 main程序启动配置和gteCTS
-				2 main发送数据帧
+				2 发送数据帧
 				3 int接收数据帧
 				4 int 获取中断状态
 				5 main程序从SRAM中读取数据，唯一的用途是获取需要发送的数据
 				6 int读快速寄存器
 				7 int写SRAM
+				8 读指定长度的RX FIFO
 	spi_Using  bool值，代表spi模块是否正在被使用
 	spi_start  bool值，设置为1，代表准备开始发送或接收数据
 */
@@ -267,8 +173,8 @@ reg [7:0] Main_Data_len=0;  //要发送的数据长度
 reg [4:0] Main_Return_len=0;  //GetCTS后返回的数据长度
 reg [7:0] Int_Data_len=0;
 reg [3:0] Int_Return_len=0;
-reg [2:0] Main_Cmd;   //主函数中的命令
-reg [2:0] Int_Cmd;	//中断函数中的命令
+reg [3:0] Main_Cmd;   //主函数中的命令
+reg [3:0] Int_Cmd;	//中断函数中的命令
 reg Main_start=0;  //Main表示想要开始发送数据，需要提前检查Spi_Using
 reg Int_start=0;   //Int表示想要开始发送数据，需要提前检查Spi_Using
 reg[31:0] Main_Data_Check=0;
@@ -277,14 +183,27 @@ reg[31:0] Main_Data_Check=0;
 reg [127:0] spi_cmd_data;
 reg [7:0] spi_data_len=0;
 reg [4:0] spi_return_len=0;
-reg [2:0] spi_cmd=0;
+reg [3:0] spi_cmd=0;
 reg spi_Using=0;
 wire spi_Using_wire;
 assign spi_Using_wire=spi_Using;
 
+reg[7:0] recv_pkt_len=0;
+wire[7:0] recv_pkt_len_wire;
+assign recv_pkt_len_wire=recv_pkt_len;
+
 reg spi_start=0; //主要是监听Main_start和Int_start脉冲，当任意一个脉冲为1时，置1
 reg [7:0] Sended_count=0; //已经发送的字节数
-reg spi_op_done=0; //用于指示spi的操作是否已经完成
+
+reg spi_op_done=0;//用于指示spi的操作是否已经完成
+reg spi_main_flag=0;
+reg spi_int_flag=0;
+wire spi_op_done_main; 
+wire spi_op_done_int;
+assign spi_op_done_main=spi_main_flag?spi_op_done:1'b0;
+assign spi_op_done_int=spi_int_flag?spi_op_done:1'b0;
+reg run_once_flag;
+
 reg spi_op_fifo_flag=0;  //用于指示发送帧时，发送的第一个命令
 
 ///与SPI_master的连线
@@ -338,7 +257,7 @@ reg CTS_error_reset_n=1;
 always@(negedge reset_n or posedge clk)  //这里最好监视Main_start和Int_start信号
 begin
 
-if(!reset_n)
+	if(!reset_n)
 	begin
 		spi_start=0;
 		spi_cmd=0;
@@ -348,6 +267,8 @@ if(!reset_n)
 		Spi_Current_State=0;
 		spi_Using=0;
 		spi_op_done=0;
+		//spi_op_done_main=0;
+		//spi_op_done_int=0;
 		GetCTS_flag=0;
 		Byte_flag=0;
 		spi_op_fifo_flag=1;
@@ -355,95 +276,104 @@ if(!reset_n)
 		CTScounter=0;
 		CTS_error_reset_n=1;
 	end
-else
-begin
-	if(Main_start&&!spi_Using)
+	else
 	begin
-		spi_start=1;
-		spi_cmd=Main_Cmd;
-		spi_data_len=Main_Data_len;
-		spi_return_len=Main_Return_len;
-		spi_cmd_data=Main_Cmd_Data;
-	end
-	if(Int_start&&!spi_Using)
-	begin
-		spi_start=1;
-		spi_cmd=Int_Cmd;
-		spi_data_len=Int_Data_len;
-		spi_return_len=Int_Return_len;
-		spi_cmd_data=Int_Cmd_Data;
-	end
-
-	if(!spi_Using&&spi_start)
-	begin
-		if(Spi_Current_State==0)
-		begin	
-			case (spi_cmd) //这里有点多余，可以简单删除一下
-				1:
-				begin
-					Spi_Current_State=1;
-					spi_Using=1;
-					spi_op_done=0;
-				end
-				2:
-				begin
-					Spi_Current_State=1;
-					spi_Using=1;
-					spi_op_done=0;
-				end
-				3:
-				begin
-					Spi_Current_State=1;
-					spi_Using=1;
-					spi_op_done=0;
-				end
-				4:
-				begin
-					Spi_Current_State=1;
-					spi_Using=1;
-					spi_op_done=0;
-				end
-				5:
-				begin
-					spi_Using=1;
-					Spi_Current_State=36;
-					spi_op_done=0;
-				end
-				6:
-				begin
-					Spi_Current_State=1;
-					spi_Using=1;
-					spi_op_done=0;
-				end
-				7:
-				begin
-					Spi_Current_State=43;
-					spi_Using=1;
-					spi_op_done=0;
-					Sended_count=0;
-				end
-				default:
-				begin
-					spi_start=0;
-					Spi_Current_State=0;
-					spi_Using=0;
-					spi_op_done=0;
-				end
-			endcase
-			GetCTS_flag=0;
-			Byte_flag=0;
-			spi_op_fifo_flag=1;
-			Ended_flag=0;
-			CTScounter=0;
-		end
-	end
-	
-	if(spi_Using&&spi_start)
-	begin
-
 		case (Spi_Current_State)
-		
-		    ////////////////将片选信号拉低/////////////////////////////
+			0:
+			begin
+				spi_main_flag=0;
+				spi_int_flag=0;
+				Spi_Current_State=54;
+			end
+			54:
+			begin
+				Spi_Current_State=53;
+			end
+			53:
+			begin
+
+				//run_once_flag=1;
+				if(Main_start)
+				begin
+
+					spi_cmd=Main_Cmd;
+					spi_data_len=Main_Data_len;
+					spi_return_len=Main_Return_len;
+					spi_cmd_data=Main_Cmd_Data;
+					spi_Using=1;
+					spi_main_flag=1;
+					spi_int_flag=0;
+					spi_op_done=0;
+					run_once_flag=0;
+					Spi_Current_State=52;
+				end
+				else if(Int_start)
+				begin
+					
+					spi_cmd=Int_Cmd;
+					spi_data_len=Int_Data_len;
+					spi_return_len=Int_Return_len;
+					spi_cmd_data=Int_Cmd_Data;
+					spi_Using=1;
+					spi_int_flag=1;
+					spi_main_flag=0;
+					spi_op_done=0;
+					Spi_Current_State=52;
+				end
+			end
+			52:
+			begin	
+				case (spi_cmd) //这里有点多余，可以简单删除一下
+					1:
+					begin
+						Spi_Current_State=1;
+					end
+					2:
+					begin
+						Spi_Current_State=1;
+					end
+					3:
+					begin
+						Spi_Current_State=1;
+					end
+					4:
+					begin
+						Spi_Current_State=1;
+					end
+					5:
+					begin
+						Spi_Current_State=36;
+					end
+					6:
+					begin
+						Spi_Current_State=1;
+					end
+					7:
+					begin
+						Spi_Current_State=43;
+						Sended_count=0;
+					end
+					8:
+					begin
+						Spi_Current_State=1;
+					end
+					/*0:
+					begin
+						spi_start=0;
+						Spi_Current_State=0;
+						spi_Using=0;
+						spi_op_done_main=0;
+						spi_op_done_int=0;
+					end	*/
+				endcase
+				GetCTS_flag=0;
+				Byte_flag=0;
+				spi_op_fifo_flag=1;
+				Ended_flag=0;
+				CTScounter=0;
+			end
+			
+			 ////////////////将片选信号拉低/////////////////////////////
 			1:  //要发送的数据存放在Main_Cmd_Data
 			begin
 				Sended_count=0;
@@ -498,6 +428,10 @@ begin
 							Spi_Current_State=28;
 						end
 						3:
+						begin
+							Spi_Current_State=30;
+						end
+						8:
 						begin
 							Spi_Current_State=30;
 						end
@@ -566,7 +500,7 @@ begin
 			end
 			15:
 			begin
-				if(spi_cmd==2||spi_cmd==3 ||Ended_flag || spi_cmd==6) //发送和接收数据帧不需要GetCTS
+				if(spi_cmd==2||spi_cmd==3 || spi_cmd==8 ||Ended_flag || spi_cmd==6) //发送和接收数据帧不需要GetCTS
 				begin
 					spi_op_done=1;
 					spi_Using=0;
@@ -718,6 +652,11 @@ begin
 					begin
 						Spi_Current_State=31;
 					end
+					8:
+					begin
+						
+						Spi_Current_State=51;
+					end
 					4:
 					begin
 						Int_Return_Data={Int_Return_Data[71:0],8'h00};
@@ -795,6 +734,7 @@ begin
 			30://从射频模块接收数据存放在FIFO_o
 			begin
 				frame_len_flag=1;
+				Sended_count=0;
 				Spi_Current_State=33; 
 			end
 			31:
@@ -806,10 +746,17 @@ begin
 					begin
 						//Byte_flag=~Byte_flag;
 						frame_len_flag=0;
-						Sended_count=0;
-						spi_data_len=Data_from_master[7:0];
+						
+						if(spi_data_len!=0)
+						begin
+							recv_pkt_len=Data_from_master[7:0];
+						end
+						else
+						begin
+							spi_data_len=Data_from_master[7:0]; //处理数据包长度小于RX_THRESHOLD时的情况，即直接产生了RX中断。
+						end
 						Data_to_sram[15:8]=Data_to_sram[15:8]+1'b1; //多了一个字节存RSSI，这条指令覆盖掉了前一条。
-						Data_to_sram[7:0]=Si4463_RSSI_RecvPacket;
+						Data_to_sram[7:0]=Si4463_RSSI_RecvPacket_wire;
 						//Spi_Current_State=22;
 						//SRAM_write=1;//写入SRAM
 						Spi_Current_State=50;
@@ -854,6 +801,44 @@ begin
 			begin
 				SRAM_write=1;//写入SRAM
 				Spi_Current_State=32;
+			end
+			
+			51:
+			begin
+				if(!Byte_flag) //由于SRAM要一次写两个字节，所以设置一个byte_flag作为调节。
+				begin
+					Data_to_sram[15:8]=Data_from_master[7:0]; //注意这一行
+					Sended_count=Sended_count+1'b1;
+					if(Sended_count<spi_data_len)
+					begin
+						Byte_flag=~Byte_flag;
+						Spi_Current_State=22;
+					end
+					else //if(Sended_count<spi_data_len)
+					begin
+						if(!SRAM_full)
+						begin
+							Data_to_sram[7:0]=8'h00;
+							SRAM_write=1;
+							Spi_Current_State=32;
+						end
+						else
+							Spi_Current_State=51;
+					end
+				end
+				else //if(!Byte_flag)
+				begin
+					Data_to_sram[7:0]=Data_from_master[7:0];
+					if(!SRAM_full)
+					begin
+						Sended_count=Sended_count+1'b1;
+						Byte_flag=~Byte_flag;
+						SRAM_write=1;
+						Spi_Current_State=32;
+					end
+					else
+						Spi_Current_State=51;
+				end											
 			end
 			
 			32:
@@ -970,21 +955,39 @@ begin
 		endcase
 	end
 end
-end
 
 reg GPS_sync_time=1'b1;  ////需要接GPS同步时钟
 reg [7:0] Main_Current_State=255;
 reg Si4463_reset=1'b1; //当程序启动或者wireless_ctrl置位时，设置为0
 wire Si4463_int;
-reg [2:0] tx_state;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
+output reg [2:0] tx_state;  //0为默认，1表示rx, 2表示tx_tune，3表示tx
 wire[2:0] tx_state_wire;
 assign tx_state_wire[2:0]=tx_state[2:0];
 
+//Variable packet lens
 reg[7:0] Data_Len_to_Send=8'h00;
+
+reg[7:0] Data_Sending_Pos=8'h00;
+
+reg[7:0] Data_Sending_Remain;
+reg Data_Sending_Remain_flag=0;
+wire Data_Sending_Remain_flag_wire;
+assign Data_Sending_Remain_flag_wire=Data_Sending_Remain_flag;
+reg TX_fifo_almost_empty_flag=0;
+wire TX_fifo_almost_empty_flag_wire;
+assign TX_fifo_almost_empty_flag_wire=TX_fifo_almost_empty_flag;
+reg RX_fifo_almost_full_flag=0;
+wire RX_fifo_almost_full_flag_wire;
+assign RX_fifo_almost_full_flag_wire=RX_fifo_almost_full_flag;
+
+`define MAX_FIFO_SIZE 64
+`define TX_THRESHOLD 40
+`define RX_THRESHOLD 40
+
+
 reg enable_irq=1'b0; //初始化完成后，才允许触发中断函数
-reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
 `define RX 3'b001
-`define TX_TUNE 3'b010
+`define TX_WAIT 3'b010
 `define TX 3'b100
 
 
@@ -994,14 +997,14 @@ reg enable_irq_sending=1'b1; //发送数据时的中断是无效的
  **/
 always@(posedge clk or negedge CTS_error_reset_n)
 begin
-if(!CTS_error_reset_n || Need_reset_from_sram)
-begin
-	Main_Current_State=0;
-	config_cmd_start_flag=0;
-	reset_n=0;
-end
-else
-begin
+	if(!CTS_error_reset_n || Need_reset_from_sram)
+	begin
+		Main_Current_State=0;
+		config_cmd_start_flag=0;
+		reset_n=0;
+	end
+	else
+	begin
 		case(Main_Current_State) 
 		255:
 		begin
@@ -1011,7 +1014,6 @@ begin
 		begin
 			led[3]=1'b0;
 			enable_irq=0;
-			enable_irq_sending=1'b1;
 			tx_state=3'b000;
 			Main_start=0;
 			delay_start_2=0;
@@ -1140,13 +1142,14 @@ begin
 		end
 		5:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=6;
 		end
 		6:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				config_count_percmd=0;
 				if(Byte_flag_config==1'b1)
 				begin
@@ -1192,13 +1195,14 @@ begin
 		end
 		9:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=10;
 		end
 		10:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=11;
 			end
 		end
@@ -1218,13 +1222,14 @@ begin
 		end
 		12:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=13;
 		end
 		13:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=14;
 			end
 		end
@@ -1245,13 +1250,14 @@ begin
 		end
 		15:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=16;
 		end
 		16:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=17;
 			end
 		end
@@ -1273,13 +1279,14 @@ begin
 		end
 		18:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=19;
 		end
 		19:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=20;
 			end
 		end
@@ -1301,13 +1308,14 @@ begin
 		end
 		21:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=22;
 		end
 		22:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=23;
 			end
 		end
@@ -1329,24 +1337,25 @@ begin
 		end
 		24:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=25;
 		end
 		25:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=26;
 			end
 		end
-		26:
+		26://PKT_TX_THRESHOLD
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h02;
 			Main_Cmd_Data[31:24]=8'h0b;
-			Main_Cmd_Data[39:32]=8'h23;
-			Main_Cmd_Data[47:40]=8'h30;
+			Main_Cmd_Data[39:32]=`TX_THRESHOLD;//8'h23;
+			Main_Cmd_Data[47:40]=`RX_THRESHOLD;//8'h30;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=6;
@@ -1355,23 +1364,24 @@ begin
 		end
 		27:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=28;
 		end
 		28:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=29;
 			end
 		end
-		29:
+		29://GLOBAL_CONFIG
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h00;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h03;
-			Main_Cmd_Data[39:32]=8'h70;
+			Main_Cmd_Data[39:32]=8'h60;//SPLIT_FIFO
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=5;
@@ -1380,13 +1390,14 @@ begin
 		end
 		30:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=31;
 		end
 		31:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=32;
 			end
 		end
@@ -1405,13 +1416,14 @@ begin
 		end
 		33:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=34;
 		end
 		34:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=40;
 			end
 		end
@@ -1468,18 +1480,19 @@ begin
 		end
 		41:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=42;
 		end
 		42:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Main_Current_State=50;
 			end
 		end
 		
-		//检查当前状态
+		//检查当前状态是否为Ready
 		50:
 		begin
 			Main_Cmd_Data[7:0]=8'h33;
@@ -1492,14 +1505,15 @@ begin
 		end
 		51:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=52;
 		end
 		52:
 		begin
 			
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				if(Main_Return_Data[15:8]==8'h03)
 				begin
 					tx_state=3'b000;
@@ -1542,14 +1556,16 @@ begin
 		end
 		55:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=56;
 		end
 		56:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				enable_irq=1;   //开始允许监听中断信号
+				led[2]=1;
 				tx_state=`RX;
 				Main_Current_State=60;
 			end
@@ -1635,16 +1651,17 @@ begin
 			end
 		end*/
 		
-		///////////////////////////////////启动完成，开始发送数据、、、、、、、、、、、、、、、、
+		///////////////////////////////////启动完成，开始发送数据/////////////////////////
 		//////////////////////////////////////////////////////////////////////////////
 		
 		
 		////判断是否有数据及数据帧长度,如果想要读取数据包长度，可以另外设置一条命令，从SPI中读取SRAM
 		60:
 		begin
-			led[2]=1;
-			if(!SRAM_empty&&!spi_Using_wire)
+			
+			if(!SRAM_empty&&!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
+//				enable_irq=0;//关闭中断
 				Main_Cmd=5; //read from sram
 				Main_start=1;
 				Main_Current_State=61;
@@ -1652,13 +1669,14 @@ begin
 		end
 		61:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=62;
 		end
 		62:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				if(Main_Data_Check[15:0]==16'h2dd4)
 				begin
 					Main_Current_State=63;
@@ -1680,23 +1698,104 @@ begin
 		end
 		64:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=65;
 		end
 		65:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Data_Len_to_Send=Main_Data_Check[7:0];
-				if(SRAM_count*2>=Data_Len_to_Send)
-				begin
-					Main_Current_State=70;
-				end	
+				Main_Current_State=66;
 			end
 		end
-
-		//CCA,LBT,...//
+		66:
+		begin
+			if(SRAM_count*2>=Data_Len_to_Send)
+			begin
+//					enable_irq=1;//开启中断
+				Main_Current_State=70;
+			end	
+		end
+		
+		//设置需要发送的数据包的长度
 		70:
+		begin
+			if(!spi_Using_wire)
+			begin
+				Main_Cmd_Data[7:0]=8'h11;
+				Main_Cmd_Data[15:8]=8'h12;
+				Main_Cmd_Data[23:16]=8'h01;
+				Main_Cmd_Data[31:24]=8'h0E;
+				Main_Cmd_Data[39:32]=Data_Len_to_Send; //已经包含了数据长度的一个字节
+				Main_Data_len=5;
+				Main_Return_len=0;
+				Main_Cmd=1;
+				Main_start=1;
+				Main_Current_State=71;
+			end
+		end
+		71:
+		begin
+			
+			Main_Current_State=72;
+		end
+		72:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=73;
+			end
+		end
+		//////如果SPI正在被使用则等待，否则将数据写入射频模块缓冲区//////
+		73:
+		begin
+
+			if(`MAX_FIFO_SIZE > Data_Len_to_Send)
+			begin
+				Main_Data_len=Data_Len_to_Send+1; //+1是因为SPI控制模块中把0x66命令的一个字节也算进去了
+				Data_Sending_Pos=Data_Len_to_Send;
+				Data_Sending_Remain_flag=0;
+			end
+			else
+			begin
+				Main_Data_len=`MAX_FIFO_SIZE+1; //没有发送完的数据会在后面继续发送，给一个未完全发送的标识
+				Data_Sending_Pos=`MAX_FIFO_SIZE;
+				Data_Sending_Remain_flag=1;
+			end
+			Main_Current_State=74;
+		end
+		74:
+		begin
+			if(!spi_Using_wire&&!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
+			begin
+//				enable_irq=0;//关闭中断
+				Main_Cmd=2;
+				//Main_Data_len=Data_Len_to_Send+1;  
+				Main_Return_len=0;
+				Main_start=1;
+				Main_Current_State=75;
+			end
+		end
+		75:
+		begin
+			
+			Main_Current_State=76;
+		end
+		76:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+//				enable_irq=1;//开启中断
+				Main_Current_State=80;
+			end
+		end
+		
+		//CCA,LBT,...//
+		80:
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
@@ -1706,152 +1805,197 @@ begin
 				Main_Data_len=2;
 				Main_Return_len=3;//only needs 3byte (third is CURR_RSSI)
 				Main_start=1;
-				Main_Current_State=71;	
+				Main_Current_State=81;	
 			end
 		end
-		71:
+		81:
 		begin
-			Main_start=0;
-			Main_Current_State=72;
+			
+			Main_Current_State=82;
 		end
-		72:
+		82:
 		begin
-			if(spi_op_done)
+			if(spi_op_done_main)
 			begin
+				Main_start=0;
 				Si4463_RSSI_Curr=Main_Return_Data[7:0]; //CURR_RSSI (Reverse sequence of addr 返回3字节，用[7:0]取得最后一个字节)
 				if(Si4463_RSSI_Curr>`RSSI_THRESHOLD)
 				begin
 					delay_mtime_3=rand_num_wire;
 					delay_start_3=1;
-					Main_Current_State=73;
+					Main_Current_State=83;
 				end
 				else
 				begin
-					Main_Current_State=80;
+					Main_Current_State=90; //开始发送
 				end
 			end
 		end
-		73:
+		83:
 		begin
 			if(delay_int_3)
 			begin
 				delay_start_3=0;
-				Main_Current_State=70;
+				Main_Current_State=80;
 			end			
 		end
-				
-		/////如果SPI正在被使用则等待，否则发送命令切换状态为tx_tune///////
 		
-		////切换状态0x34 05 TX_TUNE
-		80:
+		
+		/////////发送命令，开始发送数据///////////
+		90:
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
-				enable_irq_sending=0;
 				Main_Cmd=1;
-				Main_Cmd_Data[7:0]=8'h34;
-				Main_Cmd_Data[15:8]=8'h05;
 				Main_start=1;
-				Main_Data_len=2;
-				Main_Return_len=0;
-				Main_Current_State=81;
-			end
-		end
-		81:
-		begin
-			Main_start=0;
-			Main_Current_State=82;
-		end
-		82:
-		begin
-			if(spi_op_done)
-			begin
-				tx_state=`TX_TUNE;
-				Main_Current_State=83;
-			end
-		end
-		///重置FIFO
-		83: //0x15 03
-		begin
-			if(!spi_Using_wire)
-			begin
-				Main_Cmd=1;
-				Main_Cmd_Data[7:0]=8'h15;
-				Main_Cmd_Data[15:8]=8'h03;
-				Main_start=1;
-				Main_Data_len=2;
-				Main_Return_len=0;
-				Main_Current_State=84;
-			end
-		end
-		84:
-		begin
-			Main_start=0;
-			Main_Current_State=85;
-		end
-		85:
-		begin
-			if(spi_op_done)
-				Main_Current_State=90;
-		end
-		
-		
-		//设置需要发送的数据包的长度
-		90:
-		begin
-			if(!spi_Using_wire)
-			begin
-				Main_Cmd_Data[7:0]=8'h11;
-				Main_Cmd_Data[15:8]=8'h12;
-				Main_Cmd_Data[23:16]=8'h01;
-				Main_Cmd_Data[31:24]=8'h0E;
-				Main_Cmd_Data[39:32]=Data_Len_to_Send;
-				
 				Main_Data_len=5;
 				Main_Return_len=0;
-				Main_Cmd=1;
-				Main_start=1;
+				Main_Cmd_Data[7:0]=8'h31;
+				Main_Cmd_Data[15:8]=8'h00;
+//				if(!Data_Sending_Remain_flag)
+//				begin
+					Main_Cmd_Data[23:16]=8'h60; //RX_TUNE
+//				end
+//				else
+//				begin
+//					Main_Cmd_Data[23:16]=8'h50; //5	TX_TUNE
+//				end
+				Main_Cmd_Data[31:24]=8'h00;
+				Main_Cmd_Data[39:32]=8'h00;
 				Main_Current_State=91;
 			end
 		end
 		91:
 		begin
-			Main_start=0;
+			
 			Main_Current_State=92;
 		end
 		92:
 		begin
-			if(spi_op_done)
-			begin
+			if(spi_op_done_main)
+			begin				
+				Main_start=0;
+				if(!Data_Sending_Remain_flag)
+				begin
+					tx_state=`TX;
+				end
+				else
+				begin
+					tx_state=`TX_WAIT;
+				end
 				Main_Current_State=93;
 			end
 		end
-		
-		//////如果SPI正在被使用则等待，否则将数据写入射频模块缓冲区、、、、
-		
 		93:
+		begin
+			if(Data_Sending_Remain_flag && TX_fifo_almost_empty_flag_wire)
+			begin
+				Data_Sending_Remain=Data_Len_to_Send-Data_Sending_Pos;
+				Main_Current_State=100;			
+			end
+			else if(tx_done_wire)  //增加超时判断
+			begin
+				led[3]=~led[3];
+				delay_start_2=0;
+				//tx_state=`RX;
+				Main_Current_State=95;
+			end	
+			else
+			begin
+				delay_start_2=1;
+				delay_mtime_2=30;
+				if(delay_int_2)
+				begin
+					tx_state=3'b000;
+					delay_start_2=0;
+					Main_Current_State=0;
+				end
+				else
+				begin
+					Main_Current_State=93;
+				end
+			end
+		end
+		100:
+		begin
+			if(Data_Sending_Remain <= `TX_THRESHOLD)
+			begin
+				//写入剩余的数据
+				Main_Data_len=Data_Sending_Remain+1; //+1是因为SPI控制模块中把0x66命令的一个字节也算进去了
+				Data_Sending_Pos=Data_Len_to_Send;
+				Data_Sending_Remain_flag=0;
+			end
+			else
+			begin
+				Main_Data_len=`TX_THRESHOLD+1; //+1是因为SPI控制模块中把0x66命令的一个字节也算进去了
+				Data_Sending_Pos=Data_Sending_Pos+`TX_THRESHOLD;
+			end
+			Main_Current_State=101;
+		end
+		101:
 		begin
 			if(!spi_Using_wire)
 			begin
 				Main_Cmd=2;
-				Main_Data_len=Data_Len_to_Send+1;  //+1是因为要发送0x66命令，导致最大包长度为126,再去掉包长度，则只剩125字节
 				Main_Return_len=0;
 				Main_start=1;
-				Main_Current_State=94;
-			end
+				Main_Current_State=102;
+			end			
 		end
-		94:
+		102:
 		begin
-			Main_start=0;
-			Main_Current_State=95;
+			
+			Main_Current_State=103;
 		end
+		103:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				if(!Data_Sending_Remain_flag)
+				begin
+					tx_state=`TX;
+				end
+				else
+				begin
+					tx_state=`TX_WAIT;
+				end
+				Main_Current_State=93;
+			end
+		end	
+		
+		
+		
+		
 		95:
 		begin
-			if(spi_op_done)
+			//切换到RX状态
+			if(!spi_Using_wire)
 			begin
-				Main_Current_State=100;
+				Main_Cmd_Data[7:0]=8'h32;
+				Main_Data_len=1;
+				Main_Return_len=0;
+				Main_Cmd=1;
+				Main_start=1;
+				Main_Current_State=96;
 			end
 		end
+		96:
+		begin
+			
+			Main_Current_State=97;
+		end
+		97:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				tx_state=`RX;
+				Main_Current_State=60;
+			end
+		end		
+
+		
 		
 /*
 		///等待时隙///////////
@@ -1864,100 +2008,8 @@ begin
 		end
 */
 		/////////发送命令，开始发送数据///////////
-		100:
-		begin
-			if(!spi_Using_wire)
-			begin
-				Main_Cmd=1;
-				Main_start=1;
-				Main_Data_len=5;
-				Main_Return_len=0;
-				Main_Cmd_Data[7:0]=8'h31;
-				Main_Cmd_Data[15:8]=8'h00;
-				Main_Cmd_Data[23:16]=8'h60; //RX_TUNE
-				Main_Cmd_Data[31:24]=8'h00;
-				Main_Cmd_Data[39:32]=8'h00;
-				Main_Current_State=101;
-			end
-		end
-		101:
-		begin
-			Main_start=0;
-			tx_state=`TX;
-			Main_Current_State=102;
-		end
-		102:
-		begin
-			if(spi_op_done)
-			begin
-				enable_irq_sending=1;
-				
-				Main_Current_State=103;
-			end
-		end
-		103:
-		begin
-			if(tx_done_wire)  //增加超时判断
-			begin
-				led[3]=~led[3];
-				delay_start_2=0;
-				//tx_state=`RX;
-				Main_Current_State=105;
-			end	
-			else
-			begin
-				Main_Current_State=104;
-			end
-		end
-		104:
-		begin
-		
-			delay_start_2=1;
-			delay_mtime_2=30;
-			if(delay_int_2)
-			begin
-				tx_state=3'b000;
-				delay_start_2=0;
-				Main_Current_State=0;
-			end
-			else
-			begin
-				Main_Current_State=103;
-			end
-		end
-		105:
-		begin
-			//切换到RX状态
-			if(!spi_Using_wire)
-			begin
-				Main_Cmd_Data[7:0]=8'h32;
-				Main_Data_len=1;
-				Main_Return_len=0;
-				Main_Cmd=1;
-				Main_start=1;
-				Main_Current_State=106;
-			end
-		end
-		106:
-		begin
-			Main_start=0;
-			Main_Current_State=107;
-		end
-		107:
-		begin
-			if(spi_op_done)
-			begin
-				tx_state=`RX;
-				Main_Current_State=60;
-			end
-		end
-		
-//		default:
-//		begin
-//			Main_Current_State=8'h00;
-//		end
 	endcase
-end
+	end
 end
 
 
@@ -1977,7 +2029,7 @@ begin
 
 		Syncirq_Current_State=3;
 
-		tx_flag=0;
+		//tx_flag=0;
 		tx_done=0;
 		irq_dealing=0;
 
@@ -1985,6 +2037,9 @@ begin
 		//led[0]=1'b0;
 		//led[1]=1'b0;
 		packets_incoming=0;
+		Data_Recv_Pos=0;
+		TX_fifo_almost_empty_flag=0;
+		RX_fifo_almost_full_flag=0;
 	end
 	else
 	begin
@@ -1992,17 +2047,8 @@ begin
 			/////等待中断到来
 			0:
 			begin
-				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
+				if(enable_irq&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
 				begin
-					if(tx_state_wire==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
-					begin
-						//led[0]=~led[0];
-						tx_flag=1;
-					end
-					else
-					begin
-						tx_flag=0;
-					end
 					irq_dealing=1;
 					Irq_Current_State=1;
 				end
@@ -2024,34 +2070,84 @@ begin
 			end
 			2:
 			begin
-				Int_start=0;
+				
 				Irq_Current_State=3;
 			end
 			3:
 			begin
-				if(spi_op_done)
+				if(spi_op_done_int)
 				begin
+					Int_start=0;
 					Si4463_Ph_Status=Int_Return_Data[47:40];//PH_PEND
 					Si4463_Modem_Status=Int_Return_Data[31:24];
-					if(tx_flag==1)
+					//加两个中断源：TX_FIFO_ALMOST_EMPTY_PEND; RX_FIFO_ALMOST_FULL_PEND
+					if(((Si4463_Ph_Status &8'h32)==8'b00000010) && (tx_state_wire!=`RX) &&(Data_Sending_Remain_flag_wire))//TX_FIFO_ALMOST_EMPTY_PEND
 					begin
-						Irq_Current_State=4;//默认发送后给发送完成中断
+						TX_fifo_almost_empty_flag=1;
+						Irq_Current_State=25;
 					end
+					
+					else if((Si4463_Ph_Status &8'h20)==8'b00100000)
+					begin
+						Irq_Current_State=4;//发送完成中断
+					end
+					
 					else if((Si4463_Ph_Status&8'h08)==8'b00001000) //CRC_ERROR
 					begin
 						led[0]=~led[0];
 						//重置fifo并进入RX状态
 						//最后irq_dealing=0;
+						//需要有一个回溯SRAM指针的动作，否则前面已经写入了一部分数据了。
+						if(packets_incoming>1)//保证回滚时前面有错误的数据写入了SRAM
+							Crc_Error_Rollback=1;
 						Irq_Current_State=16;
 					end
+					
+					else if(((Si4463_Ph_Status &8'h31)==8'b00000001) && (tx_state_wire==`RX))//RX_FIFO_ALMOST_FULL_PEND
+					begin
+						RX_fifo_almost_full_flag=1;
+						if(packets_incoming==0)
+						begin
+							//出错了，没收到中断头就收到了RX_FIFO_ALMOST_FULL_PEND。需要进行错误处理。
+							//重置fifo并进入RX状态
+							//最后irq_dealing=0;
+							Irq_Current_State=16;
+						end
+						else if(packets_incoming==1)
+						begin
+							packets_incoming=packets_incoming+1'b1;
+							Irq_Current_State=6;
+						end
+						else
+						begin
+							packets_incoming=packets_incoming+1'b1;
+							Irq_Current_State=27;
+						end
+						
+					end
+
 					else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
 					begin
 						led[1]=~led[1];
-						Irq_Current_State=6;
+						RX_fifo_almost_full_flag=0;
+						if(packets_incoming==0)
+						begin
+						//出错，没有收到同步头
+							Irq_Current_State=16;
+						end
+						else if(packets_incoming==1)
+						begin
+							Irq_Current_State=6;
+						end
+						else
+						begin
+							Irq_Current_State=13;
+						end
 					end
 					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
 					begin
-						packets_incoming=packets_incoming+1'b1;
+						packets_incoming=1'b1;
+						Data_Recv_Pos=0;
 						Syncirq_Current_State=0;
 						
 						Irq_Current_State=0;
@@ -2072,7 +2168,7 @@ begin
 			begin
 				if(tx_state_wire==`RX) //等待主函数切换为RX状态
 				begin
-					tx_flag=0;
+					//tx_flag=0;
 					tx_done=0;
 					irq_dealing=0;
 					Irq_Current_State=0;
@@ -2082,6 +2178,7 @@ begin
 			begin
 				if(!SRAM_AlmostFull) //剩余的SRAM空间足以容纳一个数据包
 				begin
+					Pkt_Start_flag=1;
 					Irq_Current_State=7;
 				end
 				else //否则直接放弃改数据包，首先清空FIFO
@@ -2103,13 +2200,15 @@ begin
 			end
 			8:
 			begin
-				Int_start=0;
+				Pkt_Start_flag=0;
+				
 				Irq_Current_State=9;
 			end
 			9:
 			begin
-				if(spi_op_done)
+				if(spi_op_done_int)
 				begin
+					Int_start=0;
 					Si4463_RSSI_RecvPacket=Int_Return_Data[7:0];
 					Irq_Current_State=10;
 				end
@@ -2126,46 +2225,65 @@ begin
 			end
 			11:
 			begin
-				Int_start=0;
+				
 				Irq_Current_State=12;
 			end
 			12:
 			begin
-				if(spi_op_done)
-				begin	
+				if(spi_op_done_int)
+				begin
+					Int_start=0;
 					Irq_Current_State=13;
 				end
 			end
 			13: //发送接收命令，但是如果直接读取数据，可能会出错，因为如果SRAM已经满则，可能会导致阻塞到接收数据的模块，导致用户无法发送数据。
 			begin    //这里涉及缓冲区已满时接收数据的丢弃策略
-				Int_Data_len=0;
-				Int_Return_len=0;
-				Int_start=1;
-				Int_Cmd=3;
-				Irq_Current_State=14;
+				if(RX_fifo_almost_full_flag)
+				begin
+					Int_Data_len=`RX_THRESHOLD-2;//由于SPI_master的cmd=3流程中读取第一个字节（长度）没有算在Int_Data_len上，
+														  //所以任然读取`RX_THRESHOLD长度的FIFO在极特殊的情况下会产生FIFO_UNDERRUN的错误（担心）。
+														  //减2保证最后一位不会被填充0（还有一个字节的RSSI）
+					Data_Recv_Pos=Data_Recv_Pos+`RX_THRESHOLD-1; //对应上一行的解释，这里减1是因为要把报文长度的一个字节算在里面。
+					Int_Return_len=0;
+					Int_start=1;
+					Int_Cmd=3;
+					Irq_Current_State=14;//直接结束这次中断处理					
+				end
+				else if(packets_incoming==1)
+				begin
+					Int_Data_len=0;//处理数据包长度小于RX_THRESHOLD时的情况，即直接产生了RX中断。
+					Int_Return_len=0;
+					Int_start=1;
+					Int_Cmd=3;
+					Irq_Current_State=14;
+				end
+				else
+				begin
+					//取出最后剩下的报文部分0<len<RX_THRESHOLD
+					Int_Data_len=recv_pkt_len_wire-Data_Recv_Pos+1;
+					Int_Return_len=0;
+					Int_start=1;
+					Int_Cmd=8;
+					Irq_Current_State=14;
+				end
 			end
 			14:
 			begin
-				Int_start=0;
+				
 				Irq_Current_State=15;
 			end
 			15:
 			begin
-				if(spi_op_done)
-				begin		
-					//rx_start=0;
-					//frame_recved_int=1;
-					if(packets_incoming==1)
-					begin
-						Irq_Current_State=16;
-					end
+				if(spi_op_done_int)
+				begin	
+					Int_start=0;
+					if(!RX_fifo_almost_full_flag)
+						Irq_Current_State=19;
 					else
-					begin
-						Irq_Current_State=16;
-					end
+						Irq_Current_State=30;
+					
 				end
 			end
-			
 			16: //重置FIFO
 			begin			
 				if(!spi_Using_wire)
@@ -2181,18 +2299,22 @@ begin
 			end
 			17:
 			begin
-				Int_start=0;
+				Crc_Error_Rollback=0;
+				
 				Irq_Current_State=18;
 			end
 			18:
 			begin
-				if(spi_op_done)
+				if(spi_op_done_int)
 				begin
+					Int_start=0;
 					Irq_Current_State=19;
 				end
-			end
+			end			
+
 			19://转换到Rx状态
 			begin
+				Pkt_Received_flag=1;//给SPI_slave一个脉冲信号说明收到一个完整数据包
 				Int_Cmd_Data[7:0]=8'h32; 
 				Int_Data_len=1;
 				Int_Return_len=0;
@@ -2202,13 +2324,15 @@ begin
 			end
 			20:
 			begin
-				Int_start=0;
+				Pkt_Received_flag=0;
+				
 				Irq_Current_State=21;
 			end
 			21:
 			begin
-				if(spi_op_done)
-				begin			
+				if(spi_op_done_int)
+				begin	
+					Int_start=0;
 					//rx_start=0;
 					//packets_incoming=0;
 					//frame_recved_int=1;
@@ -2226,13 +2350,14 @@ begin
 			end
 			23:
 			begin
-				Int_start=0;
+				
 				Irq_Current_State=24;
 			end
 			24:
 			begin
-				if(spi_op_done)
-				begin				
+				if(spi_op_done_int)
+				begin
+					Int_start=0;
 					if(Int_Return_Data[15:8]==8'h08)
 					begin
 						packets_incoming=0;
@@ -2246,6 +2371,46 @@ begin
 						Irq_Current_State=19;
 					end		
 				end
+			end
+			//
+			25:
+			begin
+				Irq_Current_State=26;//脉冲持续一个周期
+			end
+			26:
+			begin
+				irq_dealing=0;//完成中断流程
+				TX_fifo_almost_empty_flag=0;
+				Irq_Current_State=0;
+			end
+			27://读RX_THRESHOLD长度的RX_FIFO
+			begin
+				Int_Data_len=`RX_THRESHOLD;
+				Int_Return_len=0;
+				Int_start=1;
+				Int_Cmd=8;
+				Data_Recv_Pos=Data_Recv_Pos+`RX_THRESHOLD;
+				Irq_Current_State=28;
+			end
+			28:
+			begin
+				
+				Irq_Current_State=29;
+			end
+			29:
+			begin
+				if(spi_op_done_int)
+				begin		
+					Int_start=0;
+					Irq_Current_State=30;
+					
+				end
+			end
+			30:
+			begin
+				RX_fifo_almost_full_flag=0;
+				irq_dealing=0;//完成中断流程
+				Irq_Current_State=0;
 			end
 		endcase
 		
@@ -2278,6 +2443,124 @@ begin
 		endcase
 	end//if(!reset_n)
 end
+
+/**
+* 伪随机数产生器，255个状态
+* http://www.cnblogs.com/BitArt/archive/2012/12/22/2827005.html
+*/
+
+reg          load=1;     /*load seed to rand_num,active high */
+reg [7:0]    seed=8'b10110110;     
+reg [7:0]    rand_num;  /*random number output*/
+wire[7:0]	 rand_num_wire;
+assign rand_num_wire=rand_num;
+
+always@(posedge clk or negedge reset_n)
+begin
+    if(!reset_n)
+        rand_num    <=8'b0;
+    else if(load)
+        rand_num <=seed;    /*load the initial value when load is active*/
+    else
+        begin
+            rand_num[0] <= rand_num[7];
+            rand_num[1] <= rand_num[0];
+            rand_num[2] <= rand_num[1];
+            rand_num[3] <= rand_num[2];
+            rand_num[4] <= rand_num[3]^rand_num[7];
+            rand_num[5] <= rand_num[4]^rand_num[7];
+            rand_num[6] <= rand_num[5]^rand_num[7];
+            rand_num[7] <= rand_num[6];
+        end
+            
+end
+
+
+/////延时函数1///////////////
+reg delay_start=0;
+reg[31:0] delay_count=0;
+reg[7:0] delay_mtime=0;
+reg delay_int=0;
+
+
+always@(posedge clk)
+begin
+	if(!delay_start)
+	begin
+		delay_count<=0;
+		delay_int<=1'b0;
+	end
+	else
+	begin
+		delay_count<=delay_count+1'b1;
+		if(delay_count==delay_mtime*20000) //20000可以算1ms
+			delay_int<=1'b1;
+	end
+end
+
+/////延时函数2///////////////
+reg delay_start_2=0;
+reg[31:0] delay_count_2=0;
+reg[7:0] delay_mtime_2=0;
+reg delay_int_2=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_2)
+	begin
+		delay_count_2<=0;
+		delay_int_2<=1'b0;
+	end
+	else
+	begin
+		delay_count_2<=delay_count_2+1'b1;
+		if(delay_count_2==delay_mtime_2*20000) //20000可以算1ms
+			delay_int_2<=1'b1;
+	end
+end
+
+/////延时函数3///////////////
+reg delay_start_3=0;
+reg[31:0] delay_count_3=0;
+reg[7:0] delay_mtime_3=0;
+reg delay_int_3=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_3)
+	begin
+		delay_count_3<=0;
+		delay_int_3<=1'b0;
+	end
+	else
+	begin
+		delay_count_3<=delay_count_3+1'b1;
+		if(delay_count_3==delay_mtime_3*200) //配合随机数生成器使用
+			delay_int_3<=1'b1;
+	end
+end
+
+/////延时函数4///////////////
+reg delay_start_4=0;
+reg[31:0] delay_count_4=0;
+reg[7:0] delay_mtime_4=0;
+reg delay_int_4=0;
+
+always@(posedge clk)
+begin
+	if(!delay_start_4)
+	begin
+		delay_count_4<=0;
+		delay_int_4<=1'b0;
+	end
+	else
+	begin
+		delay_count_4<=delay_count_4+1'b1;
+		if(delay_count_4==delay_mtime_4*20000) //20000可以算1ms
+			delay_int_4<=1'b1;
+	end
+end
+
 endmodule
 
 /*	

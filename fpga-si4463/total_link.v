@@ -65,7 +65,7 @@ output	si4463_reset;
 input	si4463_irq;
 
 	//SRAM 的引脚
-output[17:0]	sram_mem_addr;
+output[16:0]	sram_mem_addr;
 inout[15:0]	Dout;
 output	CE_n;
 output	OE_n;
@@ -101,7 +101,7 @@ wire[17:0] sram_count_to_master;
 wire[15:0] sram_data_from_master;
 wire[15:0] sram_data_to_master;
 wire SRAM_AlmostFull_to_master;
-assign SRAM_AlmostFull_to_master=(sram_count_to_slave>18'h1FF80)?1:0;
+assign SRAM_AlmostFull_to_master=(sram_count_to_slave>16'hFE00)?1:0;
 
 //Wireless_Ctrl与spi_master的连线
 wire master_rd_n;
@@ -117,8 +117,9 @@ wire[15:0] data_from_master;
 
 //Wireless_Ctrl与spi_slave的连线
 wire signal_for_recved_irq;
-
-
+wire Pkt_Received_flag_wire;
+wire Pkt_Start_flag_wire;
+wire Crc_Error_Rollback_wire;
 
 SRAM_ctrl sram(
 	.clk(clk),
@@ -164,12 +165,16 @@ SRAM_ctrl sram(
 	.OE_n(OE_n),
 	.WE_n(WE_n),
 	.LB_n(LB_n),
-	.UB_n(UB_n)
+	.UB_n(UB_n),
 	
 	//.count(Spi_Current_State)
 		//用于输出当前状态
-	//.SRAM_Ctrl_Status(Spi_Current_State),
+	.SRAM_Ctrl_Status(Spi_Current_State),
+	//.nUsing(debug_wire[1]),
 
+	//开始收包标识，用于CRC错误后的回溯。
+	.Pkt_Start_flag(Pkt_Start_flag_wire),
+	.Crc_Error_Rollback(Crc_Error_Rollback_wire)
 );
 
 Slave_Ctrl slave(
@@ -195,6 +200,7 @@ Slave_Ctrl slave(
 	
 	//帧接收中断,与wireless_ctrl连接
 	//.frame_recved_int(signal_for_recved_irq), //可以删掉了
+	.Pkt_Received_int(Pkt_Received_flag_wire),
 	
 	//用于输出当前状态
 //	.Slave_Ctrl_Status(Spi_Current_State),
@@ -245,8 +251,13 @@ Wireless_Ctrl wireless(
 	//接收完一个帧后的脉冲信号
 	//.frame_recved_int(signal_for_recved_irq),
 	
-	.Si4463_Ph_Status_1(Spi_Current_State),
-	.wireless_debug(debug_wire),//for DUBUG
+	.Pkt_Received_flag(Pkt_Received_flag_wire),
+	.Pkt_Start_flag(Pkt_Start_flag_wire),
+	.Crc_Error_Rollback(Crc_Error_Rollback_wire),
+	
+	//.Si4463_Ph_Status_1(Spi_Current_State),
+	.tx_done(debug_wire[0]),//for DUBUG
+	.wireless_debug(debug_wire[1]),
 	
 	//指示当前状态
 	.led(led)

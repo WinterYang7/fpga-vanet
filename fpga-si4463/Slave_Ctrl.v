@@ -23,6 +23,7 @@ module Slave_Ctrl(
 	
 	//帧接收中断,与wireless_ctrl连接
 	//frame_recved_int,
+	Pkt_Received_int,
 	
 	//与CPU连接的中断
 	cpu_recv_int,
@@ -37,17 +38,21 @@ module Slave_Ctrl(
 	Slave_Ctrl_Debug
 );
 output [7:0] Slave_Ctrl_Status;
-assign Slave_Ctrl_Status[5:0]=Spi_Current_State;
-assign Slave_Ctrl_Status[6]=slave_trdy;
-assign Slave_Ctrl_Status[7]=Irq_Current_State[2];
+assign Slave_Ctrl_Status[6:0]=bufferd_pkt_count[6:0];
+//assign Slave_Ctrl_Status[6]=0;
+//assign Slave_Ctrl_Status[7]=Pkt_Received_int;
+//assign Slave_Ctrl_Status[2:0]=Irq_Current_State[2:0];
+assign Slave_Ctrl_Status[7] = Pkt_Received_int;
+
 output [1:0] Slave_Ctrl_Debug;//for DUBUG
-assign Slave_Ctrl_Debug=Irq_Current_State[1:0];
+//assign Slave_Ctrl_Debug=Irq_Current_State[1:0];
 
 output Data_from_spi;
 output Spi_trdy;
 output Spi_rrdy;
 input	clk;
 //input frame_recved_int;
+input Pkt_Received_int;
 output reg cpu_recv_int=1'b1;
 output  [7:0] Spi_Current_State_1;	
 //assign Spi_Current_State_1={3'b000,Spi_Current_State};
@@ -124,7 +129,7 @@ reg[15:0] Config_count=0;
 
 //中断决策
 reg[7:0] packet_len=0;
-reg spi_send_end=0; //发送给CPU的数据已经发送完，说明准备接收下一个中断
+reg spi_send_end=1; //发送给CPU的数据已经发送完，说明准备接收下一个中断
 wire spi_send_end_wire;
 assign spi_send_end_wire=spi_send_end;
 reg spi_read_sram=0; //spi读取SRAM的使能信号
@@ -135,8 +140,138 @@ reg reset_n=1;
 wire reset_n_wire;
 assign reset_n_wire=reset_n;
 
+////中断//////不需要等待，用户读取之后，自动清除中断
+reg[2:0] Irq_Current_State=0;
+reg[15:0] bufferd_pkt_count=0;
+reg Counter_State=0;
+
 always@(posedge clk)
 begin
+
+	if(!reset_n_wire)
+	begin
+		Irq_Current_State=0;
+		SRAM_read=0;
+		cpu_recv_int=1;
+		bufferd_pkt_count=0;
+		Counter_State=0;
+	end
+	
+	case (Counter_State)
+		0:
+		begin
+			if(Pkt_Received_int)
+			begin
+				Counter_State=1;
+				
+			end
+		end
+		1:
+		begin
+			Counter_State=0;
+			bufferd_pkt_count=bufferd_pkt_count+1'b1;
+		end
+	endcase
+
+	case (Irq_Current_State)
+		0:
+		begin
+			if(bufferd_pkt_count>0 && spi_send_end_wire)
+			begin
+				SRAM_read=1;
+				Irq_Current_State=1;
+				bufferd_pkt_count=bufferd_pkt_count-1'b1;
+			end
+		end
+		1:
+		begin
+			if(SRAM_hint) 
+			begin
+				SRAM_read=0;
+				
+				if(Data_from_sram==16'h2DD4)
+					Irq_Current_State=2;
+				else
+					Irq_Current_State=0;
+			end
+		end
+		2:
+		begin
+			if(!SRAM_empty) //读取包长度和第一个数据
+			begin
+				SRAM_read=1;
+				Irq_Current_State=3;
+			end
+		end
+		3:
+		begin
+			if(SRAM_hint)
+			begin
+				SRAM_read=0;
+				Data_from_sram_reg=Data_from_sram;
+				packet_len=Data_from_sram_reg[15:8];
+				if(packet_len==0)
+					Irq_Current_State=0;
+				else
+					Irq_Current_State=4;
+			end
+		end
+		4:
+		begin
+			//if(SRAM_count*2>=packet_len-1)//一次count计数是两个字节。
+			//begin
+			cpu_recv_int=0;
+			Irq_Current_State=5;
+			//end
+		end
+		5:
+		begin
+			if(irq_noted)
+			begin
+				cpu_recv_int=1;
+				Irq_Current_State=0;
+			end
+		end
+		
+/*		
+		4:
+		begin
+			if(!spi_send_end_wire)
+			begin
+				if(spi_read_sram)
+				begin
+					if(!SRAM_empty)
+					begin
+						SRAM_read=1;
+						Irq_Current_State=5;
+					end
+				end
+			end
+			else
+			begin
+					Irq_Current_State=0;
+			end
+		end
+		5:
+		begin
+			if(SRAM_hint)
+			begin
+				Data_from_sram_reg=Data_from_sram;
+				SRAM_read=0;
+				Irq_Current_State=4;
+			end
+		end
+	*/
+/*		default:
+		begin
+			cpu_recv_int=1;
+			Irq_Current_State=0;
+		end
+*/
+	endcase
+
+
+
 	case (Spi_Current_State)
 		0:
 		begin
@@ -456,14 +591,14 @@ begin
 		//读取数据并发送
 		18:
 		begin
-			spi_read_sram=1;
+			SRAM_read=1;
 			Spi_Current_State=19;
 		end
 		19:
 		begin
 			if(SRAM_hint)
 			begin
-				spi_read_sram=0;
+				SRAM_read=0;
 				Spi_Current_State=20;
 			end
 		end
@@ -472,7 +607,7 @@ begin
 			if(slave_trdy)
 			begin
 				slave_write=1;
-				slave_data_to_spi=Data_from_sram_reg[15:8];
+				slave_data_to_spi=Data_from_sram[15:8];
 				Spi_Current_State=21;
 			end
 		end
@@ -494,7 +629,7 @@ begin
 			if(slave_trdy)
 			begin
 				slave_write=1;
-				slave_data_to_spi=Data_from_sram_reg[7:0];
+				slave_data_to_spi=Data_from_sram[7:0];
 				Spi_Current_State=23;
 			end
 		end
@@ -516,113 +651,11 @@ begin
 			Spi_Current_State=0;
 		end
 	endcase
+	
 end
 
 
-////中断函数//////不需要等待，用户读取之后，自动清除中断
-reg[2:0] Irq_Current_State=0;
 
 
-always@(posedge clk)
-begin
-	if(!reset_n_wire)
-	begin
-		Irq_Current_State=0;
-		SRAM_read=0;
-		cpu_recv_int=1;
-	end
-
-	case (Irq_Current_State)
-		0:
-		begin
-			if(!SRAM_empty) //读取前面的标志字节
-			begin
-				SRAM_read=1;
-				Irq_Current_State=6;
-			end
-		end
-		6:
-		begin
-			if(SRAM_hint) 
-			begin
-				SRAM_read=0;
-				Data_from_sram_reg=Data_from_sram;
-				if(Data_from_sram_reg==16'h2DD4)
-					Irq_Current_State=7;
-				else
-					Irq_Current_State=0;
-			end
-		end
-		7:
-		begin
-			if(!SRAM_empty) //读取包长度和第一个数据
-			begin
-				SRAM_read=1;
-				Irq_Current_State=1;
-			end
-		end
-		1:
-		begin
-			if(SRAM_hint)
-			begin
-				SRAM_read=0;
-				Data_from_sram_reg=Data_from_sram;
-				packet_len=Data_from_sram_reg[15:8];
-				if(packet_len==0)
-					Irq_Current_State=0;
-				else
-					Irq_Current_State=2;
-			end
-		end
-		2:
-		begin
-			if(SRAM_count*2>=packet_len-1)//一次count计数是两个字节。
-			begin
-				cpu_recv_int=0;
-				Irq_Current_State=3;
-			end
-		end
-		3:
-		begin
-			if(irq_noted)
-			begin
-				cpu_recv_int=1;
-				Irq_Current_State=4;
-			end
-		end
-		4:
-		begin
-			if(!spi_send_end_wire)
-			begin
-				if(spi_read_sram)
-				begin
-					if(!SRAM_empty)
-					begin
-						SRAM_read=1;
-						Irq_Current_State=5;
-					end
-				end
-			end
-			else
-			begin
-					Irq_Current_State=0;
-			end
-		end
-		5:
-		begin
-			if(SRAM_hint)
-			begin
-				Data_from_sram_reg=Data_from_sram;
-				SRAM_read=0;
-				Irq_Current_State=4;
-			end
-		end
-		default:
-		begin
-			cpu_recv_int=1;
-			Irq_Current_State=0;
-		end
-	endcase
-end
 
 endmodule

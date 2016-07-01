@@ -1,7 +1,7 @@
 
 # PlanAhead Launch Script for Post-Synthesis pin planning, created by Project Navigator
 
-create_project -name Total_link -dir "E:/work/FPGA/Workspace/0616/Total_link/planAhead_run_3" -part xc6slx9tqg144-3
+create_project -name Total_link -dir "E:/work/FPGA/Workspace/0616/Total_link/planAhead_run_1" -part xc6slx9tqg144-3
 set_property design_mode GateLvl [get_property srcset [current_run -impl]]
 set_property edif_top_file "E:/work/FPGA/Workspace/0616/Total_link/total_link.ngc" [ get_property srcset [ current_run ] ]
 add_files -norecurse { {E:/work/FPGA/Workspace/0616/Total_link} }

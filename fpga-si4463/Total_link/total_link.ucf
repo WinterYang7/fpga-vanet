@@ -33,7 +33,6 @@ NET "sram_mem_addr[13]" LOC = P87;
 NET "sram_mem_addr[14]" LOC = P94;
 NET "sram_mem_addr[15]" LOC = P85;
 NET "sram_mem_addr[16]" LOC = P78;
-NET "sram_mem_addr[17]" LOC = P6;
 NET "CE_n" LOC = P26;
 NET "clk" LOC = P56;
 NET "cpu_miso" LOC = P55;
