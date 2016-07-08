@@ -2476,6 +2476,7 @@ begin
 end
 
 
+`define CLK_COUNT_PER_MS 100000
 /////延时函数1///////////////
 reg delay_start=0;
 reg[31:0] delay_count=0;
@@ -2493,7 +2494,7 @@ begin
 	else
 	begin
 		delay_count<=delay_count+1'b1;
-		if(delay_count==delay_mtime*20000) //20000可以算1ms
+		if(delay_count==delay_mtime*`CLK_COUNT_PER_MS)
 			delay_int<=1'b1;
 	end
 end
@@ -2514,7 +2515,7 @@ begin
 	else
 	begin
 		delay_count_2<=delay_count_2+1'b1;
-		if(delay_count_2==delay_mtime_2*20000) //20000可以算1ms
+		if(delay_count_2==delay_mtime_2*`CLK_COUNT_PER_MS) 
 			delay_int_2<=1'b1;
 	end
 end
@@ -2535,7 +2536,7 @@ begin
 	else
 	begin
 		delay_count_3<=delay_count_3+1'b1;
-		if(delay_count_3==delay_mtime_3*200) //配合随机数生成器使用
+		if(delay_count_3==delay_mtime_3*1000) //配合随机数生成器使用
 			delay_int_3<=1'b1;
 	end
 end
@@ -2556,7 +2557,7 @@ begin
 	else
 	begin
 		delay_count_4<=delay_count_4+1'b1;
-		if(delay_count_4==delay_mtime_4*20000) //20000可以算1ms
+		if(delay_count_4==delay_mtime_4*`CLK_COUNT_PER_MS) 
 			delay_int_4<=1'b1;
 	end
 end

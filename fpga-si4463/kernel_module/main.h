@@ -4,11 +4,11 @@
 #include <linux/netdevice.h>
 #include <linux/spi/spi.h>
 
-#define SPI_SPEED 7000000//
+#define SPI_SPEED 20000000//
 #define BITS_PER_WORD 8
 
 #define PACKETLEN_BITS	1
-#define MAXPACKETLEN	200
+#define MAXPACKETLEN 253	
 
 //#define DEBUG
 #define GALILEO

@@ -38,7 +38,7 @@
 //EXTRADELAY: 0
 //TARGETSSDELAY: 0
 
-`define SPI_FRE_DIV 8'h01    //可以通过这里修改spi的速度，spi速率=clk/4x; x就是前面的值
+`define SPI_FRE_DIV 8'h0a    //可以通过这里修改spi的速度，spi速率=clk/4x; x就是前面的值
 
 module spi_master (
                     // inputs:

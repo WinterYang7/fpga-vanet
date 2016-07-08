@@ -116,6 +116,15 @@ const struct gpio pin_mux[pin_mux_num] = {
 };
 #endif
 
+/*-------------------------------------------------------------------------*/
+static void ppp(u8 * arr, int len){
+	int i = 0;
+	printk(KERN_ALERT "ppp: len=[%d]\n", len);
+	for(i = 0;i<len;i++)
+		printk(KERN_ALERT "%x ", arr[i]);
+	printk(KERN_ALERT "\n");
+}
+
 static void write2file(struct file *fp, const char *write_str, int len) {
 //    static char buf1[10];
     mm_segment_t fs;
@@ -182,6 +191,16 @@ int set_pinmux(void){
 	filp_close(fp,NULL);
 	fp = filp_open("/sys/class/gpio/export", O_WRONLY|O_APPEND, 0);
 	write2file(fp, "30", 2);
+	filp_close(fp,NULL);
+
+	fp = filp_open("/sys/class/gpio/export", O_WRONLY|O_APPEND, 0);
+	write2file(fp, "10", 2);
+	filp_close(fp,NULL);
+	fp = filp_open("/sys/class/gpio/export", O_WRONLY|O_APPEND, 0);
+	write2file(fp, "74", 2);
+	filp_close(fp,NULL);
+	fp = filp_open("/sys/class/gpio/export", O_WRONLY|O_APPEND, 0);
+	write2file(fp, "6", 1);
 	filp_close(fp,NULL);
 
 	printk(KERN_ALERT "GALILEO EXPORT GPIO\n");
@@ -262,10 +281,24 @@ spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 		status = message->status;
 		if (status == 0)
 			status = message->actual_length;
+	} else {
+
 	}
 	return status;
 }
 
+inline int spi_write_data(struct spidev_data *spidev, u8* tx_data, int len)
+{
+	struct spi_transfer	t = {
+			.tx_buf		= tx_data,
+			.len		= len,
+			.cs_change	= 0
+		};
+	struct spi_message m;
+	spi_message_init(&m);
+	spi_message_add_tail(&t, &m);
+	return spidev_sync(spidev, &m);
+}
 
 inline int spi_write_packet(struct spidev_data *spidev, struct sk_buff *skb)
 {
@@ -287,7 +320,9 @@ inline int spi_write_packet(struct spidev_data *spidev, struct sk_buff *skb)
 	struct spi_message m;
 	spi_message_init(&m);
 
+
 //	printk(KERN_ALERT "spi_write_packet: len:%d\n",skb->len);
+//	ppp(skb->data, skb->len);
 
 	spi_message_add_tail(&tcmd, &m);
 	spi_message_add_tail(&tlen, &m);
@@ -341,10 +376,10 @@ static void si4463_handle_rx(struct work_struct *work)
 	len = rw->len;
 	data = rw->data;
 
-	skb = dev_alloc_skb(len+2);
+	skb = alloc_skb(len+2, GFP_KERNEL);
 	skb_reserve(skb, 2);
 	memcpy(skb_put(skb, len), data, len);
-	rbuf_enqueue(&global_buf_queue);
+
 //	printk(KERN_ALERT "spi_complete_recv\n");
 //int j;
 //for(j=0;j<20;j++)
@@ -363,7 +398,7 @@ static void si4463_handle_rx(struct work_struct *work)
 
 //	printk(KERN_ALERT "si4463_handle_rx out 2 \n");
 	kfree(rw);
-
+	rbuf_enqueue(&global_buf_queue);
 }
 
 inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
@@ -374,10 +409,15 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 	struct spi_message m;
 	struct rx_work *work;
 	struct module_priv *priv;
+	struct sk_buff *skb;
 	priv = netdev_priv(global_net_devs);
 
-	ubuf = rbuf_get_avail_msg(&global_buf_queue);
-	ubuf->len_ = len;
+	u8 * tmp_reciever=kmalloc(MAXPACKETLEN, GFP_KERNEL);
+	u8 * tmp_tx=kmalloc(MAXPACKETLEN, GFP_KERNEL);
+	memset(tmp_tx, 0, MAXPACKETLEN);
+
+//	ubuf = rbuf_get_avail_msg(&global_buf_queue);
+//	ubuf->len_ = len;
 	spi_message_init(&m);
 
 	if(len > MAXPACKETLEN){
@@ -387,43 +427,60 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 
 //	printk(KERN_ALERT "spi_recv_packet: len: %d\n", len);
 
-	t.rx_buf = ubuf->buf_;//
+	t.tx_buf = tmp_tx;
+	t.rx_buf = tmp_reciever;//global_reader;//skb_put(skb, len);//ubuf->buf_;//
 	t.cs_change = 0;
-	t.len = len;
+	t.len = len;//ubuf->len_;
+	t.bits_per_word=BITS_PER_WORD;
+	t.speed_hz=SPI_SPEED;
+	t.rx_nbits=0;
 	spi_message_add_tail(&t, &m);
-	spidev_sync(spidev, &m);
-
-	status = m.status;
-	if (status == 0){
-//		printk(KERN_ALERT "spi_actual_length %d\n",m.actual_length);
+	status = spidev_sync(spidev, &m);
+	if(status<=0){
+		kfree(tmp_reciever);
+		return status;
 	}
-	else {
-		printk(KERN_ALERT "spi_complete_recv: STATUS=%d\n", status);
-		return -1;
-	}
+//	status = m.status;
+//	if (status == 0){
+////		printk(KERN_ALERT "spi_actual_length %d\n",m.actual_length);
+//	}
+//	else {
+//		printk(KERN_ALERT "spi_complete_recv: STATUS=%d\n", status);
+//		return -1;
+//	}
 
-	work = kzalloc(sizeof(struct rx_work), GFP_KERNEL);
-	if (!work)
-		return -1;
+	skb = alloc_skb(len+2, GFP_KERNEL);
+	skb_reserve(skb, 2);
 
-	INIT_WORK(&work->work, si4463_handle_rx);
-	work->data = ubuf->buf_;
-	work->dev = global_net_devs;
-	work->len = len;
-	queue_work(priv->dev_workqueue, &work->work);
+	memcpy(skb_put(skb, (len-1)), (tmp_reciever+1), (len-1));
+	kfree(tmp_reciever);
+	kfree(tmp_tx);
+//	work = kzalloc(sizeof(struct rx_work), GFP_KERNEL);
+//	if (!work)
+//		return -1;
+//	INIT_WORK(&work->work, si4463_handle_rx);
+//	work->data = ubuf->buf_;
+//	work->dev = global_net_devs;
+//	work->len = ubuf->len_;
+//	queue_work(priv->dev_workqueue, &work->work);
+
+//	printk(KERN_ALERT "spi_complete_recv\n");
+
+//	ppp(skb->data, len);
+	/* Handover recieved data */
 
 
-	return 0;
+
+	skb->dev = global_net_devs;
+	skb->protocol = eth_type_trans(skb, global_net_devs);
+	/* We need not check the checksum */
+	skb->ip_summed = CHECKSUM_UNNECESSARY;
+	netif_rx(skb);
+
+	return status;
 }
 
-/*-------------------------------------------------------------------------*/
-void ppp(u8 * arr, int len){
-	int i = 0;
-	printk(KERN_ALERT "ppp: len=[%d]\n", len);
-	for(i = 0;i<len;i++)
-		printk(KERN_ALERT "%x ", arr[i]);
-	printk(KERN_ALERT "\n");
-}
+
 
 /* Device Private Data */
 struct si4463 {
@@ -582,11 +639,24 @@ static irqreturn_t si4463_isr_data(int irq, void *data)
 static void si4463_isrwork(struct work_struct *work)
 {
 	u16 len;
+	int status;
+	u8* tmp_data;
 	struct si4463 *devrec = container_of(work, struct si4463, irqwork);
+
 	mutex_lock(&mutex_txrx);
 	len = spi_recv_packetlen(&spidev_global);
-	spi_recv_packet(&spidev_global, len);
+	if(len<=0)
+		printk(KERN_ALERT "si4463_isrwork: len is 0!!");
+	status = spi_recv_packet(&spidev_global, len);
+	if(status<=0){
+		printk(KERN_ALERT "si4463_isrwork: status %d, len %d\n", status, len);
+		tmp_data=kmalloc(len, GFP_KERNEL);
+		memset(tmp_data, 0, len);
+		spi_write_data(&spidev_global, tmp_data, len);
+		kfree(tmp_data);
+	}
 	mutex_unlock(&mutex_txrx);
+
 //	spi_recv_packet(&spidev_global, 20);
 //	enable_irq(devrec->spi->irq);
 }
@@ -635,7 +705,7 @@ static int si4463_probe(struct spi_device *spi)
 	struct si4463 *devrec;
 
 //	struct pinctrl *pinctrl;
-	printk(KERN_ALERT "si4463: probe(). IRQ: %d\n", spi->irq);
+	printk(KERN_ALERT "si4463: probe(). VERSION:%s, IRQ: %d\n", "20160708,11:31", spi->irq);
 
 	devrec = kzalloc(sizeof(struct si4463), GFP_KERNEL);
 	if (!devrec)
@@ -678,7 +748,7 @@ static int si4463_probe(struct spi_device *spi)
 	tmp |= spi->mode & ~SPI_MODE_MASK;
 
 	printk(KERN_ALERT "after: tmp= %x\n", tmp);
-//	spi->mode = (u8)tmp;
+//	spi->mode = (u16)tmp;
 	spi->mode = SPI_MODE_0;
 	spi->bits_per_word = BITS_PER_WORD;
 	spi->max_speed_hz = SPI_SPEED;
@@ -799,7 +869,7 @@ void module_net_init(struct net_device *dev)
 	dev->netdev_ops = &si4463_netdev_ops;
 
 	//MTU
-	dev->mtu		= 113;
+	dev->mtu		= 230;
 
 	dev->dev_addr[0] = 0x18;//(0x01 & addr[0])为multicast
 	dev->dev_addr[1] = 0x02;

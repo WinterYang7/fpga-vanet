@@ -176,11 +176,10 @@ begin
 	case (Irq_Current_State)
 		0:
 		begin
-			if(bufferd_pkt_count>0 && spi_send_end_wire)
+			if(bufferd_pkt_count>0)
 			begin
 				SRAM_read=1;
-				Irq_Current_State=1;
-				bufferd_pkt_count=bufferd_pkt_count-1'b1;
+				Irq_Current_State=1;			
 			end
 		end
 		1:
@@ -227,9 +226,15 @@ begin
 		5:
 		begin
 			if(irq_noted)
+				Irq_Current_State=6;
+		end
+		6:
+		begin
+			if(spi_send_end_wire)
 			begin
 				cpu_recv_int=1;
 				Irq_Current_State=0;
+				bufferd_pkt_count=bufferd_pkt_count-1'b1;
 			end
 		end
 		
