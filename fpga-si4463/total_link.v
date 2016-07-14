@@ -65,7 +65,7 @@ output	si4463_reset;
 input	si4463_irq;
 
 	//SRAM µÄÒı½Å
-output[16:0]	sram_mem_addr;
+output[17:0]	sram_mem_addr;
 inout[15:0]	Dout;
 output	CE_n;
 output	OE_n;

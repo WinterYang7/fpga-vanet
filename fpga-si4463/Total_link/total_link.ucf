@@ -1,5 +1,4 @@
 
-# PlanAhead Generated physical constraints 
 
 NET "Dout[1]" LOC = AA14;
 NET "Dout[2]" LOC = AB14;
@@ -38,10 +37,12 @@ NET "LB_n" LOC = Y6;
 NET "OE_n" LOC = Y5;
 NET "UB_n" LOC = AB5;
 NET "debug_wire[0]" LOC = E1;
+NET "debug_wire[1]" LOC = D1;
 NET "Spi_Current_State[0]" LOC = C1;
 NET "Spi_Current_State[1]" LOC = D2;
 NET "Spi_Current_State[2]" LOC = F1;
 NET "Spi_Current_State[3]" LOC = G1;
+NET "Spi_Current_State[4]" LOC = H2;
 NET "Spi_Current_State[5]" LOC = K2;
 NET "Spi_Current_State[6]" LOC = F2;
 NET "Spi_Current_State[7]" LOC = H1;
@@ -49,6 +50,7 @@ NET "led[0]" LOC = M1;
 NET "led[1]" LOC = N1;
 NET "led[2]" LOC = P1;
 NET "led[3]" LOC = P2;
+NET "sram_mem_addr[17]" LOC = Y3;
 NET "sram_mem_addr[16]" LOC = AA4;
 NET "sram_mem_addr[15]" LOC = AB4;
 NET "clk" LOC = L1;
@@ -63,3 +65,5 @@ NET "si4463_mosi" LOC = H21;
 NET "si4463_miso" LOC = H22;
 NET "si4463_reset" LOC = L22;
 NET "si4463_ss_n" LOC = K21;
+
+

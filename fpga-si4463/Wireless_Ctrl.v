@@ -2308,24 +2308,23 @@ begin
 				if(spi_op_done_int)
 				begin
 					Int_start=0;
-					Irq_Current_State=19;
+					Irq_Current_State=20;
 				end
 			end			
 
-			19://转换到Rx状态
+			19:
 			begin
 				Pkt_Received_flag=1;//给SPI_slave一个脉冲信号说明收到一个完整数据包
+				Irq_Current_State=20;
+			end
+			20://转换到Rx状态
+			begin
+				Pkt_Received_flag=0;
 				Int_Cmd_Data[7:0]=8'h32; 
 				Int_Data_len=1;
 				Int_Return_len=0;
 				Int_start=1;
 				Int_Cmd=4;
-				Irq_Current_State=20;
-			end
-			20:
-			begin
-				Pkt_Received_flag=0;
-				
 				Irq_Current_State=21;
 			end
 			21:
@@ -2563,156 +2562,3 @@ begin
 end
 
 endmodule
-
-/*	
-			
-			0:
-			begin
-				if(enable_irq&&enable_irq_sending&&!Si4463_int) //1.初始化完成后才允许中断 2.如果正在发送准备数据，此时不允许接收中断 3.中断信号低电平有效
-				begin
-					if(tx_state_wire==`TX) //发送完成中断，如果当前的状态为发送状态，那么默认为当前状态为发送完成的中断
-					begin
-						//led[0]=~led[0];
-						tx_flag=1;
-						rx_flag=~tx_flag;
-						irq_dealing=1;
-						Irq_Current_State=4;
-					end
-					else
-					begin
-						tx_flag=0;
-						rx_flag=tx_flag;  ///这里可能出现问题
-						irq_dealing=1;
-						Irq_Current_State=1;
-					end
-				end
-			end
-	
-			//////读取中断状态，判断中断源
-			1:
-			begin
-				if(!spi_Using_wire)
-				begin
-					Int_Cmd_Data[7:0]=8'h50;
-					Int_start=1;
-					Int_Cmd=6;
-					Int_Data_len=1;
-					Int_Return_len=2;
-					Irq_Current_State=2;
-				end
-			end
-			2:
-			begin
-				Int_start=0;
-				Irq_Current_State=3;
-			end
-			3:
-			begin
-				if(spi_op_done)
-				begin
-					
-					Si4463_Ph_Status=Int_Return_Data[15:8]; //PH_PEND状态
-					Si4463_Modem_Status=Int_Return_Data[7:0];
-					//Si4463_Ph_Status_1=Si4463_Ph_Status;
-	
-					if((Si4463_Ph_Status&8'h08)==8'b00001000) //CRC_ERROR
-					begin
-						led[0]=~led[0];
-						
-						Irq_Current_State=9;
-					end
-					else if((Si4463_Ph_Status&8'h10)==8'b00010000) //接收中断
-					begin
-						led[1]=~led[1];
-						Irq_Current_State=4;
-						rx_flag=1;
-					end
-					else if((Si4463_Modem_Status&8'h03)==8'h03) //收到同步头时产生的中断，虽然也可以使用前导码，但是效果并不好，因为射频模块容易被其他设备的发送的前导码干扰
-					begin
-						packets_incoming=packets_incoming+1'b1;
-						Syncirq_Current_State=0;
-						Irq_Current_State=4;
-					end
-					else
-					begin
-						Irq_Current_State=4;
-					end
-				end
-			end
-			
-			4: //清除中断
-			begin
-				if(!spi_Using_wire)
-				begin
-					Int_Cmd_Data[7:0]=8'h20;
-					Int_Cmd_Data[15:8]=8'h00;
-					Int_Cmd_Data[23:16]=8'h00;
-					Int_Cmd_Data[31:24]=8'h00;
-					Int_start=1;
-					Int_Cmd=4;
-					Int_Data_len=4;
-					Int_Return_len=0;
-					Irq_Current_State=5;
-				end
-			end
-			5:
-			begin
-				Int_start=0;
-				Irq_Current_State=6;
-			end
-			6:
-			begin
-				if(spi_op_done)
-				begin
-					if(!Si4463_int) //如果中断没有清除，那么循环清除中断
-						Irq_Current_State=4;
-					else
-					begin
-						Irq_Current_State=7;
-					end
-				end
-			end
-			7:
-			begin
-				if(rx_flag)  //如果是接收数据中断
-				begin
-					rx_start=1;
-					irq_dealing=0;
-					Irq_Current_State=0;
-				end
-				else if(tx_flag) //如果是发送完成中断
-				begin
-					tx_done=1;
-					Irq_Current_State=8;
-				end
-				else //其他中断及中断错误
-				begin
-					irq_dealing=0;
-					Irq_Current_State=0;
-				end
-			end
-			8:
-			begin
-				if(tx_state_wire==`RX) //等待主函数切换为其他状态
-				begin
-
-					tx_flag=0;
-					tx_done=0;
-					irq_dealing=0;
-					Irq_Current_State=0;
-				end
-			end
-			
-			9://CRC ERROR! 清中断，清FIFO，重新进入RX
-			
-			
-			
-			///如果是发送中断，置tx_done 为1
-			///如果是接收中断，提示用户开始接收数据,置rx_start为1,接收完成后，置为0/////////
-//			default:
-//			begin
-//				irq_dealing=0;
-//				Irq_Current_State=0;
-//			end
-		endcase
-*/

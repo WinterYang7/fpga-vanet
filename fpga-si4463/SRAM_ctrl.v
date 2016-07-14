@@ -1,14 +1,15 @@
 `timescale 1ns / 1ps
 
-//126KB for Input, First 1KB for configuration space
-`define MAX_FIFO_I_PTR  17'b01111111111110000
-`define MIN_FIFO_I_PTR  17'b00000001000000010
-`define CONFIG_START_P	17'b00000000000000000
-`define CONFIG_MAXEND_P	17'b00000001000000000
+//注意，一个地址对应两个字节输出 
+`define MAX_FIFO_I_PTR  18'b011111111111110000
+`define MIN_FIFO_I_PTR  18'b000000001000000010
+`define CONFIG_START_P	18'b000000000000000000
+`define CONFIG_MAXEND_P	18'b000000001000000000
 `define FIFO_I_SIZE (`MAX_FIFO_I_PTR-`MIN_FIFO_I_PTR+1)
-//127KB for Output 63K*16bit
-`define MAX_FIFO_O_PTR 	17'b11111111111110000
-`define MIN_FIFO_O_PTR 	17'b10000000000000000
+
+`define MAX_FIFO_O_PTR 	18'b111111111111110000
+`define MIN_FIFO_O_PTR 	18'b100000000000000000
+
 `define FIFO_O_SIZE (`MAX_FIFO_O_PTR-`MIN_FIFO_O_PTR+1)
 
 module SRAM_ctrl(
@@ -103,7 +104,7 @@ output reg master_hint;
 reg wireless_control_need_reset=0;//
 
 //SRAM的引脚
-output reg [16:0]	mem_addr;
+output reg [17:0]	mem_addr;
 inout[15:0]	   Dout;
 output reg	CE_n=0; //always selected
 output reg	OE_n=1;
@@ -121,20 +122,20 @@ output reg	fifo_o_full=0;
 output reg[17:0]	fifo_o_count=0;
 
 //Configure Space Points
-reg[16:0] config_wr_ptr=`CONFIG_START_P;
-reg[16:0] config_rd_ptr=`CONFIG_START_P;
+reg[17:0] config_wr_ptr=`CONFIG_START_P;
+reg[17:0] config_rd_ptr=`CONFIG_START_P;
 
 
 //FIFO_i缓冲区指针
 
-reg[16:0] fifo_i_rd_ptr=`MIN_FIFO_I_PTR;
-reg[16:0] fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
+reg[17:0] fifo_i_rd_ptr=`MIN_FIFO_I_PTR;
+reg[17:0] fifo_i_wr_ptr=`MIN_FIFO_I_PTR;
 
 
 //FIFO_o缓冲区指针
-reg[16:0] fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
-reg[16:0] fifo_o_wr_ptr=`MIN_FIFO_O_PTR;
-reg[16:0] fifo_o_wr_ptr_tmp;//用于CRC错误的回溯机制
+reg[17:0] fifo_o_rd_ptr=`MIN_FIFO_O_PTR;
+reg[17:0] fifo_o_wr_ptr=`MIN_FIFO_O_PTR;
+reg[17:0] fifo_o_wr_ptr_tmp;//用于CRC错误的回溯机制
 
 //负责同步互斥
 output reg nUsing=0;
@@ -222,7 +223,7 @@ begin
 		begin
 			opcode=1;
 			data_to_sram=slave_data_to_sram;
-			mem_addr[16:0]=fifo_i_wr_ptr;
+			mem_addr[17:0]=fifo_i_wr_ptr[17:0];
 			fifo_i_wr_ptr=fifo_i_wr_ptr+1;
 			fifo_i_count=fifo_i_count+1;
 			if(fifo_i_wr_ptr>`MAX_FIFO_I_PTR)
@@ -233,7 +234,7 @@ begin
 		2: //SPI_slave模块读请求
 		begin
 			opcode=2;
-			mem_addr[16:0]=fifo_o_rd_ptr;
+			mem_addr[17:0]=fifo_o_rd_ptr[17:0];
 			fifo_o_rd_ptr=fifo_o_rd_ptr+1;
 			fifo_o_count=fifo_o_count-1;
 			if(fifo_o_rd_ptr>`MAX_FIFO_O_PTR)
@@ -245,7 +246,7 @@ begin
 		begin
 			opcode=3;
 			data_to_sram=master_data_to_sram;
-			mem_addr[16:0]=fifo_o_wr_ptr;
+			mem_addr[17:0]=fifo_o_wr_ptr[17:0];
 			fifo_o_wr_ptr=fifo_o_wr_ptr+1;
 			fifo_o_count=fifo_o_count+1;
 			if(fifo_o_wr_ptr > `MAX_FIFO_O_PTR)
@@ -256,7 +257,7 @@ begin
 		4://SPI_master模块读请求
 		begin
 			opcode=4;
-			mem_addr[16:0]=fifo_i_rd_ptr;
+			mem_addr[17:0]=fifo_i_rd_ptr[17:0];
 			fifo_i_rd_ptr=fifo_i_rd_ptr+1;
 			fifo_i_count=fifo_i_count-1;
 			if(fifo_i_rd_ptr > `MAX_FIFO_I_PTR)
@@ -268,7 +269,7 @@ begin
 		begin
 			opcode=5;	
 			data_to_sram=slave_data_to_sram;
-			mem_addr=config_wr_ptr;
+			mem_addr[17:0]=config_wr_ptr[17:0];
 			config_wr_ptr=config_wr_ptr+1;
 			Current_State=10;	
 		end
@@ -276,7 +277,7 @@ begin
 		6://读配置w
 		begin
 			opcode=6;
-			mem_addr=config_rd_ptr;
+			mem_addr[17:0]=config_rd_ptr[17:0];
 			config_rd_ptr=config_rd_ptr+1;
 			Current_State=11;	
 		end
@@ -371,12 +372,13 @@ begin
 		end
 		14: //等待一个周期之后，恢复hint信号，操作完成，给其他操作让出空间
 		begin
-			slave_hint=0;
-			master_hint=0;
+			
 			Current_State=18;
 		end
 		18:
 		begin
+			slave_hint=0;
+			master_hint=0;
 			Current_State=0;
 			nUsing=0;
 		end
