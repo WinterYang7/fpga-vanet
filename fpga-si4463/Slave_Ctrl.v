@@ -20,6 +20,8 @@ module Slave_Ctrl(
 	Config_write_sram,
 	Config_write_sram_done,	
 
+	Cmd_write_sram,
+	Cmd_write_sram_done,
 	
 	//帧接收中断,与wireless_ctrl连接
 	//frame_recved_int,
@@ -65,6 +67,9 @@ input	sclk;
 //与SRAM的接口
 output reg Config_write_sram=0;
 output reg Config_write_sram_done=0;	
+
+output reg Cmd_write_sram=0;
+output reg Cmd_write_sram_done=0;
 
 output reg	SRAM_read=0;
 output reg  SRAM_write=0;
@@ -126,6 +131,9 @@ reg irq_noted=0;
 //reg rx_flag=0;
 reg[15:0] Config_len=0;
 reg[15:0] Config_count=0;
+
+reg[7:0] Cmd_len=0;
+reg[7:0] Cmd_count=0;
 
 //中断决策
 reg[7:0] packet_len=0;
@@ -291,12 +299,20 @@ begin
 			case(slave_data_from_spi_reg)
 				8'b00010001: //写配置文件命令0x11
 				begin
-					Sended_count=0;
+					//Sended_count=0;
 					Byte_flag=0;
 					Config_len[15:0]=16'b0;
 					Config_count[15:0]=16'b0;
 					Spi_Current_State=30;
 				end
+				8'b00010010: //写单条命令（不重启）0x12
+				begin
+					Byte_flag=0;
+					Cmd_len[7:0]=8'b0;
+					Cmd_count[7:0]=8'b0;
+					Spi_Current_State=45;
+				end
+				
 				8'b01100110: //CPU发送数据0x66
 				begin
 					Data_to_sram[15:8]=8'h2D;
@@ -354,10 +370,9 @@ begin
 		end
 		33:
 		begin
-			Config_write_sram=0;
 			if(SRAM_hint)
 			begin
-				
+				Config_write_sram=0;
 				Spi_Current_State=34;
 			end
 		end
@@ -440,6 +455,101 @@ begin
 			reset_n=1;
 			Spi_Current_State=0;
 		end
+		
+		/**
+		 * 0x12，接收单条命令，目的是写寄存器，不重启设备
+		 *       第一个字节为命令长度，后续跟命令；写入SRAM时，第一个字节为长度，后续第二个字节填充0，然后是命令实体，。
+		 */
+		45://接收cmd长度
+		begin
+			if(slave_irq)
+			begin
+				Cmd_len[7:0]=slave_data_from_spi[7:0];
+				Spi_Current_State=46;
+			end
+		end
+		46://配置长度写入sram
+		begin
+			Data_to_sram[15:8]=Cmd_len[7:0];
+			Data_to_sram[7:0]=8'b0;
+			Cmd_write_sram=1;
+			Spi_Current_State=47;
+		end
+		47:
+		begin
+			if(SRAM_hint)
+			begin
+				Cmd_write_sram=0;
+				Spi_Current_State=48;
+			end
+		end		
+		48://接收CMD数据
+		begin
+			if(slave_irq)
+			begin
+				slave_data_from_spi_reg=slave_data_from_spi;
+				Spi_Current_State=49;
+			end
+		end
+		49:
+		begin
+			if(!Byte_flag)
+			begin
+				Data_to_sram[15:8]=slave_data_from_spi_reg;
+				Byte_flag=~Byte_flag;
+				Cmd_count=Cmd_count+1'b1;
+				if(Cmd_count>=Cmd_len)
+				begin
+					Data_to_sram[7:0]=8'b000;
+					Byte_flag=~Byte_flag;
+					Spi_Current_State=50;//接收完毕
+				end
+				else
+				begin
+					Spi_Current_State=48;//继续接收
+				end
+			end
+			else
+			begin
+				Data_to_sram[7:0]=slave_data_from_spi_reg;
+				Byte_flag=~Byte_flag;
+				Cmd_count=Cmd_count+1'b1;
+				Spi_Current_State=36;//接收了2个字节，写入sram
+			end
+		end		
+		50:
+		begin
+			Cmd_write_sram=1;
+			Spi_Current_State=51;
+		end
+		51:
+		begin
+			if(SRAM_hint)
+			begin
+				Cmd_write_sram=0;
+				if(Cmd_count<Cmd_len)
+				begin
+					Spi_Current_State=48; //配置数据还没有接收完毕
+				end
+				else
+				begin
+					Spi_Current_State=52;
+				end
+			end
+		end
+		52://cmd接收完毕，通知wireless_ctrl将该命令通过spi master发送出去
+		begin
+			Cmd_write_sram_done=1;
+			Spi_Current_State=53;
+		end
+		53:
+		begin
+			Cmd_write_sram_done=0;
+			Spi_Current_State=0;
+		end
+
+
+		
 		4:
 		begin
 			if(slave_irq)

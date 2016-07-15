@@ -76,6 +76,8 @@ output	UB_n;
 //SRAM与spi_slave的连线
 wire config_write_sram;
 wire config_write_sram_done;
+wire cmd_write_sram;
+wire cmd_write_sram_done;
 
 wire slave_read_sram;
 wire slave_write_sram;
@@ -91,6 +93,8 @@ wire wireless_control_need_reset_wire;
 
 wire config_read_sram;
 wire config_read_sram_done;
+
+wire cmd_read_sram;
 
 wire master_read_sram;
 wire master_write_sram;
@@ -137,6 +141,9 @@ SRAM_ctrl sram(
 	
 	.config_write(config_write_sram),//for spi slave
 	.config_write_done(config_write_sram_done),
+	
+	.cmd_read(cmd_read_sram),//for wireless control
+	.cmd_write(cmd_write_sram),//for spi slave
 	
 	//数据线
 	.slave_data_to_sram(sram_data_from_slave),
@@ -188,6 +195,8 @@ Slave_Ctrl slave(
 	//与SRAM的接口
 	.Config_write_sram(config_write_sram),//SPI slave should write the configuration space
 	.Config_write_sram_done(config_write_sram_done),
+	.Cmd_write_sram(cmd_write_sram),
+	
 	
 	.SRAM_read(slave_read_sram),
 	.SRAM_write(slave_write_sram),
@@ -201,6 +210,7 @@ Slave_Ctrl slave(
 	//帧接收中断,与wireless_ctrl连接
 	//.frame_recved_int(signal_for_recved_irq), //可以删掉了
 	.Pkt_Received_int(Pkt_Received_flag_wire),
+	.Cmd_write_sram_done(cmd_write_sram_done),
 	
 	//用于输出当前状态
 //	.Slave_Ctrl_Status(Spi_Current_State),
@@ -221,6 +231,10 @@ Wireless_Ctrl wireless(
 	.Config_read_sram(config_read_sram),//wireless control can only read configurations.
 	.Need_reset_from_sram(wireless_control_need_reset_wire),
 	.Config_read_sram_done(config_read_sram_done),
+	
+	.Cmd_read_sram(cmd_read_sram),
+	.Cmd_waiting(cmd_write_sram_done),
+
 	
 	.SRAM_read(master_read_sram),
 	.SRAM_write(master_write_sram),

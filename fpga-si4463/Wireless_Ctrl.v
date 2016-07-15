@@ -5,6 +5,10 @@ module Wireless_Ctrl(
 	Need_reset_from_sram,
 	Config_read_sram,
 	Config_read_sram_done,
+	Cmd_read_sram,
+	
+	//有单条命令等待被发送
+	Cmd_waiting,
 	
 	SRAM_read,
 	SRAM_write,
@@ -75,6 +79,10 @@ input Need_reset_from_sram;
 output Config_read_sram;
 output Config_read_sram_done;
 
+output reg Cmd_read_sram=0;
+input Cmd_waiting;
+
+
 output	SRAM_read;
 output	SRAM_write;
 input	SRAM_full;
@@ -120,6 +128,10 @@ reg [7:0] config_cmd_len_next;
 reg config_cmd_start_flag;
 reg [15:0] config_count;
 reg [7:0] config_count_percmd;
+
+//单条命令的处理
+reg [7:0] cmd_len;
+reg [7:0] cmd_count;
 
 //中断处理函数的信号
 reg [4:0] Irq_Current_State=0;
@@ -1656,22 +1668,79 @@ begin
 		
 		
 		////判断是否有数据及数据帧长度,如果想要读取数据包长度，可以另外设置一条命令，从SPI中读取SRAM
+		////判断是否有待发送的命令
 		60:
 		begin
-			
-			if(!SRAM_empty&&!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
+			if(Cmd_waiting)
+			begin
+				Cmd_read_sram=1;
+				cmd_count=0;
+				Main_Current_State=61;
+			end
+			else if(!SRAM_empty&&!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
 //				enable_irq=0;//关闭中断
 				Main_Cmd=5; //read from sram
 				Main_start=1;
-				Main_Current_State=61;
+				Main_Current_State=62;
 			end
 		end
 		61:
 		begin
-			
-			Main_Current_State=62;
+			if(SRAM_hint)
+			begin
+				//Cmd_waiting读出一条命令的长度
+				Cmd_read_sram=0;
+				cmd_len=Data_from_sram[15:8];//只有第一个字节有效，第二个字节是0填充
+				if(cmd_len==0)
+					Main_Current_State=0;
+				else
+					Main_Current_State=67;
+			end
 		end
+		67:
+		begin
+			Cmd_read_sram=1;
+			Main_Current_State=68;
+		end
+		68:
+		begin
+			if(SRAM_hint)
+			begin
+				Cmd_read_sram=0;
+				
+				Main_Cmd_Data[(cmd_count*8) +:8]=Data_from_sram[15:8];
+				cmd_count=cmd_count+1'b1;
+				if(cmd_count==cmd_len)
+					Main_Current_State=69;//发送命令
+				else
+				begin
+					Main_Cmd_Data[(cmd_count*8) +:8]=Data_from_sram[7:0];
+					cmd_count=cmd_count+1'b1;
+					if(cmd_count==cmd_len)
+						Main_Current_State=69;//发送命令
+					else
+						Main_Current_State=67;//继续读取
+				end
+			end
+		end
+		69:
+		begin
+			Main_Data_len=cmd_len;
+			Main_Return_len=0;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Current_State=77;
+		end
+		77:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=60;
+			end
+		end
+		
 		62:
 		begin
 			if(spi_op_done_main)

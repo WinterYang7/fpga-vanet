@@ -31,6 +31,9 @@
 #include <linux/mutex.h>
 #include <linux/timer.h>
 
+#include <linux/debugfs.h>
+#include <linux/types.h>
+
 #include "main.h"
 #include "ringbuffer.h"
 /* Bit masks for spi_device.mode management.  Note that incorrect
@@ -64,12 +67,15 @@ u8 global_reader[MAXPACKETLEN];
  */
 const u8 sendcmd[5] = {0x66, 0,0,0,0};
 const u8 recvcmd[5] = {0x77, 0,0,0,0};
-
+const u8 configcmd[5] = {0x11, 0,0,0,0};
+const u8 single_config_cmd[5] = {0x12, 0,0,0,0};
 
 struct net_device *global_net_devs;
 struct spi_device *spi_save;
 struct spidev_data spidev_global;
 struct si4463 * global_devrec;
+
+struct si4463_status global_si4463_status;
 
 DEFINE_MUTEX(mutex_txrx);
 /* TX withdraw timer */
@@ -899,6 +905,190 @@ void module_net_init(struct net_device *dev)
 	spin_lock_init(&priv->lock);
 }
 
+static void update_power_lvl(u8 val)
+{
+	u8 tmp[5]={0,0,0,0,0};
+//	int status;
+	u8 cmd[5]={0x11,0x22,0x01,0x01,0};
+	cmd[4]=val;
+
+	struct spi_transfer	tcmd = {
+					.tx_buf		= single_config_cmd,
+					.len		= 1,
+					.cs_change	= 0
+				};
+	struct spi_transfer	t = {
+				.tx_buf		= cmd,
+				.rx_buf		= tmp,
+				.len		= 5,
+				.cs_change	= 0
+			};
+//	memcpy(len, (blen+1), PACKETLEN_BITS);
+	struct spi_message	m;
+	spi_message_init(&m);
+	spi_message_add_tail(&tcmd, &m);
+	spi_message_add_tail(&t, &m);
+	spidev_sync(&spidev_global, &m);
+}
+static void update_device_with_new_config(int val)
+{
+	u16 len;
+	u8 tmp[2];
+	tmp[0] = global_modes_array[val][1];
+	tmp[1] = global_modes_array[val][0];
+	memcpy(&len, tmp, 2);
+	printk(KERN_ALERT "Config len: %d\n", len);
+	struct spi_transfer	tcmd = {
+					.tx_buf		= configcmd,
+					.len		= 1,
+					.cs_change	= 0
+				};
+	struct spi_transfer	t = {
+				.tx_buf		= global_modes_array[val],
+				.len		= len+2,
+				.cs_change	= 0
+			};
+//	memcpy(len, (blen+1), PACKETLEN_BITS);
+	struct spi_message	m;
+	spi_message_init(&m);
+	spi_message_add_tail(&tcmd, &m);
+	spi_message_add_tail(&t, &m);
+	spidev_sync(&spidev_global, &m);
+}
+int status_open_generic(struct inode *inode, struct file *filp)
+{
+	filp->private_data = inode->i_private;
+	return 0;
+}
+
+static int
+status_speed_read(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	char buf[64];
+	int r;
+	struct si4463_status *st = filp->private_data;
+
+	r = snprintf(buf, sizeof(buf), "%d\n", st->speed_kbps);
+	if (r > sizeof(buf))
+		r = sizeof(buf);
+	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
+}
+
+static int
+status_speed_write(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	int i,j=1,k;
+	unsigned int val;
+	int ret;
+	struct si4463_status *st = filp->private_data;
+
+	ret = kstrtouint_from_user(ubuf, cnt, 10, &val);
+	if (ret)
+		return ret;
+
+	/*需要选择到最近的档位*/
+	val=val/100;
+	if(val > SIZE_OF_MODES)
+		val = SIZE_OF_MODES;
+	while(val>0 && global_modes_array[val][0]==0){
+		val--;
+	}
+	if(val==0){
+		while(val<=SIZE_OF_MODES && global_modes_array[val][0]==0){
+			val++;
+		}
+	}
+	if(val>SIZE_OF_MODES){
+		printk(KERN_ALERT "global_si4463_status.modes_array is empty!!!!\n");
+		return -1;
+	}
+	printk(KERN_ALERT "Select speed: %d kbps\n", val*100);
+	/* reboot device with new configuration! */
+	update_device_with_new_config(val);
+	st->speed_kbps=val*100;
+	return cnt;
+
+}
+
+static int
+status_power_lvl_read(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	char buf[32];
+	int r;
+	struct si4463_status *st = filp->private_data;
+	r = snprintf(buf, sizeof(buf), "%d\n", st->power_lvl);
+	if (r > sizeof(buf))
+		r = sizeof(buf);
+	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
+}
+static int
+status_power_lvl_write(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	unsigned char val;
+	int ret;
+	struct si4463_status *st = filp->private_data;
+	ret = kstrtou8_from_user(ubuf, cnt, 10, &val);
+	if (ret)
+		return ret;
+
+	if(val>127)
+		val = 127;
+	st->power_lvl = val;
+
+	/* UPDATE REGISTER! */
+	update_power_lvl(val);
+
+	return cnt;
+
+}
+
+struct dentry *si4463_status_create_file(const char *name,
+				 umode_t mode,
+				 struct dentry *parent,
+				 void *data,
+				 const struct file_operations *fops)
+{
+	struct dentry *ret;
+
+	ret = debugfs_create_file(name, mode, parent, data, fops);
+	if (!ret)
+		printk(KERN_ALERT "Could not create debugfs '%s' entry\n", name);
+
+	return ret;
+}
+
+
+static const struct file_operations status_speed_fops = {
+	.open		= status_open_generic,
+	.read		= status_speed_read,
+	.write		= status_speed_write,
+};
+static const struct file_operations status_power_lvl_fops = {
+	.open		= status_open_generic,
+	.read		= status_power_lvl_read,
+	.write		= status_power_lvl_write,
+};
+
+static int si4463_create_debugfs(void)
+{
+	struct dentry *d_status;
+
+	if (!debugfs_initialized())
+			return NULL;
+	global_si4463_status.dir = debugfs_create_dir("si4463", NULL);
+	d_status = global_si4463_status.dir;
+
+	si4463_status_create_file("speed_kbps", 0644, d_status,
+			&global_si4463_status, &status_speed_fops);
+
+	si4463_status_create_file("power_lvl", 0644, d_status,
+			&global_si4463_status, &status_power_lvl_fops);
+}
+
 static int __init si4463_init(void)
 {
 	int status, ret, result;
@@ -919,6 +1109,8 @@ static int __init si4463_init(void)
 		printk(KERN_ALERT "demo: error %i registering device \"%s\"\n",result, global_net_devs->name);
 	else
 		ret = 0;
+
+	si4463_create_debugfs();
 out:
 	return status;
 }
