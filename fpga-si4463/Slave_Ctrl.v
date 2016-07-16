@@ -514,7 +514,7 @@ begin
 				Data_to_sram[7:0]=slave_data_from_spi_reg;
 				Byte_flag=~Byte_flag;
 				Cmd_count=Cmd_count+1'b1;
-				Spi_Current_State=36;//接收了2个字节，写入sram
+				Spi_Current_State=50;//接收了2个字节，写入sram
 			end
 		end		
 		50:

@@ -60,7 +60,7 @@ struct {
 	int position;
 } data_sending;
 
-rbuf_t global_buf_queue;
+//rbuf_t global_buf_queue;
 u8 global_reader[MAXPACKETLEN];
 /**
  * CONST Commands
@@ -259,6 +259,7 @@ int set_pinmux(void){
     return 0;
 }
 #endif
+
 /*-------------------------------------------------------------------------*/
 
 
@@ -291,6 +292,66 @@ spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 
 	}
 	return status;
+}
+
+
+
+static void update_power_lvl(u8 val)
+{
+	u8 tmp[5]={0,0,0,0,0};
+//	int status;
+	u8 cmd[6]={0x05,0x11,0x22,0x01,0x01,val};
+	//cmd[4]=val;
+
+	struct spi_transfer	tcmd = {
+					.tx_buf		= single_config_cmd,
+					.len		= 1,
+					.cs_change	= 0
+				};
+	struct spi_transfer	t = {
+				.tx_buf		= cmd,
+				.rx_buf		= tmp,
+				.len		= 6,
+				.cs_change	= 0
+			};
+//	memcpy(len, (blen+1), PACKETLEN_BITS);
+	struct spi_message	m;
+	spi_message_init(&m);
+	spi_message_add_tail(&tcmd, &m);
+	spi_message_add_tail(&t, &m);
+	spidev_sync(&spidev_global, &m);
+}
+static void update_device_with_new_config(int val)
+{
+	u16 len;
+	u8 tmp[2];
+	tmp[0] = global_modes_array[val][1];
+	tmp[1] = global_modes_array[val][0];
+	memcpy(&len, tmp, 2);
+	printk(KERN_ALERT "Config len: %d\n", len);
+	struct spi_transfer	tcmd = {
+					.tx_buf		= configcmd,
+					.len		= 1,
+					.cs_change	= 0
+				};
+	struct spi_transfer	t = {
+				.tx_buf		= global_modes_array[val],
+				.len		= len+2,
+				.cs_change	= 0
+			};
+//	memcpy(len, (blen+1), PACKETLEN_BITS);
+	struct spi_message	m;
+	spi_message_init(&m);
+	spi_message_add_tail(&tcmd, &m);
+	spi_message_add_tail(&t, &m);
+
+	netif_stop_queue(global_net_devs);
+	disable_irq_nosync(global_devrec->spi->irq);
+
+	spidev_sync(&spidev_global, &m);
+
+	enable_irq(global_devrec->spi->irq);
+	netif_wake_queue(global_net_devs);
 }
 
 inline int spi_write_data(struct spidev_data *spidev, u8* tx_data, int len)
@@ -371,41 +432,42 @@ struct rx_work {
 	struct net_device *dev;
 };
 
-static void si4463_handle_rx(struct work_struct *work)
-{
-	struct sk_buff *skb;
-	u32 len;
-	u8* data;
-	struct rx_work *rw = container_of(work, struct rx_work, work);
-
-
-	len = rw->len;
-	data = rw->data;
-
-	skb = alloc_skb(len+2, GFP_KERNEL);
-	skb_reserve(skb, 2);
-	memcpy(skb_put(skb, len), data, len);
-
-//	printk(KERN_ALERT "spi_complete_recv\n");
-//int j;
-//for(j=0;j<20;j++)
-//	printk(KERN_ALERT "%d ",skb->data[j]);
-//printk(KERN_ALERT "\n");
-//return 1;
-	/* Handover recieved data */
-
-
-
-	skb->dev = global_net_devs;
-	skb->protocol = eth_type_trans(skb, global_net_devs);
-	/* We need not check the checksum */
-	skb->ip_summed = CHECKSUM_UNNECESSARY;
-	netif_rx(skb);
-
-//	printk(KERN_ALERT "si4463_handle_rx out 2 \n");
-	kfree(rw);
-	rbuf_enqueue(&global_buf_queue);
-}
+//
+//static void si4463_handle_rx(struct work_struct *work)
+//{
+//	struct sk_buff *skb;
+//	u32 len;
+//	u8* data;
+//	struct rx_work *rw = container_of(work, struct rx_work, work);
+//
+//
+//	len = rw->len;
+//	data = rw->data;
+//
+//	skb = alloc_skb(len+2, GFP_KERNEL);
+//	skb_reserve(skb, 2);
+//	memcpy(skb_put(skb, len), data, len);
+//
+////	printk(KERN_ALERT "spi_complete_recv\n");
+////int j;
+////for(j=0;j<20;j++)
+////	printk(KERN_ALERT "%d ",skb->data[j]);
+////printk(KERN_ALERT "\n");
+////return 1;
+//	/* Handover recieved data */
+//
+//
+//
+//	skb->dev = global_net_devs;
+//	skb->protocol = eth_type_trans(skb, global_net_devs);
+//	/* We need not check the checksum */
+//	skb->ip_summed = CHECKSUM_UNNECESSARY;
+//	netif_rx(skb);
+//
+////	printk(KERN_ALERT "si4463_handle_rx out 2 \n");
+//	kfree(rw);
+//	rbuf_enqueue(&global_buf_queue);
+//}
 
 inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 {
@@ -488,24 +550,6 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 
 
 
-/* Device Private Data */
-struct si4463 {
-	struct spi_device *spi;
-//	struct ieee802154_dev *dev;
-	struct net_device *dev;
-	struct mutex buffer_mutex; /* only used to protect buf */
-	struct completion tx_complete;
-	struct work_struct irqwork;
-
-	u8 *buf; /* 3 bytes. Used for SPI single-register transfers. */
-
-	struct mutex mutex_spi;
-
-
-	bool irq_busy;
-	spinlock_t lock;
-};
-
 #define printdev(X) (&X->spi->dev)
 
 struct xmit_work {
@@ -568,8 +612,8 @@ int si4463_release(struct net_device *dev)
 {
 	printk("si4463_release\n");
     netif_stop_queue(dev);
-    free_irq(gpio_to_irq(IRQ_DATA),global_net_devs);
-    gpio_free_array(pin_mux, pin_mux_num);
+	free_irq(global_devrec->spi->irq,global_devrec);
+    //gpio_free_array(pin_mux, pin_mux_num);
 
 //	kthread_stop(cmd_handler_tsk);
 //	kthread_stop(irq_handler_tsk);
@@ -673,17 +717,30 @@ static int si4463_start(struct net_device *dev)
 	int ret, irq;
 //	int saved_muxing = 0;
 //	int err,tmp;
-	/* IRQ */
-	irq = gpio_to_irq(IRQ_DATA);
-	irq_set_irq_type(irq, IRQ_TYPE_EDGE_FALLING);
-    ret = request_irq(irq, si4463_isr_data, IRQ_TYPE_EDGE_FALLING,
-//    		dev->name, dev);
-    		dev->name, global_devrec);
-	if (ret) {
-//		dev_err(printdev(global_devrec), "Unable to get IRQ");
-		printk("IRQ REQUEST ERROR!\n");
-	}
-	global_devrec->spi->irq = irq;
+
+	u16 len;
+	u8 tmp[2];
+	tmp[0] = global_modes_array[DEFAULT_MODE][1];
+	tmp[1] = global_modes_array[DEFAULT_MODE][0];
+	memcpy(&len, tmp, 2);
+	printk(KERN_ALERT "Config len: %d\n", len);
+	struct spi_transfer	tcmd = {
+					.tx_buf		= configcmd,
+					.len		= 1,
+					.cs_change	= 0
+				};
+	struct spi_transfer	t = {
+				.tx_buf		= global_modes_array[DEFAULT_MODE],
+				.len		= len+2,
+				.cs_change	= 0
+			};
+//	memcpy(len, (blen+1), PACKETLEN_BITS);
+	struct spi_message	m;
+	spi_message_init(&m);
+	spi_message_add_tail(&tcmd, &m);
+	spi_message_add_tail(&t, &m);
+
+	spidev_sync(&spidev_global, &m);
 
 	printk(KERN_ALERT "rx_start\n");
 	netif_start_queue(dev);
@@ -707,7 +764,7 @@ static int si4463_probe(struct spi_device *spi)
 {
 	int tmp;
 	int ret = -ENOMEM;
-
+	int irq;
 	struct si4463 *devrec;
 
 //	struct pinctrl *pinctrl;
@@ -782,7 +839,20 @@ static int si4463_probe(struct spi_device *spi)
 
 	INIT_WORK(&devrec->irqwork, si4463_isrwork);
 
-	rbuf_init(&global_buf_queue);
+	//rbuf_init(&global_buf_queue);
+
+	/* IRQ */
+	irq = gpio_to_irq(IRQ_DATA);
+	irq_set_irq_type(irq, IRQ_TYPE_EDGE_FALLING);
+    ret = request_irq(irq, si4463_isr_data, IRQ_TYPE_EDGE_FALLING,
+//    		dev->name, dev);
+    		global_net_devs->name, global_devrec);
+	if (ret) {
+//		dev_err(printdev(global_devrec), "Unable to get IRQ");
+		printk("IRQ REQUEST ERROR!\n");
+	}
+	global_devrec->spi->irq = irq;
+
 
 	return 0;
 
@@ -905,56 +975,7 @@ void module_net_init(struct net_device *dev)
 	spin_lock_init(&priv->lock);
 }
 
-static void update_power_lvl(u8 val)
-{
-	u8 tmp[5]={0,0,0,0,0};
-//	int status;
-	u8 cmd[5]={0x11,0x22,0x01,0x01,0};
-	cmd[4]=val;
 
-	struct spi_transfer	tcmd = {
-					.tx_buf		= single_config_cmd,
-					.len		= 1,
-					.cs_change	= 0
-				};
-	struct spi_transfer	t = {
-				.tx_buf		= cmd,
-				.rx_buf		= tmp,
-				.len		= 5,
-				.cs_change	= 0
-			};
-//	memcpy(len, (blen+1), PACKETLEN_BITS);
-	struct spi_message	m;
-	spi_message_init(&m);
-	spi_message_add_tail(&tcmd, &m);
-	spi_message_add_tail(&t, &m);
-	spidev_sync(&spidev_global, &m);
-}
-static void update_device_with_new_config(int val)
-{
-	u16 len;
-	u8 tmp[2];
-	tmp[0] = global_modes_array[val][1];
-	tmp[1] = global_modes_array[val][0];
-	memcpy(&len, tmp, 2);
-	printk(KERN_ALERT "Config len: %d\n", len);
-	struct spi_transfer	tcmd = {
-					.tx_buf		= configcmd,
-					.len		= 1,
-					.cs_change	= 0
-				};
-	struct spi_transfer	t = {
-				.tx_buf		= global_modes_array[val],
-				.len		= len+2,
-				.cs_change	= 0
-			};
-//	memcpy(len, (blen+1), PACKETLEN_BITS);
-	struct spi_message	m;
-	spi_message_init(&m);
-	spi_message_add_tail(&tcmd, &m);
-	spi_message_add_tail(&t, &m);
-	spidev_sync(&spidev_global, &m);
-}
 int status_open_generic(struct inode *inode, struct file *filp)
 {
 	filp->private_data = inode->i_private;
@@ -1133,7 +1154,7 @@ static void __exit si4463_exit(void)
 		free_netdev(global_net_devs);
 	}
 	del_timer(&tx_withdraw_timer);
-
+	debugfs_remove_recursive(global_si4463_status.dir);
 	return;
 }
 module_exit(si4463_exit);

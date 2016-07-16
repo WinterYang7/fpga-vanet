@@ -40,6 +40,25 @@ struct module_priv
     spinlock_t lock;
 };
 
+
+/* Device Private Data */
+struct si4463 {
+	struct spi_device *spi;
+//	struct ieee802154_dev *dev;
+	struct net_device *dev;
+	struct mutex buffer_mutex; /* only used to protect buf */
+	struct completion tx_complete;
+	struct work_struct irqwork;
+
+	u8 *buf; /* 3 bytes. Used for SPI single-register transfers. */
+
+	struct mutex mutex_spi;
+
+
+	bool irq_busy;
+	spinlock_t lock;
+};
+
 struct si4463_status
 {
 	struct dentry *dir;
@@ -49,7 +68,7 @@ struct si4463_status
 	unsigned int speed_kbps;
 #define SIZE_PER_MODE_BYTE 400
 #define SIZE_OF_MODES	5
-
+#define DEFAULT_MODE	5
 
 };
 /**
