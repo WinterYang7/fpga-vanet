@@ -20,8 +20,9 @@
 #define WIFISENDPORT 9000
 #define WIFIRECVPORT 9001
 
-#define RF_LOGFILE		"/home/root/rflog.txt"
-#define WIFI_LOGFILE	"/home/root/wifilog.txt"
+#define LOGFILE_BASE	"/home/root/"
+#define RF_LOGFILE		"rflog.txt"
+#define WIFI_LOGFILE	"wifilog.txt"
 
 char mywifi_ip[30];
 char myrf_ip[30];
@@ -124,10 +125,15 @@ void* send_tester_loop(void * parm) {
 			pos += 1;
 			memcpy(sendbuf+pos, &m8_Gps_->datetime.seconds, 1);
 			pos += 1;
+			memcpy(sendbuf+pos, &m8_Gps_->datetime.millis, 2);
+			pos += 2;
 			memcpy(sendbuf+pos, &m8_Gps_->longitude, sizeof(float));
 			pos += sizeof(float);
 			memcpy(sendbuf+pos, &m8_Gps_->latitude, sizeof(float));
 			pos += sizeof(float);
+			memcpy(sendbuf+pos, &m8_Gps_->speed, 2);
+			pos += 2;
+
 			if ((len = sendto(sock_rf, sendbuf, pos, 0,
 					(struct sockaddr *) &remote_rf_addr, sizeof(struct sockaddr))) < 0) {
 				perror("sendto");
@@ -150,8 +156,73 @@ void* send_tester_loop(void * parm) {
 
 }
 
+#define PI                      3.1415926
+#define EARTH_RADIUS            6378.137        //地球近似半径
+// 求弧度
+float radian(float d)
+{
+    return d * PI / 180.0;   //角度1˚ = π / 180
+}
+//计算距离
+float get_distance(float lat1, float lng1, float lat2, float lng2)
+{
+	float radLat1 = radian(lat1);
+	float radLat2 = radian(lat2);
+	float a = radLat1 - radLat2;
+	float b = radian(lng1) - radian(lng2);
+
+	float dst = 2 * asin((sqrt(pow(sin(a / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b / 2), 2) )));
+
+    dst = dst * EARTH_RADIUS;
+    dst= round(dst * 10000) / 10000;
+    return dst;
+}
+
+struct dist{
+	float rf_longitude, rf_latitude;
+	bool rf_valid;
+	float wifi_longitude, wifi_latitude;
+	bool wifi_valid;
+	Ublox *m8_Gps;
+	pthread_mutex_t lock;
+};
+void* print_distance_loop(void *parm) {
+	struct dist * dist_ = (struct dist *)parm;
+	while(1){
+		pthread_testcancel();
+
+		system("clear");
+		if(dist_->rf_valid){
+
+			printf("RF-sub1G distance: %f\n",
+					get_distance(dist_->rf_latitude, dist_->rf_longitude,
+							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude));
+		}else{
+			printf("RF-sub1G distance: ----\n");
+		}
+		if(dist_->wifi_valid){
+
+			printf("802.11p distance: %f\n",
+					get_distance(dist_->wifi_latitude, dist_->wifi_longitude,
+							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude));
+		}else{
+			printf("802.11p distance: ----\n");
+		}
+		pthread_mutex_lock(&dist_->lock);
+		dist_->rf_valid=0;
+		dist_->wifi_valid=0;
+		pthread_mutex_unlock(&dist_->lock);
+
+
+		sleep(1);
+	}
+
+}
+
 void* recv_tester_loop(void * parm) {
 	Ublox *m8_Gps_ = (Ublox*)parm;
+
+
 	struct sockaddr_in rf_recv_addr;
 	struct sockaddr_in wifi_recv_addr;
 	int sock_rf;
@@ -197,8 +268,27 @@ void* recv_tester_loop(void * parm) {
 	}
 
 	uint8_t hours, minutes, seconds;
+	uint16_t mills;
 	float longitude, latitude;
+	uint16_t speed;
 	long long sn;
+
+
+	//wait for GPS validation
+	while(!m8_Gps_->datetime.valid){
+		printf("waiting for GPS validation\n");
+		sleep(1);
+	}
+
+	pthread_t disttid;
+	struct dist* dist_;
+	dist_ = (struct dist*)malloc(sizeof(struct dist));
+	pthread_mutex_init(&dist_->lock, NULL);
+	dist_->m8_Gps = m8_Gps_;
+	dist_->rf_valid=0;
+	dist_->wifi_valid=0;
+	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
+
 
 	pid_t fpid;
 	fpid = fork();
@@ -207,8 +297,26 @@ void* recv_tester_loop(void * parm) {
 	else if (fpid == 0) {//Child
 
 		char recvbuf[BUFSIZ];
+		char logfile_name[200];
+		char tmp[100];
+		memset(logfile_name,0,200);
+		memset(tmp,0,100);
+		strcat(logfile_name, LOGFILE_BASE);
+		sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
+				m8_Gps_->datetime.month, m8_Gps_->datetime.day,
+				m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
+		strcat(logfile_name, tmp);
+
+		sprintf(tmp, WIFI_LOGFILE);
+		strcat(logfile_name, tmp);
+
+		printf("LOG FILE: %s\n", logfile_name);
 		int len;
-		FILE* fp = fopen(WIFI_LOGFILE, "a+");
+		FILE* fp = fopen(logfile_name, "a+");
+		if(fp==NULL){
+			perror("*******LOG FILE OPEN ERROR********\n");
+			exit(0);
+		}
 		while(1){
 			len = recvfrom(sock_wifi, recvbuf, sizeof(recvbuf), 0, NULL,NULL);
 			if(len > 0){
@@ -221,19 +329,32 @@ void* recv_tester_loop(void * parm) {
 				pos += 1;
 				memcpy(&seconds, recvbuf+pos, 1);
 				pos += 1;
+				memcpy(&mills, recvbuf+pos, 2);
+				pos += 2;
 				memcpy(&longitude, recvbuf+pos, sizeof(float));
 				pos += sizeof(float);
 				memcpy(&latitude, recvbuf+pos, sizeof(float));
 				pos += sizeof(float);
+				memcpy(&speed, recvbuf+pos, 2);
+				pos += 2;
+
 				if(pos != len) {
-					perror("sock_rf: pos != len\n");
+					perror("sock_wifi: pos != len\n");
 					exit(0);
 				}
 			}
 			fprintf(fp, "SN@%lld ", sn);
-			fprintf(fp, "TIME@%d:%d:%d ", hours, minutes, seconds);
-			fprintf(fp, "%f,%f\n", longitude, latitude);
+			fprintf(fp, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
+			fprintf(fp, "%f,%f ", longitude, latitude);
+			fprintf(fp, "SPEED@%u\n", speed);
 			fflush(fp);
+
+			pthread_mutex_lock(&dist_->lock);
+			dist_->wifi_latitude=latitude;
+			dist_->wifi_longitude=longitude;
+			dist_->wifi_valid=1;
+			pthread_mutex_unlock(&dist_->lock);
+
 		}
 
 
@@ -244,8 +365,26 @@ void* recv_tester_loop(void * parm) {
 		if(ffpid > 0) {
 
 			char recvbuf[BUFSIZ];
+			char logfile_name[200];
+			char tmp[100];
+			memset(logfile_name,0,200);
+			memset(tmp,0,100);
+			strcat(logfile_name, LOGFILE_BASE);
+			sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
+					m8_Gps_->datetime.month, m8_Gps_->datetime.day,
+					m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
+			strcat(logfile_name, tmp);
+
+			sprintf(tmp, RF_LOGFILE);
+			strcat(logfile_name, tmp);
+
+			printf("LOG FILE: %s\n", logfile_name);
 			int len;
-			FILE* fp = fopen(RF_LOGFILE, "a+");
+			FILE* fp = fopen(logfile_name, "a+");
+			if(fp==NULL){
+				perror("*******LOG FILE OPEN ERROR********\n");
+				exit(0);
+			}
 			while(1){
 				len = recvfrom(sock_rf, recvbuf, sizeof(recvbuf), 0, NULL,NULL);
 				if(len > 0){
@@ -258,19 +397,31 @@ void* recv_tester_loop(void * parm) {
 					pos += 1;
 					memcpy(&seconds, recvbuf+pos, 1);
 					pos += 1;
+					memcpy(&mills, recvbuf+pos, 2);
+					pos += 2;
 					memcpy(&longitude, recvbuf+pos, sizeof(float));
 					pos += sizeof(float);
 					memcpy(&latitude, recvbuf+pos, sizeof(float));
 					pos += sizeof(float);
+					memcpy(&speed, recvbuf+pos, 2);
+					pos += 2;
 					if(pos != len) {
 						perror("sock_rf: pos != len\n");
 						exit(0);
 					}
 				}
 				fprintf(fp, "SN@%lld ", sn);
-				fprintf(fp, "TIME@%d:%d:%d ", hours, minutes, seconds);
-				fprintf(fp, "%f,%f\n", longitude, latitude);
+				fprintf(fp, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
+				fprintf(fp, "%f,%f ", longitude, latitude);
+				fprintf(fp, "SPEED@%u\n", speed);
 				fflush(fp);
+
+				pthread_mutex_lock(&dist_->lock);
+				dist_->rf_latitude=latitude;
+				dist_->rf_longitude=longitude;
+				dist_->rf_valid=1;
+				pthread_mutex_unlock(&dist_->lock);
+
 			}
 
 		}
@@ -328,7 +479,7 @@ int main(){
 			printf("i: Init interfaces.\n");
 			printf("g: Start gps decoding loop.\n");
 			printf("s: Start packet sending loop.\n");
-			printf("r: Start Recing loog.\n");
+			printf("r: Start Receiving loop.\n");
 			printf("t: Terminate loops.\n");
 			printf("p: ping test.\n");
 			break;
@@ -345,7 +496,7 @@ int main(){
 			system("ip link set wlp1s0 down");
 			system("./iw-802.11p dev wlp1s0 set type ocb");
 			system("ip link set wlp1s0 up");
-			system("./iw-802.11p dev wlp1s0 ocb join 5910 10MHZ");
+			system("./iw-802.11p dev wlp1s0 ocb join 5805 10MHZ");
 			strcpy(tmpbuf , "ifconfig wlp1s0 ");
 			strcat(tmpbuf, mywifi_ip);
 			printf("%s\n", tmpbuf);
@@ -356,9 +507,13 @@ int main(){
 			printf("%s\n", tmpbuf);
 			sleep(1);
 //			system(tmpbuf);
-			system("insmod /home/root/si4463_normal.ko");
-			sleep(1);
-			strcpy(tmpbuf , "ifconfig si0 ");
+			system("insmod /home/root/si4463_fpga.ko");
+			system("iptables -I OUTPUT -d 8.8.0.0/16 -j DROP");
+			system("iptables -A OUTPUT -p udp --dport 1534 -j DROP");
+			system("mount -t debugfs none /home/root/d");
+			system("echo 400 > /home/root/d/si4463/speed_kbps");
+			//sleep(1);
+			strcpy(tmpbuf , "ifconfig sif0 ");
 			strcat(tmpbuf, myrf_ip);
 			printf("%s\n", tmpbuf);
 			system(tmpbuf);
