@@ -40,8 +40,8 @@ module Slave_Ctrl(
 	Slave_Ctrl_Debug
 );
 output [7:0] Slave_Ctrl_Status;
-assign Slave_Ctrl_Status[6:0]=bufferd_pkt_count[6:0];
-//assign Slave_Ctrl_Status[6]=0;
+assign Slave_Ctrl_Status[5:0]=Spi_Current_State;
+assign Slave_Ctrl_Status[6]=0;
 //assign Slave_Ctrl_Status[7]=Pkt_Received_int;
 //assign Slave_Ctrl_Status[2:0]=Irq_Current_State[2:0];
 assign Slave_Ctrl_Status[7] = Pkt_Received_int;

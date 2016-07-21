@@ -53,8 +53,8 @@ module Wireless_Ctrl(
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1[6:0]=Main_Current_State[6:0];
-assign Si4463_Ph_Status_1[7]=spi_op_done_main;
+assign Si4463_Ph_Status_1[7:0]=Main_Current_State[7:0];
+//assign Si4463_Ph_Status_1[7]=spi_op_done_main;
 //assign Si4463_Ph_Status_1[4:0]=Irq_Current_State[4:0];//Spi_Current_State;
 //assign Si4463_Ph_Status_1[7:5]=packets_incoming[3:0];
 
@@ -1207,19 +1207,15 @@ begin
 		end
 		9:
 		begin
-			
-			Main_Current_State=10;
-		end
-		10:
-		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				Main_Current_State=11;
+				//Main_Current_State=11;
+				Main_Current_State=14;
 			end
 		end
 		//===Function_set_tran_property()====
-		11:
+/*		11:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1244,7 +1240,7 @@ begin
 				Main_start=0;
 				Main_Current_State=14;
 			end
-		end
+		end */
 		14:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
@@ -1262,36 +1258,47 @@ begin
 		end
 		15:
 		begin
-			
-			Main_Current_State=16;
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=16;
+			end
 		end
 		16:
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h10;
+			Main_Cmd_Data[39:32]=8'ha2;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=17;
+		end
+		17:
 		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				Main_Current_State=17;
+				Main_Current_State=18;
 			end
-		end
-		17:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h0d;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'ha2;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=8;
-			Main_Return_len=0;
-			Main_Current_State=18;
 		end
 		18:
 		begin
-			
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h02;
+			Main_Cmd_Data[31:24]=8'h21;
+			Main_Cmd_Data[39:32]=8'h00;
+			Main_Cmd_Data[47:40]=8'h01;
+			//Main_Cmd_Data[55:48]=8'h00;
+			//Main_Cmd_Data[63:56]=8'h82;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=6;
+			Main_Return_len=0;
 			Main_Current_State=19;
 		end
 		19:
@@ -1306,51 +1313,59 @@ begin
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h21;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h01;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h82;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h24;//PKT_RX_FIELD_1_CRC_CONFIG
+			Main_Cmd_Data[39:32]=8'h82;//CRC
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Data_len=8;
+			Main_Data_len=5;
 			Main_Return_len=0;
-			Main_Current_State=21;
+			Main_Current_State=21;		
 		end
 		21:
-		begin
-			
-			Main_Current_State=22;
-		end
-		22:
 		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				Main_Current_State=23;
-			end
+				Main_Current_State=22;
+			end		
 		end
-		23:
+		22:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
+			Main_Cmd_Data[23:16]=8'h02;
 			Main_Cmd_Data[31:24]=8'h25;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'hfa;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h0a;
+			//Main_Cmd_Data[55:48]=8'h00;
+			//Main_Cmd_Data[63:56]=8'h0a;//CRC
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Data_len=8;
+			Main_Data_len=6;
 			Main_Return_len=0;
-			Main_Current_State=24;
+			Main_Current_State=23;
+		end
+		23:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=24;
+			end
 		end
 		24:
 		begin
-			
-			Main_Current_State=25;
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h28;//PKT_RX_FIELD_2_CRC_CONFIG
+			Main_Cmd_Data[39:32]=8'h0a;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=25;				
 		end
 		25:
 		begin

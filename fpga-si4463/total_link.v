@@ -28,25 +28,22 @@ module total_link(
 	//LED灯指示当前状态
 	led,
 	debug_wire,
-	Spi_Current_State
+	Spi_Current_State,
+	Virtual_DebugIO,
+	Virtual_DebugIO3,
+	Virtual_DebugIO4,
 );
 input	clk;
 output[3:0] led;
 output[7:0] Spi_Current_State;
 output[1:0] debug_wire;
+output[7:0] Virtual_DebugIO;
+output[15:0] Virtual_DebugIO3;
+output[15:0] Virtual_DebugIO4;
 
-/*
-assign Spi_Current_State[0]=clk;
-assign Spi_Current_State[1]=0;
-assign Spi_Current_State[2]=0;
-assign Spi_Current_State[3]=0;
-assign Spi_Current_State[4]=0;
-assign Spi_Current_State[5]=0;
-assign Spi_Current_State[6]=0;
-assign Spi_Current_State[7]=0;*/
-//assign Spi_Current_State={7'b0000000,slave_write_sram};
-//assign Spi_Current_State=sram_count_to_slave[7:0];
-	
+assign Virtual_DebugIO3=sram_data_from_slave;
+assign Virtual_DebugIO4=sram_data_to_master;
+
 	//SPI_slave引脚
 input	cpu_mosi;
 output	cpu_miso;
@@ -213,7 +210,7 @@ Slave_Ctrl slave(
 	.Cmd_write_sram_done(cmd_write_sram_done),
 	
 	//用于输出当前状态
-//	.Slave_Ctrl_Status(Spi_Current_State),
+	.Slave_Ctrl_Status(Virtual_DebugIO),
 //	.Slave_Ctrl_Debug(debug_wire),
 	
 	//与CPU连接的中断
