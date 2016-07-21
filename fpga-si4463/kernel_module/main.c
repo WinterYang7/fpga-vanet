@@ -387,7 +387,11 @@ inline int spi_write_packet(struct spidev_data *spidev, struct sk_buff *skb)
 	struct spi_message m;
 	spi_message_init(&m);
 
-
+	t.cs_change = 0;
+	t.bits_per_word=BITS_PER_WORD;
+	t.speed_hz=SPI_SPEED;
+	t.rx_nbits=0;
+	t.tx_nbits=0;
 //	printk(KERN_ALERT "spi_write_packet: len:%d\n",skb->len);
 //	ppp(skb->data, skb->len);
 
@@ -502,6 +506,7 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 	t.bits_per_word=BITS_PER_WORD;
 	t.speed_hz=SPI_SPEED;
 	t.rx_nbits=0;
+	t.tx_nbits=0;
 	spi_message_add_tail(&t, &m);
 	status = spidev_sync(spidev, &m);
 	if(status<=0){
@@ -519,7 +524,7 @@ inline int spi_recv_packet(struct spidev_data *spidev, u32 len)
 
 	skb = alloc_skb(len+2, GFP_KERNEL);
 	skb_reserve(skb, 2);
-
+	memcpy(&global_si4463_status.rssi_last_pkt, tmp_reciever, 1);
 	memcpy(skb_put(skb, (len-1)), (tmp_reciever+1), (len-1));
 	kfree(tmp_reciever);
 	kfree(tmp_tx);
@@ -768,7 +773,7 @@ static int si4463_probe(struct spi_device *spi)
 	struct si4463 *devrec;
 
 //	struct pinctrl *pinctrl;
-	printk(KERN_ALERT "si4463: probe(). VERSION:%s, IRQ: %d\n", "20160708,11:31", spi->irq);
+	printk(KERN_ALERT "si4463: probe(). VERSION:%s, IRQ: %d\n", "20160721,12:22", spi->irq);
 
 	devrec = kzalloc(sizeof(struct si4463), GFP_KERNEL);
 	if (!devrec)
@@ -1064,7 +1069,19 @@ status_power_lvl_write(struct file *filp, char __user *ubuf,
 	update_power_lvl(val);
 
 	return cnt;
+}
 
+static int
+status_rssi_last_pkt_read(struct file *filp, char __user *ubuf,
+	    size_t cnt, loff_t *ppos)
+{
+	char buf[32];
+	int r;
+	struct si4463_status *st = filp->private_data;
+	r = snprintf(buf, sizeof(buf), "%u\n", st->rssi_last_pkt);
+	if (r > sizeof(buf))
+		r = sizeof(buf);
+	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
 }
 
 struct dentry *si4463_status_create_file(const char *name,
@@ -1094,6 +1111,10 @@ static const struct file_operations status_power_lvl_fops = {
 	.write		= status_power_lvl_write,
 };
 
+static const struct file_operations status_rssi_last_pkt = {
+	.open		= status_open_generic,
+	.read		= status_rssi_last_pkt_read,
+};
 static int si4463_create_debugfs(void)
 {
 	struct dentry *d_status;
@@ -1108,6 +1129,10 @@ static int si4463_create_debugfs(void)
 
 	si4463_status_create_file("power_lvl", 0644, d_status,
 			&global_si4463_status, &status_power_lvl_fops);
+
+	si4463_status_create_file("rssi_last_pkt", 0444, d_status,
+			&global_si4463_status, &status_rssi_last_pkt);
+
 }
 
 static int __init si4463_init(void)

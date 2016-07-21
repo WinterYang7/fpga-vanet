@@ -6,6 +6,7 @@
 #include<cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
@@ -20,6 +21,7 @@
 #define WIFISENDPORT 9000
 #define WIFIRECVPORT 9001
 
+#define RF_RSSI_LOC		"/home/root/d/si4463/rssi_last_pkt"
 #define LOGFILE_BASE	"/home/root/"
 #define RF_LOGFILE		"rflog.txt"
 #define WIFI_LOGFILE	"wifilog.txt"
@@ -112,7 +114,16 @@ void* send_tester_loop(void * parm) {
 	remote_wifi_addr.sin_addr.s_addr = inet_addr(remotewifi_ip); //
 	remote_wifi_addr.sin_port = htons(WIFIRECVPORT);
 
+	//wait for GPS validation
+	while(!m8_Gps_->datetime.valid){
+		printf("waiting for GPS validation\n");
+		sleep(1);
+	}
+
 	long long sn = 1;
+	long long wifi_sn = 1;
+	long long rf_sn = 1;
+	bool rest=0;
 	int pos = 0;
   	while(1){
 		while(m8_Gps_->datetime.valid){
@@ -134,16 +145,30 @@ void* send_tester_loop(void * parm) {
 			memcpy(sendbuf+pos, &m8_Gps_->speed, 2);
 			pos += 2;
 
-			if ((len = sendto(sock_rf, sendbuf, pos, 0,
-					(struct sockaddr *) &remote_rf_addr, sizeof(struct sockaddr))) < 0) {
-				perror("sendto");
-				return NULL;
-			}
-
+			/**
+			 * 802.11p sending
+			 */
+			memcpy(sendbuf, &wifi_sn, sizeof(long long));
+			wifi_sn++;
 			if ((len = sendto(sock_wifi, sendbuf, pos, 0,
 					(struct sockaddr *) &remote_wifi_addr, sizeof(struct sockaddr))) < 0) {
 				perror("sendto");
 				return NULL;
+			}
+			/**
+			 * sub1G sending
+			 */
+			memcpy(sendbuf, &rf_sn, sizeof(long long));
+			rf_sn++;
+			if(!rest) {
+				if ((len = sendto(sock_rf, sendbuf, pos, 0,
+						(struct sockaddr *) &remote_rf_addr, sizeof(struct sockaddr))) < 0) {
+					perror("sendto");
+					return NULL;
+				}
+				rest = 1;
+			} else {
+				rest = 0;
 			}
 
 			sn++;
@@ -219,10 +244,79 @@ void* print_distance_loop(void *parm) {
 
 }
 
+
 void* recv_tester_loop(void * parm) {
 	Ublox *m8_Gps_ = (Ublox*)parm;
 
+	pthread_t disttid;
+	struct dist* dist_;
+	dist_ = (struct dist*)malloc(sizeof(struct dist));
+	pthread_mutex_init(&dist_->lock, NULL);
+	dist_->m8_Gps = m8_Gps_;
+	dist_->rf_valid=0;
+	dist_->wifi_valid=0;
+	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
 
+	//wait for GPS validation
+	while(!m8_Gps_->datetime.valid){
+		printf("waiting for GPS validation\n");
+		usleep(500 * 1000);
+	}
+
+	/**
+	 * open log files
+	 */
+	FILE* fp_wifi, * fp_rf;
+	char logfile_name[200];
+	char tmp[100];
+	memset(logfile_name,0,200);
+	memset(tmp,0,100);
+	strcat(logfile_name, LOGFILE_BASE);
+	sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
+			m8_Gps_->datetime.month, m8_Gps_->datetime.day,
+			m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
+	strcat(logfile_name, tmp);
+
+	sprintf(tmp, WIFI_LOGFILE);
+	strcat(logfile_name, tmp);
+
+	printf("LOG FILE: %s\n", logfile_name);
+	fp_wifi = fopen(logfile_name, "a+");
+	if(fp_wifi==NULL){
+		perror("*******LOG FILE OPEN ERROR********\n");
+		exit(0);
+	}
+	//RF
+	memset(logfile_name,0,200);
+	memset(tmp,0,100);
+	strcat(logfile_name, LOGFILE_BASE);
+	sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
+			m8_Gps_->datetime.month, m8_Gps_->datetime.day,
+			m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
+	strcat(logfile_name, tmp);
+
+	sprintf(tmp, RF_LOGFILE);
+	strcat(logfile_name, tmp);
+
+	printf("LOG FILE: %s\n", logfile_name);
+	fp_rf = fopen(logfile_name, "a+");
+	if(fp_rf==NULL){
+		perror("*******LOG FILE OPEN ERROR********\n");
+		exit(0);
+	}
+	/**
+	 * RSSI file of rfsub1G
+	 */
+	FILE* fp_rf_rssi;
+	fp_rf_rssi = fopen(RF_RSSI_LOC, "r");
+	if(fp_rf_rssi==NULL){
+		perror("*******RSSI FILE OPEN ERROR********\n");
+		exit(0);
+	}
+
+	/**
+	 * SOCKETS
+	 */
 	struct sockaddr_in rf_recv_addr;
 	struct sockaddr_in wifi_recv_addr;
 	int sock_rf;
@@ -274,121 +368,35 @@ void* recv_tester_loop(void * parm) {
 	long long sn;
 
 
-	//wait for GPS validation
-	while(!m8_Gps_->datetime.valid){
-		printf("waiting for GPS validation\n");
-		sleep(1);
-	}
-
-	pthread_t disttid;
-	struct dist* dist_;
-	dist_ = (struct dist*)malloc(sizeof(struct dist));
-	pthread_mutex_init(&dist_->lock, NULL);
-	dist_->m8_Gps = m8_Gps_;
-	dist_->rf_valid=0;
-	dist_->wifi_valid=0;
-	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
-
-
-	pid_t fpid;
-	fpid = fork();
-	if (fpid < 0)
-		printf("error in fork!");
-	else if (fpid == 0) {//Child
-
-		char recvbuf[BUFSIZ];
-		char logfile_name[200];
-		char tmp[100];
-		memset(logfile_name,0,200);
-		memset(tmp,0,100);
-		strcat(logfile_name, LOGFILE_BASE);
-		sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
-				m8_Gps_->datetime.month, m8_Gps_->datetime.day,
-				m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
-		strcat(logfile_name, tmp);
-
-		sprintf(tmp, WIFI_LOGFILE);
-		strcat(logfile_name, tmp);
-
-		printf("LOG FILE: %s\n", logfile_name);
-		int len;
-		FILE* fp = fopen(logfile_name, "a+");
-		if(fp==NULL){
-			perror("*******LOG FILE OPEN ERROR********\n");
+	/**
+	 * select LOOP
+	 */
+	char recvbuf[BUFSIZ];
+	int pos;
+	int len;
+	int rf_rssi;
+	fd_set rfds;
+	struct timeval time_out;
+	time_out.tv_sec=1;
+	time_out.tv_usec=0;
+	int maxfd = sock_rf > sock_wifi ? sock_rf:sock_wifi;
+	int ret;
+	while(1)
+	{
+		FD_ZERO(&rfds);
+		FD_SET(sock_rf, &rfds);
+		FD_SET(sock_wifi, &rfds);
+		ret = select(maxfd+1, &rfds, NULL, NULL, &time_out);
+		if(ret < 0){
+			perror("*********select return SOCKET_ERROR**********\n");
 			exit(0);
-		}
-		while(1){
-			len = recvfrom(sock_wifi, recvbuf, sizeof(recvbuf), 0, NULL,NULL);
-			if(len > 0){
-				int pos = 0;
-				memcpy(&sn, recvbuf+pos, sizeof(long long));
-				pos += sizeof(long long);
-				memcpy(&hours, recvbuf+pos, 1);
-				pos += 1;
-				memcpy(&minutes, recvbuf+pos, 1);
-				pos += 1;
-				memcpy(&seconds, recvbuf+pos, 1);
-				pos += 1;
-				memcpy(&mills, recvbuf+pos, 2);
-				pos += 2;
-				memcpy(&longitude, recvbuf+pos, sizeof(float));
-				pos += sizeof(float);
-				memcpy(&latitude, recvbuf+pos, sizeof(float));
-				pos += sizeof(float);
-				memcpy(&speed, recvbuf+pos, 2);
-				pos += 2;
-
-				if(pos != len) {
-					perror("sock_wifi: pos != len\n");
-					exit(0);
-				}
-			}
-			fprintf(fp, "SN@%lld ", sn);
-			fprintf(fp, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
-			fprintf(fp, "%f,%f ", longitude, latitude);
-			fprintf(fp, "SPEED@%u\n", speed);
-			fflush(fp);
-
-			pthread_mutex_lock(&dist_->lock);
-			dist_->wifi_latitude=latitude;
-			dist_->wifi_longitude=longitude;
-			dist_->wifi_valid=1;
-			pthread_mutex_unlock(&dist_->lock);
-
-		}
-
-
-	}
-	else {
-		pid_t ffpid;
-		ffpid = fork();
-		if(ffpid > 0) {
-
-			char recvbuf[BUFSIZ];
-			char logfile_name[200];
-			char tmp[100];
-			memset(logfile_name,0,200);
-			memset(tmp,0,100);
-			strcat(logfile_name, LOGFILE_BASE);
-			sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
-					m8_Gps_->datetime.month, m8_Gps_->datetime.day,
-					m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
-			strcat(logfile_name, tmp);
-
-			sprintf(tmp, RF_LOGFILE);
-			strcat(logfile_name, tmp);
-
-			printf("LOG FILE: %s\n", logfile_name);
-			int len;
-			FILE* fp = fopen(logfile_name, "a+");
-			if(fp==NULL){
-				perror("*******LOG FILE OPEN ERROR********\n");
-				exit(0);
-			}
-			while(1){
+		} else if(ret == 0){
+			pthread_testcancel();
+		} else {
+			if (FD_ISSET(sock_rf, &rfds)){
 				len = recvfrom(sock_rf, recvbuf, sizeof(recvbuf), 0, NULL,NULL);
 				if(len > 0){
-					int pos = 0;
+					pos = 0;
 					memcpy(&sn, recvbuf+pos, sizeof(long long));
 					pos += sizeof(long long);
 					memcpy(&hours, recvbuf+pos, 1);
@@ -410,20 +418,61 @@ void* recv_tester_loop(void * parm) {
 						exit(0);
 					}
 				}
-				fprintf(fp, "SN@%lld ", sn);
-				fprintf(fp, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
-				fprintf(fp, "%f,%f ", longitude, latitude);
-				fprintf(fp, "SPEED@%u\n", speed);
-				fflush(fp);
+
+				fseek(fp_rf_rssi, 0, SEEK_SET);
+				fscanf(fp_rf_rssi, "%d", &rf_rssi);
+
+				fprintf(fp_rf, "SN@%lld ", sn);
+				fprintf(fp_rf, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
+				fprintf(fp_rf, "%f,%f ", longitude, latitude);
+				fprintf(fp_rf, "SPEED@%d ", speed);
+				fprintf(fp_rf, "RSSI@%d\n", rf_rssi);
+				fflush(fp_rf);
 
 				pthread_mutex_lock(&dist_->lock);
 				dist_->rf_latitude=latitude;
 				dist_->rf_longitude=longitude;
 				dist_->rf_valid=1;
 				pthread_mutex_unlock(&dist_->lock);
-
 			}
+			if (FD_ISSET(sock_wifi, &rfds)){
+				len = recvfrom(sock_wifi, recvbuf, sizeof(recvbuf), 0, NULL,NULL);
+				if(len > 0){
+					pos = 0;
+					memcpy(&sn, recvbuf+pos, sizeof(long long));
+					pos += sizeof(long long);
+					memcpy(&hours, recvbuf+pos, 1);
+					pos += 1;
+					memcpy(&minutes, recvbuf+pos, 1);
+					pos += 1;
+					memcpy(&seconds, recvbuf+pos, 1);
+					pos += 1;
+					memcpy(&mills, recvbuf+pos, 2);
+					pos += 2;
+					memcpy(&longitude, recvbuf+pos, sizeof(float));
+					pos += sizeof(float);
+					memcpy(&latitude, recvbuf+pos, sizeof(float));
+					pos += sizeof(float);
+					memcpy(&speed, recvbuf+pos, 2);
+					pos += 2;
 
+					if(pos != len) {
+						perror("sock_wifi: pos != len\n");
+						exit(0);
+					}
+				}
+				fprintf(fp_wifi, "SN@%lld ", sn);
+				fprintf(fp_wifi, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
+				fprintf(fp_wifi, "%f,%f ", longitude, latitude);
+				fprintf(fp_wifi, "SPEED@%u\n", speed);
+				fflush(fp_wifi);
+
+				pthread_mutex_lock(&dist_->lock);
+				dist_->wifi_latitude=latitude;
+				dist_->wifi_longitude=longitude;
+				dist_->wifi_valid=1;
+				pthread_mutex_unlock(&dist_->lock);
+			}
 		}
 	}
 
@@ -464,6 +513,7 @@ int main(){
 	Ublox * m8_Gps = NULL;
 	int gpsloopflag = 0;
 	int sendloopflag = 0;
+	int recvloopflag = 0;
 	int err, ret;
 	char cmd;
 	int tmpnum;
@@ -477,7 +527,7 @@ int main(){
 		switch(cmd){
 		case 'h':
 			printf("i: Init interfaces.\n");
-			printf("g: Start gps decoding loop.\n");
+			//printf("g: Start gps decoding loop.\n");
 			printf("s: Start packet sending loop.\n");
 			printf("r: Start Receiving loop.\n");
 			printf("t: Terminate loops.\n");
@@ -505,7 +555,7 @@ int main(){
 			system("rmmod spidev");
 //			snprintf(tmpbuf, CMDSIZE, "insmod /home/root/si4463_tdma.ko global_slots_perframe=2 global_slot_size_ms=195 global_device_num=2 global_device_id=%d", tmpnum);
 			printf("%s\n", tmpbuf);
-			sleep(1);
+			//sleep(1);
 //			system(tmpbuf);
 			system("insmod /home/root/si4463_fpga.ko");
 			system("iptables -I OUTPUT -d 8.8.0.0/16 -j DROP");
@@ -518,8 +568,9 @@ int main(){
 			printf("%s\n", tmpbuf);
 			system(tmpbuf);
 
-			break;
-		case 'g':
+			/**
+			 * open GPS deamon
+			 */
 			if(gpsloopflag)
 				break;
 			m8_Gps = new Ublox();
@@ -527,6 +578,7 @@ int main(){
 			gpsloopflag = 1;
 
 			break;
+
 		case 's':
 			if(sendloopflag)
 				break;
