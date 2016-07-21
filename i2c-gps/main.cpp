@@ -209,6 +209,9 @@ struct dist{
 	float wifi_longitude, wifi_latitude;
 	bool wifi_valid;
 	Ublox *m8_Gps;
+	int rssi_rf_lastpkt;
+	float pkt_loss_rate_rf_last20;
+	float pkt_loss_rate_wifi_last20;
 	pthread_mutex_t lock;
 };
 void* print_distance_loop(void *parm) {
@@ -219,19 +222,21 @@ void* print_distance_loop(void *parm) {
 		system("clear");
 		if(dist_->rf_valid){
 
-			printf("RF-sub1G distance: %f\n",
+			printf("RF-sub1G distance: %f, rssi: %d, pkt_loss_rate_last20: %f\n",
 					get_distance(dist_->rf_latitude, dist_->rf_longitude,
-							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude));
+							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude),
+							dist_->rssi_rf_lastpkt, dist_->pkt_loss_rate_rf_last20);
 		}else{
-			printf("RF-sub1G distance: ----\n");
+			printf("RF-sub1G distance: ---- pkt_loss_rate_last20: %f\n", dist_->pkt_loss_rate_rf_last20);
 		}
 		if(dist_->wifi_valid){
 
-			printf("802.11p distance: %f\n",
+			printf("802.11p distance: %f, pkt_loss_rate_last20: %f\n",
 					get_distance(dist_->wifi_latitude, dist_->wifi_longitude,
-							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude));
+							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude),
+							dist_->pkt_loss_rate_wifi_last20);
 		}else{
-			printf("802.11p distance: ----\n");
+			printf("802.11p distance: ---- pkt_loss_rate_last20: %f\n", dist_->pkt_loss_rate_wifi_last20);
 		}
 		pthread_mutex_lock(&dist_->lock);
 		dist_->rf_valid=0;
@@ -244,6 +249,20 @@ void* print_distance_loop(void *parm) {
 
 }
 
+float cal_pktlossrate_lastn(long long * pktsn_set, int n){
+	int i;
+	long long start = pktsn_set[0];
+	float pkt_loss = 0;
+
+	for(i=0; i<n && pktsn_set[i] > 0; i++, start++){
+		if(pktsn_set[i] > start){
+			pkt_loss = pktsn_set[i] - start;
+			start = pktsn_set[i];
+		}
+	}
+
+	return (pkt_loss/n);
+}
 
 void* recv_tester_loop(void * parm) {
 	Ublox *m8_Gps_ = (Ublox*)parm;
@@ -367,6 +386,12 @@ void* recv_tester_loop(void * parm) {
 	uint16_t speed;
 	long long sn;
 
+	long long pktsn_rf_last20[20];
+	long long pktsn_wifi_last20[20];
+	int pkt_rf_p = 0;
+	int pkt_wifi_p = 0;
+	memset(pktsn_rf_last20, -1, 20*sizeof(long long));
+	memset(pktsn_wifi_last20, -1, 20*sizeof(long long));
 
 	/**
 	 * select LOOP
@@ -429,6 +454,11 @@ void* recv_tester_loop(void * parm) {
 				fprintf(fp_rf, "RSSI@%d\n", rf_rssi);
 				fflush(fp_rf);
 
+				pktsn_rf_last20[pkt_rf_p] = sn;
+				pkt_rf_p = (pkt_rf_p+1) % 20;
+				dist_->pkt_loss_rate_rf_last20 = cal_pktlossrate_lastn(pktsn_rf_last20, 20);
+				dist_->rssi_rf_lastpkt = rf_rssi;
+
 				pthread_mutex_lock(&dist_->lock);
 				dist_->rf_latitude=latitude;
 				dist_->rf_longitude=longitude;
@@ -466,6 +496,10 @@ void* recv_tester_loop(void * parm) {
 				fprintf(fp_wifi, "%f,%f ", longitude, latitude);
 				fprintf(fp_wifi, "SPEED@%u\n", speed);
 				fflush(fp_wifi);
+
+				pktsn_wifi_last20[pkt_wifi_p] = sn;
+				pkt_wifi_p = (pkt_wifi_p+1) % 20;
+				dist_->pkt_loss_rate_wifi_last20 = cal_pktlossrate_lastn(pktsn_wifi_last20, 20);
 
 				pthread_mutex_lock(&dist_->lock);
 				dist_->wifi_latitude=latitude;
