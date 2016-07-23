@@ -23,6 +23,12 @@ module Wireless_Ctrl(
 	//Si4463接口
 	Si4463_int,
 	Si4463_reset,
+	/**
+	 * Clear Channel Assessment. 
+	 * This output goes high when the Current RSSI signal exceeds the threshold value set by the MODEM_RSSI_THRESH property, 
+	 * and is low when the Current RSSI is below threshold. This is a real-time (non-latched) signal.
+	 */
+	Si4463_cca,
 	
 	//SPI_master接口
 	Data_to_master,
@@ -97,7 +103,8 @@ input SRAM_AlmostFull;
 	//Si4463接口
 input	Si4463_int;
 output	Si4463_reset;
-	
+input		Si4463_cca;
+
 	//SPI_master接口
 output[15:0]	Data_to_master;
 input[15:0]	Data_from_master;
@@ -118,7 +125,7 @@ reg [7:0] Si4463_RSSI_Curr=0;
 reg [7:0] Si4463_RSSI_RecvPacket=0;
 wire[7:0] Si4463_RSSI_RecvPacket_wire;
 assign Si4463_RSSI_RecvPacket_wire=Si4463_RSSI_RecvPacket;
-`define RSSI_THRESHOLD 8'ha0
+`define RSSI_THRESHOLD 8'hb0
 
 //config from SRAM
 reg [15:0] config_len;
@@ -1210,8 +1217,8 @@ begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				//Main_Current_State=11;
-				Main_Current_State=14;
+				Main_Current_State=11;
+				//Main_Current_State=14;
 			end
 		end
 		//===Function_set_tran_property()====
@@ -1241,6 +1248,27 @@ begin
 				Main_Current_State=14;
 			end
 		end */
+		11://MODEM_RSSI_THRESH
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h20;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h4a;
+			Main_Cmd_Data[39:32]=`RSSI_THRESHOLD;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=12;
+		end
+		12:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=14;
+			end
+		end
 		14:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
@@ -1883,37 +1911,30 @@ begin
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
-				Main_Cmd=1;
-				Main_Cmd_Data[7:0]=8'h22; //GET_MODEM_STATUS
-				Main_Cmd_Data[15:8]=8'hff;
-				Main_Data_len=2;
-				Main_Return_len=3;//only needs 3byte (third is CURR_RSSI)
-				Main_start=1;
-				Main_Current_State=81;	
+				delay_mtime_3=100;//1ms
+				delay_start_3=1;
+				Main_Current_State=81;
 			end
 		end
 		81:
 		begin
-			
-			Main_Current_State=82;
+			if(Si4463_cca)
+			begin
+				//退避随机时间后重新开始
+				delay_start_3=0;
+				Main_Current_State=82;
+			end
+			else if(delay_int_3)
+			begin
+				delay_start_3=0;
+				Main_Current_State=90;
+			end			
 		end
 		82:
 		begin
-			if(spi_op_done_main)
-			begin
-				Main_start=0;
-				Si4463_RSSI_Curr=Main_Return_Data[7:0]; //CURR_RSSI (Reverse sequence of addr 返回3字节，用[7:0]取得最后一个字节)
-				if(Si4463_RSSI_Curr>`RSSI_THRESHOLD)
-				begin
-					delay_mtime_3=rand_num_wire;
-					delay_start_3=1;
-					Main_Current_State=83;
-				end
-				else
-				begin
-					Main_Current_State=90; //开始发送
-				end
-			end
+			delay_mtime_3=rand_num_wire;
+			delay_start_3=1;
+			Main_Current_State=83;
 		end
 		83:
 		begin
@@ -1922,7 +1943,7 @@ begin
 				delay_start_3=0;
 				Main_Current_State=80;
 			end			
-		end
+		end		
 		
 		
 		/////////发送命令，开始发送数据///////////

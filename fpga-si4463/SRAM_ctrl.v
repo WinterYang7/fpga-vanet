@@ -4,8 +4,8 @@
 `define MAX_FIFO_I_PTR  18'b011111111111110000
 `define MIN_FIFO_I_PTR  18'b000000001100000010
 //启动配置专用缓冲区
-`define CONFIG_START_P	18'b000000000000000000
-`define CONFIG_MAXEND_P	18'b000000001000000000
+`define CONFIG_START_P	18'b000000000000000001
+`define CONFIG_MAXEND_P	18'b000000001000000001
 //给单条命令专用的缓冲区
 `define CMD_START_P		18'b000000001000000001
 `define CMD_MAXEND_P		18'b000000001100000000
@@ -357,7 +357,7 @@ begin
 			LB_n<=0;
 			UB_n<=0;
 			link<=1;
-			Current_State=22;
+			Current_State=19;
 		end
 		
 		21: //读SRAM
@@ -367,6 +367,11 @@ begin
 			OE_n<=0;
 			LB_n<=0;
 			UB_n<=0;
+			Current_State=19;
+		end
+		
+		19:
+		begin
 			Current_State=22;
 		end
 		

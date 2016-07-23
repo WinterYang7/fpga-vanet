@@ -30,11 +30,6 @@ module Slave_Ctrl(
 	//与CPU连接的中断
 	cpu_recv_int,
 	
-	Spi_Current_State_1,
-	Spi_rrdy,
-	Spi_trdy,
-	Data_from_spi,
-	
 	//用于输出当前状态
 	Slave_Ctrl_Status,
 	Slave_Ctrl_Debug
@@ -49,15 +44,10 @@ assign Slave_Ctrl_Status[7] = Pkt_Received_int;
 output [1:0] Slave_Ctrl_Debug;//for DUBUG
 //assign Slave_Ctrl_Debug=Irq_Current_State[1:0];
 
-output Data_from_spi;
-output Spi_trdy;
-output Spi_rrdy;
 input	clk;
 //input frame_recved_int;
 input Pkt_Received_int;
 output reg cpu_recv_int=1'b1;
-output  [7:0] Spi_Current_State_1;	
-//assign Spi_Current_State_1={3'b000,Spi_Current_State};
 	//与CPU的接口
 input	mosi;
 output	miso;
