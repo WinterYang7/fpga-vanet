@@ -6,6 +6,8 @@
 #include<cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -22,6 +24,8 @@
 #define WIFIRECVPORT 9001
 
 #define RF_RSSI_LOC		"/home/root/d/si4463/rssi_last_pkt"
+#define WIFI_RSSI_LOC_BASE	"/home/root/d/ieee80211/phy0/netdev:wlp1s0/stations/"
+#define WIFI_RSSI_LOC_TAIL	"/last_signal"
 #define LOGFILE_BASE	"/home/root/"
 #define RF_LOGFILE		"rflog.txt"
 #define WIFI_LOGFILE	"wifilog.txt"
@@ -57,6 +61,7 @@ void* send_tester_loop(void * parm) {
 	Ublox *m8_Gps_ = (Ublox*)parm;
 	struct sockaddr_in wifi_send_addr;
 	int sock_wifi;
+	struct ifreq ifr;
 	struct sockaddr_in rf_send_addr;
 	int sock_rf;
 
@@ -91,6 +96,19 @@ void* send_tester_loop(void * parm) {
 		perror("socket");
 		return NULL;
 	}
+
+	strcpy(ifr.ifr_name, "wlp1s0");
+	ioctl(sock_wifi, SIOCGIFHWADDR, &ifr);
+	char wifi_mac[32];
+	sprintf(wifi_mac, "%02x:%02x:%02x:%02x:%02x:%02x",
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[0],
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[1],
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[2],
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[3],
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[4],
+	            (unsigned   char)ifr.ifr_hwaddr.sa_data[5]);
+
+	printf("wifi MAC: %s, size: %d\n",wifi_mac, strlen(wifi_mac));
 
 	if (bind(sock_wifi, (struct sockaddr *) &wifi_send_addr,
 			sizeof(struct sockaddr)) < 0) {
@@ -146,21 +164,11 @@ void* send_tester_loop(void * parm) {
 			pos += 2;
 
 			/**
-			 * 802.11p sending
-			 */
-			memcpy(sendbuf, &wifi_sn, sizeof(long long));
-			wifi_sn++;
-			if ((len = sendto(sock_wifi, sendbuf, pos, 0,
-					(struct sockaddr *) &remote_wifi_addr, sizeof(struct sockaddr))) < 0) {
-				perror("sendto");
-				return NULL;
-			}
-			/**
 			 * sub1G sending
 			 */
-			memcpy(sendbuf, &rf_sn, sizeof(long long));
-			rf_sn++;
 			if(!rest) {
+				memcpy(sendbuf, &rf_sn, sizeof(long long));
+				rf_sn++;
 				if ((len = sendto(sock_rf, sendbuf, pos, 0,
 						(struct sockaddr *) &remote_rf_addr, sizeof(struct sockaddr))) < 0) {
 					perror("sendto");
@@ -171,6 +179,19 @@ void* send_tester_loop(void * parm) {
 				rest = 0;
 			}
 
+			/**
+			 * 802.11p sending
+			 */
+			memcpy(sendbuf, &wifi_sn, sizeof(long long));
+			wifi_sn++;
+			memcpy(sendbuf+pos, wifi_mac, strlen(wifi_mac));
+			pos += strlen(wifi_mac);
+
+			if ((len = sendto(sock_wifi, sendbuf, pos, 0,
+					(struct sockaddr *) &remote_wifi_addr, sizeof(struct sockaddr))) < 0) {
+				perror("sendto");
+				return NULL;
+			}
 			sn++;
 			usleep(1000 * 100);
 		}
@@ -210,6 +231,7 @@ struct dist{
 	bool wifi_valid;
 	Ublox *m8_Gps;
 	int rssi_rf_lastpkt;
+	int rssi_wifi_lastpkt;
 	float pkt_loss_rate_rf_last20;
 	float pkt_loss_rate_wifi_last20;
 	pthread_mutex_t lock;
@@ -225,16 +247,18 @@ void* print_distance_loop(void *parm) {
 			printf("RF-sub1G distance: %f, rssi: %d, pkt_loss_rate_last20: %f\n",
 					get_distance(dist_->rf_latitude, dist_->rf_longitude,
 							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude),
-							dist_->rssi_rf_lastpkt, dist_->pkt_loss_rate_rf_last20);
+					dist_->rssi_rf_lastpkt,
+					dist_->pkt_loss_rate_rf_last20);
 		}else{
 			printf("RF-sub1G distance: ---- pkt_loss_rate_last20: %f\n", dist_->pkt_loss_rate_rf_last20);
 		}
 		if(dist_->wifi_valid){
 
-			printf("802.11p distance: %f, pkt_loss_rate_last20: %f\n",
+			printf("802.11p distance: %f, SNR: %d, pkt_loss_rate_last20: %f\n",
 					get_distance(dist_->wifi_latitude, dist_->wifi_longitude,
 							dist_->m8_Gps->latitude, dist_->m8_Gps->longitude),
-							dist_->pkt_loss_rate_wifi_last20);
+					dist_->rssi_wifi_lastpkt,
+					dist_->pkt_loss_rate_wifi_last20);
 		}else{
 			printf("802.11p distance: ---- pkt_loss_rate_last20: %f\n", dist_->pkt_loss_rate_wifi_last20);
 		}
@@ -244,7 +268,8 @@ void* print_distance_loop(void *parm) {
 		pthread_mutex_unlock(&dist_->lock);
 
 
-		sleep(1);
+		//sleep(1);
+		usleep(600 * 1000);
 	}
 
 }
@@ -332,6 +357,12 @@ void* recv_tester_loop(void * parm) {
 		perror("*******RSSI FILE OPEN ERROR********\n");
 		exit(0);
 	}
+	/**
+	 * RSSI file of 802.11p
+	 */
+	FILE* fp_wifi_rssi;
+	char rssi_wifi_file_name[200];
+	memset(rssi_wifi_file_name, 0, 200);
 
 	/**
 	 * SOCKETS
@@ -385,6 +416,7 @@ void* recv_tester_loop(void * parm) {
 	float longitude, latitude;
 	uint16_t speed;
 	long long sn;
+	char wifi_mac[20];
 
 	long long pktsn_rf_last20[20];
 	long long pktsn_wifi_last20[20];
@@ -400,6 +432,7 @@ void* recv_tester_loop(void * parm) {
 	int pos;
 	int len;
 	int rf_rssi;
+	int wifi_rssi;
 	fd_set rfds;
 	struct timeval time_out;
 	time_out.tv_sec=1;
@@ -485,21 +518,40 @@ void* recv_tester_loop(void * parm) {
 					pos += sizeof(float);
 					memcpy(&speed, recvbuf+pos, 2);
 					pos += 2;
-
+					memcpy(wifi_mac, recvbuf+pos, 17);
+					pos += 17;
+					wifi_mac[17] = '\0';
 					if(pos != len) {
 						perror("sock_wifi: pos != len\n");
 						exit(0);
 					}
 				}
+
+				memset(rssi_wifi_file_name, 0, 200);
+				strcat(rssi_wifi_file_name, WIFI_RSSI_LOC_BASE);
+				strcat(rssi_wifi_file_name, wifi_mac);
+				strcat(rssi_wifi_file_name, WIFI_RSSI_LOC_TAIL);
+
+				fp_wifi_rssi = fopen(rssi_wifi_file_name, "r");
+				if(fp_wifi_rssi==NULL){
+					perror("*******802.11p RSSI FILE OPEN ERROR********\n");
+					exit(0);
+				}
+				fscanf(fp_wifi_rssi, "%d", &wifi_rssi);
+				fclose(fp_wifi_rssi);
+
+
 				fprintf(fp_wifi, "SN@%lld ", sn);
 				fprintf(fp_wifi, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
 				fprintf(fp_wifi, "%f,%f ", longitude, latitude);
-				fprintf(fp_wifi, "SPEED@%u\n", speed);
+				fprintf(fp_wifi, "SPEED@%u ", speed);
+				fprintf(fp_wifi, "SNR@%d\n", wifi_rssi);
 				fflush(fp_wifi);
 
 				pktsn_wifi_last20[pkt_wifi_p] = sn;
 				pkt_wifi_p = (pkt_wifi_p+1) % 20;
 				dist_->pkt_loss_rate_wifi_last20 = cal_pktlossrate_lastn(pktsn_wifi_last20, 20);
+				dist_->rssi_wifi_lastpkt = wifi_rssi;
 
 				pthread_mutex_lock(&dist_->lock);
 				dist_->wifi_latitude=latitude;

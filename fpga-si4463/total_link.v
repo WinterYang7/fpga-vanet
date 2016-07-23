@@ -15,6 +15,7 @@ module total_link(
 	si4463_ss_n,
 	si4463_reset,
 	si4463_irq,
+	si4463_gpio1, //ÅäÖÃ³ÉCCA£¬ÓÃÓÚÔØ²¨¼àÌı
 	
 	//SRAM µÄÒı½Å
 	sram_mem_addr,
@@ -28,25 +29,24 @@ module total_link(
 	//LEDµÆÖ¸Ê¾µ±Ç°×´Ì¬
 	led,
 	debug_wire,
-	Spi_Current_State
+	Spi_Current_State,
+//	Virtual_DebugIO,
+//	Virtual_DebugIO1,
+//	Virtual_DebugIO3,
+//	Virtual_DebugIO4
 );
 input	clk;
 output[3:0] led;
 output[7:0] Spi_Current_State;
 output[1:0] debug_wire;
+//output[7:0] Virtual_DebugIO;
+//output[7:0] Virtual_DebugIO1;
+//output[15:0] Virtual_DebugIO3;
+//output[15:0] Virtual_DebugIO4;
 
-/*
-assign Spi_Current_State[0]=clk;
-assign Spi_Current_State[1]=0;
-assign Spi_Current_State[2]=0;
-assign Spi_Current_State[3]=0;
-assign Spi_Current_State[4]=0;
-assign Spi_Current_State[5]=0;
-assign Spi_Current_State[6]=0;
-assign Spi_Current_State[7]=0;*/
-//assign Spi_Current_State={7'b0000000,slave_write_sram};
-//assign Spi_Current_State=sram_count_to_slave[7:0];
-	
+//assign Virtual_DebugIO3=sram_data_from_slave;
+//assign Virtual_DebugIO4=sram_data_to_master;
+
 	//SPI_slaveÒı½Å
 input	cpu_mosi;
 output	cpu_miso;
@@ -58,11 +58,12 @@ assign cpu_irq_full=(sram_count_to_master>18'h1FF80)?1:0; //µ±FIFO_I»¹Ê£255¸ö×Ö½
 																			//Èç¹ûÊı¾İ¸öÊı²»Ò»ÖÂ£¬ÄÇÃ´SPI_ctrl»á×èÈûµ½»ñÈ¡Êı¾İµÄµØ·½£¬Òò´Ë±ØĞëÙ¤ÀûÂÔ±ØĞë·¢ËÍ¸ü¶àÊı¾İÀ´Ìî³äÇ°Ò»¸öÊı¾İµÄ¿Õ°×¡£
 	//wireless_ctrlÒı½Å
 output	si4463_mosi;
-input	si4463_miso;
+input		si4463_miso;
 output	si4463_sclk;
 output	si4463_ss_n;
 output	si4463_reset;
-input	si4463_irq;
+input		si4463_irq;
+input 	si4463_gpio1;
 
 	//SRAM µÄÒı½Å
 output[17:0]	sram_mem_addr;
@@ -176,7 +177,7 @@ SRAM_ctrl sram(
 	
 	//.count(Spi_Current_State)
 		//ÓÃÓÚÊä³öµ±Ç°×´Ì¬
-	.SRAM_Ctrl_Status(Spi_Current_State),
+	//.SRAM_Ctrl_Status(Virtual_DebugIO1),
 	//.nUsing(debug_wire[1]),
 
 	//¿ªÊ¼ÊÕ°ü±êÊ¶£¬ÓÃÓÚCRC´íÎóºóµÄ»ØËİ¡£
@@ -213,7 +214,7 @@ Slave_Ctrl slave(
 	.Cmd_write_sram_done(cmd_write_sram_done),
 	
 	//ÓÃÓÚÊä³öµ±Ç°×´Ì¬
-//	.Slave_Ctrl_Status(Spi_Current_State),
+//	.Slave_Ctrl_Status(Virtual_DebugIO),
 //	.Slave_Ctrl_Debug(debug_wire),
 	
 	//ÓëCPUÁ¬½ÓµÄÖĞ¶Ï
@@ -249,6 +250,7 @@ Wireless_Ctrl wireless(
 	//Si4463½Ó¿Ú
 	.Si4463_int(si4463_irq),
 	.Si4463_reset(si4463_reset),
+	.Si4463_cca(si4463_gpio1),
 	
 	//SPI_master½Ó¿Ú
 	.Data_to_master(data_to_master),
@@ -269,7 +271,7 @@ Wireless_Ctrl wireless(
 	.Pkt_Start_flag(Pkt_Start_flag_wire),
 	.Crc_Error_Rollback(Crc_Error_Rollback_wire),
 	
-	//.Si4463_Ph_Status_1(Spi_Current_State),
+	.Si4463_Ph_Status_1(Spi_Current_State),
 	.tx_done(debug_wire[0]),//for DUBUG
 	.wireless_debug(debug_wire[1]),
 	

@@ -1,10 +1,20 @@
 #include "Ublox.h"
+#include "string"
+
+using  std::string;
 
 #define I2CGPS_I2C_ADDR 		0x42
 #define I2C_DEVICE_FD 		0
 #define BUFFER_SIZE			255
 typedef unsigned char		u8;
 
+#define MAX_NODES_NUM	2
+
+
+//string global_nodes_mac[MAX_NODES_NUM] = {
+//		"DC:85:DE:7C:64:67",
+//		"9C:D2:1E:6F:FD:91"
+//};
 
 class i2cgps{
 public:
@@ -30,6 +40,5 @@ private:
 	int size_;
 	int i2c_wrtie(u8 subaddress, u8 *data, int size);
 	int i2c_read(u8 subaddress, u8 *buf, int size);
-
 
 };

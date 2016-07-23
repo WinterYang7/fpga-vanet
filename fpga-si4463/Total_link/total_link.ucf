@@ -65,5 +65,6 @@ NET "si4463_mosi" LOC = H21;
 NET "si4463_miso" LOC = H22;
 NET "si4463_reset" LOC = L22;
 NET "si4463_ss_n" LOC = K21;
+NET "si4463_gpio1" LOC = K22;
 
 

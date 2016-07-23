@@ -23,6 +23,12 @@ module Wireless_Ctrl(
 	//Si4463接口
 	Si4463_int,
 	Si4463_reset,
+	/**
+	 * Clear Channel Assessment. 
+	 * This output goes high when the Current RSSI signal exceeds the threshold value set by the MODEM_RSSI_THRESH property, 
+	 * and is low when the Current RSSI is below threshold. This is a real-time (non-latched) signal.
+	 */
+	Si4463_cca,
 	
 	//SPI_master接口
 	Data_to_master,
@@ -53,8 +59,8 @@ module Wireless_Ctrl(
 );
 input clk;
 output [7:0] Si4463_Ph_Status_1;
-assign Si4463_Ph_Status_1[6:0]=Main_Current_State[6:0];
-assign Si4463_Ph_Status_1[7]=spi_op_done_main;
+assign Si4463_Ph_Status_1[7:0]=Main_Current_State[7:0];
+//assign Si4463_Ph_Status_1[7]=spi_op_done_main;
 //assign Si4463_Ph_Status_1[4:0]=Irq_Current_State[4:0];//Spi_Current_State;
 //assign Si4463_Ph_Status_1[7:5]=packets_incoming[3:0];
 
@@ -97,7 +103,8 @@ input SRAM_AlmostFull;
 	//Si4463接口
 input	Si4463_int;
 output	Si4463_reset;
-	
+input		Si4463_cca;
+
 	//SPI_master接口
 output[15:0]	Data_to_master;
 input[15:0]	Data_from_master;
@@ -118,7 +125,7 @@ reg [7:0] Si4463_RSSI_Curr=0;
 reg [7:0] Si4463_RSSI_RecvPacket=0;
 wire[7:0] Si4463_RSSI_RecvPacket_wire;
 assign Si4463_RSSI_RecvPacket_wire=Si4463_RSSI_RecvPacket;
-`define RSSI_THRESHOLD 8'ha0
+`define RSSI_THRESHOLD 8'hb0
 
 //config from SRAM
 reg [15:0] config_len;
@@ -1207,19 +1214,15 @@ begin
 		end
 		9:
 		begin
-			
-			Main_Current_State=10;
-		end
-		10:
-		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
 				Main_Current_State=11;
+				//Main_Current_State=14;
 			end
 		end
 		//===Function_set_tran_property()====
-		11:
+/*		11:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1244,6 +1247,27 @@ begin
 				Main_start=0;
 				Main_Current_State=14;
 			end
+		end */
+		11://MODEM_RSSI_THRESH
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h20;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h4a;
+			Main_Cmd_Data[39:32]=`RSSI_THRESHOLD;
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=12;
+		end
+		12:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=14;
+			end
 		end
 		14:
 		begin
@@ -1262,36 +1286,47 @@ begin
 		end
 		15:
 		begin
-			
-			Main_Current_State=16;
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=16;
+			end
 		end
 		16:
+		begin
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h10;
+			Main_Cmd_Data[39:32]=8'ha2;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=17;
+		end
+		17:
 		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				Main_Current_State=17;
+				Main_Current_State=18;
 			end
-		end
-		17:
-		begin
-			Main_Cmd_Data[7:0]=8'h11;
-			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h0d;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h00;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'ha2;
-			Main_Cmd=1;
-			Main_start=1;
-			Main_Data_len=8;
-			Main_Return_len=0;
-			Main_Current_State=18;
 		end
 		18:
 		begin
-			
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h02;
+			Main_Cmd_Data[31:24]=8'h21;
+			Main_Cmd_Data[39:32]=8'h00;
+			Main_Cmd_Data[47:40]=8'h01;
+			//Main_Cmd_Data[55:48]=8'h00;
+			//Main_Cmd_Data[63:56]=8'h82;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=6;
+			Main_Return_len=0;
 			Main_Current_State=19;
 		end
 		19:
@@ -1306,51 +1341,59 @@ begin
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
-			Main_Cmd_Data[31:24]=8'h21;
-			Main_Cmd_Data[39:32]=8'h00;
-			Main_Cmd_Data[47:40]=8'h01;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h82;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h24;//PKT_RX_FIELD_1_CRC_CONFIG
+			Main_Cmd_Data[39:32]=8'h82;//CRC
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Data_len=8;
+			Main_Data_len=5;
 			Main_Return_len=0;
-			Main_Current_State=21;
+			Main_Current_State=21;		
 		end
 		21:
-		begin
-			
-			Main_Current_State=22;
-		end
-		22:
 		begin
 			if(spi_op_done_main)
 			begin
 				Main_start=0;
-				Main_Current_State=23;
-			end
+				Main_Current_State=22;
+			end		
 		end
-		23:
+		22:
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
-			Main_Cmd_Data[23:16]=8'h04;
+			Main_Cmd_Data[23:16]=8'h02;
 			Main_Cmd_Data[31:24]=8'h25;
 			Main_Cmd_Data[39:32]=8'h00;
 			Main_Cmd_Data[47:40]=8'hfa;
-			Main_Cmd_Data[55:48]=8'h00;
-			Main_Cmd_Data[63:56]=8'h0a;
+			//Main_Cmd_Data[55:48]=8'h00;
+			//Main_Cmd_Data[63:56]=8'h0a;//CRC
 			Main_Cmd=1;
 			Main_start=1;
-			Main_Data_len=8;
+			Main_Data_len=6;
 			Main_Return_len=0;
-			Main_Current_State=24;
+			Main_Current_State=23;
+		end
+		23:
+		begin
+			if(spi_op_done_main)
+			begin
+				Main_start=0;
+				Main_Current_State=24;
+			end
 		end
 		24:
 		begin
-			
-			Main_Current_State=25;
+			Main_Cmd_Data[7:0]=8'h11;
+			Main_Cmd_Data[15:8]=8'h12;
+			Main_Cmd_Data[23:16]=8'h01;
+			Main_Cmd_Data[31:24]=8'h28;//PKT_RX_FIELD_2_CRC_CONFIG
+			Main_Cmd_Data[39:32]=8'h0a;//CRC
+			Main_Cmd=1;
+			Main_start=1;
+			Main_Data_len=5;
+			Main_Return_len=0;
+			Main_Current_State=25;				
 		end
 		25:
 		begin
@@ -1868,37 +1911,30 @@ begin
 		begin
 			if(!spi_Using_wire&&!irq_dealing_wire&&packets_incoming_wire==0)
 			begin
-				Main_Cmd=1;
-				Main_Cmd_Data[7:0]=8'h22; //GET_MODEM_STATUS
-				Main_Cmd_Data[15:8]=8'hff;
-				Main_Data_len=2;
-				Main_Return_len=3;//only needs 3byte (third is CURR_RSSI)
-				Main_start=1;
-				Main_Current_State=81;	
+				delay_mtime_3=100;//1ms
+				delay_start_3=1;
+				Main_Current_State=81;
 			end
 		end
 		81:
 		begin
-			
-			Main_Current_State=82;
+			if(Si4463_cca)
+			begin
+				//退避随机时间后重新开始
+				delay_start_3=0;
+				Main_Current_State=82;
+			end
+			else if(delay_int_3)
+			begin
+				delay_start_3=0;
+				Main_Current_State=90;
+			end			
 		end
 		82:
 		begin
-			if(spi_op_done_main)
-			begin
-				Main_start=0;
-				Si4463_RSSI_Curr=Main_Return_Data[7:0]; //CURR_RSSI (Reverse sequence of addr 返回3字节，用[7:0]取得最后一个字节)
-				if(Si4463_RSSI_Curr>`RSSI_THRESHOLD)
-				begin
-					delay_mtime_3=rand_num_wire;
-					delay_start_3=1;
-					Main_Current_State=83;
-				end
-				else
-				begin
-					Main_Current_State=90; //开始发送
-				end
-			end
+			delay_mtime_3=rand_num_wire;
+			delay_start_3=1;
+			Main_Current_State=83;
 		end
 		83:
 		begin
@@ -1907,7 +1943,7 @@ begin
 				delay_start_3=0;
 				Main_Current_State=80;
 			end			
-		end
+		end		
 		
 		
 		/////////发送命令，开始发送数据///////////
