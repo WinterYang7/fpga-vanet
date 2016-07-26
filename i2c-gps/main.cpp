@@ -132,11 +132,13 @@ void* send_tester_loop(void * parm) {
 	remote_wifi_addr.sin_addr.s_addr = inet_addr(remotewifi_ip); //
 	remote_wifi_addr.sin_port = htons(WIFIRECVPORT);
 
+#ifndef DEBUG
 	//wait for GPS validation
 	while(!m8_Gps_->datetime.valid){
 		printf("waiting for GPS validation\n");
 		sleep(1);
 	}
+#endif
 
 	long long sn = 1;
 	long long wifi_sn = 1;
@@ -144,7 +146,9 @@ void* send_tester_loop(void * parm) {
 	bool rest=0;
 	int pos = 0;
   	while(1){
+#ifndef DEBUG
 		while(m8_Gps_->datetime.valid){
+#endif
 			pos = 0;
 			memcpy(sendbuf+pos, &sn, sizeof(long long));
 			pos += sizeof(long long);
@@ -194,7 +198,9 @@ void* send_tester_loop(void * parm) {
 			}
 			sn++;
 			usleep(1000 * 100);
+#ifndef DEBUG
 		}
+#endif
 		pthread_testcancel();
   	}
 
@@ -282,6 +288,8 @@ float cal_pktlossrate_lastn(long long * pktsn_set, int n){
 	for(i=0; i<n && pktsn_set[i] > 0; i++, start++){
 		if(pktsn_set[i] > start){
 			pkt_loss = pktsn_set[i] - start;
+			if(pkt_loss > n)
+				pkt_loss = 0;
 			start = pktsn_set[i];
 		}
 	}
@@ -301,11 +309,13 @@ void* recv_tester_loop(void * parm) {
 	dist_->wifi_valid=0;
 	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
 
+#ifndef DEBUG
 	//wait for GPS validation
 	while(!m8_Gps_->datetime.valid){
 		printf("waiting for GPS validation\n");
 		usleep(500 * 1000);
 	}
+#endif
 
 	/**
 	 * open log files
@@ -352,11 +362,7 @@ void* recv_tester_loop(void * parm) {
 	 * RSSI file of rfsub1G
 	 */
 	FILE* fp_rf_rssi;
-	fp_rf_rssi = fopen(RF_RSSI_LOC, "r");
-	if(fp_rf_rssi==NULL){
-		perror("*******RSSI FILE OPEN ERROR********\n");
-		exit(0);
-	}
+
 	/**
 	 * RSSI file of 802.11p
 	 */
@@ -439,6 +445,7 @@ void* recv_tester_loop(void * parm) {
 	time_out.tv_usec=0;
 	int maxfd = sock_rf > sock_wifi ? sock_rf:sock_wifi;
 	int ret;
+	float distance;
 	while(1)
 	{
 		FD_ZERO(&rfds);
@@ -477,12 +484,18 @@ void* recv_tester_loop(void * parm) {
 					}
 				}
 
-				fseek(fp_rf_rssi, 0, SEEK_SET);
+				fp_rf_rssi = fopen(RF_RSSI_LOC, "r");
+				if(fp_rf_rssi==NULL){
+					perror("*******RSSI FILE OPEN ERROR********\n");
+					exit(0);
+				}
 				fscanf(fp_rf_rssi, "%d", &rf_rssi);
+				fclose(fp_rf_rssi);
 
 				fprintf(fp_rf, "SN@%lld ", sn);
 				fprintf(fp_rf, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
-				fprintf(fp_rf, "%f,%f ", longitude, latitude);
+				fprintf(fp_rf, "GPSPKT@%f,%f ", longitude, latitude);
+				fprintf(fp_rf, "GPSCURR@%f,%f ", m8_Gps_->longitude, m8_Gps_->latitude);
 				fprintf(fp_rf, "SPEED@%d ", speed);
 				fprintf(fp_rf, "RSSI@%d\n", rf_rssi);
 				fflush(fp_rf);
@@ -540,10 +553,10 @@ void* recv_tester_loop(void * parm) {
 				fscanf(fp_wifi_rssi, "%d", &wifi_rssi);
 				fclose(fp_wifi_rssi);
 
-
 				fprintf(fp_wifi, "SN@%lld ", sn);
 				fprintf(fp_wifi, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
-				fprintf(fp_wifi, "%f,%f ", longitude, latitude);
+				fprintf(fp_wifi, "GPSPKT@%f,%f ", longitude, latitude);
+				fprintf(fp_wifi, "GPSCURR@%f,%f ", m8_Gps_->longitude, m8_Gps_->latitude);
 				fprintf(fp_wifi, "SPEED@%u ", speed);
 				fprintf(fp_wifi, "SNR@%d\n", wifi_rssi);
 				fflush(fp_wifi);
@@ -604,8 +617,13 @@ int main(){
 	char cmd;
 	int tmpnum;
 	char *tmpbuf;
+	int pwr_lvl = 0;
+	int speed = 400;
 	tmpbuf = (char*)malloc(CMDSIZE);
 
+#ifdef DEBUG
+	printf("Debug mode, Gps validation is not concerned.\n");
+#endif
 	do {
 		printf("Input CMD (h for help):\n");
 		scanf("%c", &cmd);
@@ -618,6 +636,8 @@ int main(){
 			printf("r: Start Receiving loop.\n");
 			printf("t: Terminate loops.\n");
 			printf("p: ping test.\n");
+			printf("l: Change RF power level.\n");
+			printf("g: Change RF speed.\n");
 			break;
 		case 'i':
 
@@ -712,6 +732,26 @@ int main(){
 			system(tmpbuf);
 			strcpy(tmpbuf , "ping -c 5 ");
 			strcat(tmpbuf, remoterf_ip);
+			system(tmpbuf);
+			break;
+		case 'l':
+			do {
+				printf("Input power level 0~127: ");
+				scanf("%d", &pwr_lvl);
+			}
+			while(pwr_lvl < 0 || pwr_lvl > 127);
+			sprintf(tmpbuf, "echo %d > /home/root/d/si4463/power_lvl", pwr_lvl);
+			printf("%s\n", tmpbuf);
+			system(tmpbuf);
+			break;
+		case 'g':
+			do {
+				printf("Input speed 0~400: ");
+				scanf("%d", &speed);
+			}
+			while(speed < 0);
+			sprintf(tmpbuf, "echo %d > /home/root/d/si4463/speed_kbps", speed);
+			printf("%s\n", tmpbuf);
 			system(tmpbuf);
 			break;
 		default:

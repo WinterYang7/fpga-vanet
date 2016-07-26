@@ -1,5 +1,6 @@
 
-CFLAGS += 
+CFLAGS +=
+#CFLAGS += -DDEBUG
 
 default: i2c-gps.o main.o Ublox.o
 	${CXX} ${CFLAGS} i2c-gps.o Ublox.o main.o -o gpstester  -lpthread
