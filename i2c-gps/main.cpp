@@ -35,6 +35,9 @@ char myrf_ip[30];
 char remotewifi_ip[30];
 char remoterf_ip[30];
 
+int pwr_lvl = 127;
+int speed = 400;
+
 unsigned char gps_config_change[80] = {
   /*timepulse*/
 //0xB5, 0x62, 0x06, 0x07, 0x14, 0x00, 0xA0, 0x86, 0x01, 0x00, 0x50, 0xC3, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x34, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x93, 0x9B,
@@ -147,7 +150,7 @@ void* send_tester_loop(void * parm) {
 	int pos = 0;
   	while(1){
 #ifndef DEBUG
-		while(m8_Gps_->datetime.valid){
+		if(m8_Gps_->datetime.valid){
 #endif
 			pos = 0;
 			memcpy(sendbuf+pos, &sn, sizeof(long long));
@@ -199,6 +202,8 @@ void* send_tester_loop(void * parm) {
 			sn++;
 			usleep(1000 * 100);
 #ifndef DEBUG
+		} else {
+			printf("Sendloop: GPS invalid!\n");
 		}
 #endif
 		pthread_testcancel();
@@ -287,14 +292,16 @@ float cal_pktlossrate_lastn(long long * pktsn_set, int n){
 
 	for(i=0; i<n && pktsn_set[i] > 0; i++, start++){
 		if(pktsn_set[i] > start){
-			pkt_loss = pktsn_set[i] - start;
-			if(pkt_loss > n)
-				pkt_loss = 0;
+			pkt_loss += pktsn_set[i] - start;
+
 			start = pktsn_set[i];
 		}
 	}
 
-	return (pkt_loss/n);
+	if(pkt_loss > n)
+		return 1;
+	else
+		return (pkt_loss/n);
 }
 
 void* recv_tester_loop(void * parm) {
@@ -312,7 +319,7 @@ void* recv_tester_loop(void * parm) {
 #ifndef DEBUG
 	//wait for GPS validation
 	while(!m8_Gps_->datetime.valid){
-		printf("waiting for GPS validation\n");
+		printf("recv_tester_loop: waiting for GPS validation\n");
 		usleep(500 * 1000);
 	}
 #endif
@@ -325,7 +332,14 @@ void* recv_tester_loop(void * parm) {
 	char tmp[100];
 	memset(logfile_name,0,200);
 	memset(tmp,0,100);
-	strcat(logfile_name, LOGFILE_BASE);
+	strcpy(logfile_name, LOGFILE_BASE);
+#ifndef DEBUG
+	//wait for GPS validation 2
+	while(!m8_Gps_->datetime.valid){
+		printf("recv_tester_loop: waiting for GPS validation\n");
+		usleep(500 * 1000);
+	}
+#endif
 	sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
 			m8_Gps_->datetime.month, m8_Gps_->datetime.day,
 			m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
@@ -340,10 +354,18 @@ void* recv_tester_loop(void * parm) {
 		perror("*******LOG FILE OPEN ERROR********\n");
 		exit(0);
 	}
+	fprintf(fp_wifi, "/* Sub1G: Speed = %d, pwr_lvl = %d */\n", speed, pwr_lvl);
 	//RF
 	memset(logfile_name,0,200);
 	memset(tmp,0,100);
-	strcat(logfile_name, LOGFILE_BASE);
+	strcpy(logfile_name, LOGFILE_BASE);
+#ifndef DEBUG
+	//wait for GPS validation 2
+	while(!m8_Gps_->datetime.valid){
+		printf("recv_tester_loop: waiting for GPS validation\n");
+		usleep(500 * 1000);
+	}
+#endif
 	sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
 			m8_Gps_->datetime.month, m8_Gps_->datetime.day,
 			m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
@@ -358,6 +380,8 @@ void* recv_tester_loop(void * parm) {
 		perror("*******LOG FILE OPEN ERROR********\n");
 		exit(0);
 	}
+	fprintf(fp_rf, "/* Sub1G: Speed = %d, pwr_lvl = %d */\n", speed, pwr_lvl);
+
 	/**
 	 * RSSI file of rfsub1G
 	 */
@@ -603,23 +627,125 @@ void* gpsdata_decode_loop(void * parm) {
 	}
 }
 
-int main(){
+int usage(){
+	printf("Parameter Error!\n");
+	return -1;
+}
+
+int main(int argc, char **argv){
 
 	int byte2read;
 	pthread_t gpstid;
 	pthread_t sendlooptid;
 	void * tret;
 	Ublox * m8_Gps = NULL;
-	int gpsloopflag = 0;
-	int sendloopflag = 0;
-	int recvloopflag = 0;
+	bool gpsloopflag = 0;
+	bool sendloopflag = 0;
+	bool recvloopflag = 0;
+	bool changeSpeedFlag = 0;
+	bool changePwrFlag = 0;
 	int err, ret;
 	char cmd;
 	int tmpnum;
 	char *tmpbuf;
-	int pwr_lvl = 0;
-	int speed = 400;
+
 	tmpbuf = (char*)malloc(CMDSIZE);
+
+	argc--;
+	argv++;
+
+	while(argc > 0) {
+		if(argv[0][0]=='-' && argv[0][1]=='i') {
+			if (isdigit(argv[0][2])) {
+				tmpnum = atoi(argv[0] + 2);
+			} else {
+				if(argc < 2 || argv[0][2] != '\0') return usage();
+				tmpnum = atoi(argv[1]);
+				argc--;
+				argv++;
+			}
+		} else if(!strcmp(argv[0],"-s")) {
+			sendloopflag = 1;
+		} else if(!strcmp(argv[0],"-r")) {
+			recvloopflag = 1;
+		} else if(argv[0][0]=='-' && argv[0][1]=='g') {
+			if (isdigit(argv[0][2])) {
+				return usage();
+			} else {
+				if(argc < 2 || argv[0][2] != '\0') return usage();
+				speed = atoi(argv[1]);
+				changeSpeedFlag = 1;
+				argc--;
+				argv++;
+			}
+		} if(argv[0][0]=='-' && argv[0][1]=='l') {
+			if (isdigit(argv[0][2])) {
+				return usage();
+			} else {
+				if(argc < 2 || argv[0][2] != '\0') return usage();
+				pwr_lvl = atoi(argv[1]);
+				changePwrFlag = 1;
+				argc--;
+				argv++;
+			}
+		}
+		argc--;
+		argv++;
+	}
+
+	snprintf(myrf_ip, sizeof(myrf_ip), "192.168.3.%d", tmpnum);
+	snprintf(mywifi_ip, sizeof(mywifi_ip), "192.168.4.%d", tmpnum);
+	snprintf(remoterf_ip, sizeof(remoterf_ip), "192.168.3.%d", tmpnum==1?2:1);
+	snprintf(remotewifi_ip, sizeof(remotewifi_ip), "192.168.4.%d", tmpnum==1?2:1);
+
+	system("ip link set wlp1s0 down");
+	system("./iw-802.11p dev wlp1s0 set type ocb");
+	system("ip link set wlp1s0 up");
+	system("./iw-802.11p dev wlp1s0 ocb join 5805 10MHZ");
+	strcpy(tmpbuf , "ifconfig wlp1s0 ");
+	strcat(tmpbuf, mywifi_ip);
+	printf("%s\n", tmpbuf);
+	system(tmpbuf);
+
+	system("rmmod spidev");
+	system("insmod /home/root/si4463_fpga.ko");
+	system("iptables -I OUTPUT -d 8.8.0.0/16 -j DROP");
+	system("iptables -A OUTPUT -p udp --dport 1534 -j DROP");
+	system("mount -t debugfs none /home/root/d");
+	//sleep(1);
+	if(changeSpeedFlag) {
+		sprintf(tmpbuf,"echo %d > /home/root/d/si4463/speed_kbps", speed);
+		printf("%s\n", tmpbuf);
+		system(tmpbuf);
+	}
+	if(changePwrFlag) {
+		sprintf(tmpbuf, "echo %d > /home/root/d/si4463/power_lvl", pwr_lvl);
+		printf("%s\n", tmpbuf);
+		system(tmpbuf);
+	}
+
+	strcpy(tmpbuf , "ifconfig sif0 ");
+	strcat(tmpbuf, myrf_ip);
+	printf("%s\n", tmpbuf);
+	system(tmpbuf);
+
+	/**
+	 * open GPS deamon
+	 */
+	m8_Gps = new Ublox();
+	ret = pthread_create(&gpstid, NULL, gpsdata_decode_loop, (void*)m8_Gps);
+	gpsloopflag = 1;
+
+	if(sendloopflag){
+		ret = pthread_create(&sendlooptid, NULL, send_tester_loop, (void*)m8_Gps);
+	}
+	if(recvloopflag){
+		printf("%s\n", myrf_ip);
+		printf("%s\n", remoterf_ip);
+		printf("%s\n", mywifi_ip);
+		printf("%s\n", remotewifi_ip);
+		recv_tester_loop((void*)m8_Gps);
+	}
 
 #ifdef DEBUG
 	printf("Debug mode, Gps validation is not concerned.\n");
@@ -630,7 +756,6 @@ int main(){
 		getchar();
 		switch(cmd){
 		case 'h':
-			printf("i: Init interfaces.\n");
 			//printf("g: Start gps decoding loop.\n");
 			printf("s: Start packet sending loop.\n");
 			printf("r: Start Receiving loop.\n");
@@ -638,51 +763,6 @@ int main(){
 			printf("p: ping test.\n");
 			printf("l: Change RF power level.\n");
 			printf("g: Change RF speed.\n");
-			break;
-		case 'i':
-
-			printf("Input device number (1,2):\n");
-			scanf("%d", &tmpnum);
-			getchar();
-			snprintf(myrf_ip, sizeof(myrf_ip), "192.168.3.%d", tmpnum);
-			snprintf(mywifi_ip, sizeof(mywifi_ip), "192.168.4.%d", tmpnum);
-			snprintf(remoterf_ip, sizeof(remoterf_ip), "192.168.3.%d", tmpnum==1?2:1);
-			snprintf(remotewifi_ip, sizeof(remotewifi_ip), "192.168.4.%d", tmpnum==1?2:1);
-
-			system("ip link set wlp1s0 down");
-			system("./iw-802.11p dev wlp1s0 set type ocb");
-			system("ip link set wlp1s0 up");
-			system("./iw-802.11p dev wlp1s0 ocb join 5805 10MHZ");
-			strcpy(tmpbuf , "ifconfig wlp1s0 ");
-			strcat(tmpbuf, mywifi_ip);
-			printf("%s\n", tmpbuf);
-			system(tmpbuf);
-
-			system("rmmod spidev");
-//			snprintf(tmpbuf, CMDSIZE, "insmod /home/root/si4463_tdma.ko global_slots_perframe=2 global_slot_size_ms=195 global_device_num=2 global_device_id=%d", tmpnum);
-			printf("%s\n", tmpbuf);
-			//sleep(1);
-//			system(tmpbuf);
-			system("insmod /home/root/si4463_fpga.ko");
-			system("iptables -I OUTPUT -d 8.8.0.0/16 -j DROP");
-			system("iptables -A OUTPUT -p udp --dport 1534 -j DROP");
-			system("mount -t debugfs none /home/root/d");
-			system("echo 400 > /home/root/d/si4463/speed_kbps");
-			//sleep(1);
-			strcpy(tmpbuf , "ifconfig sif0 ");
-			strcat(tmpbuf, myrf_ip);
-			printf("%s\n", tmpbuf);
-			system(tmpbuf);
-
-			/**
-			 * open GPS deamon
-			 */
-			if(gpsloopflag)
-				break;
-			m8_Gps = new Ublox();
-			ret = pthread_create(&gpstid, NULL, gpsdata_decode_loop, (void*)m8_Gps);
-			gpsloopflag = 1;
-
 			break;
 
 		case 's':
@@ -748,6 +828,7 @@ int main(){
 			do {
 				printf("Input speed 0~400: ");
 				scanf("%d", &speed);
+				getchar();
 			}
 			while(speed < 0);
 			sprintf(tmpbuf, "echo %d > /home/root/d/si4463/speed_kbps", speed);
