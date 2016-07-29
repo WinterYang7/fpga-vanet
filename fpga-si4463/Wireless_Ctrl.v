@@ -1248,13 +1248,13 @@ begin
 				Main_Current_State=14;
 			end
 		end */
-		11://MODEM_RSSI_THRESH
+		11://MODEM_RSSI_CONTROL
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h20;
 			Main_Cmd_Data[23:16]=8'h01;
-			Main_Cmd_Data[31:24]=8'h4a;
-			Main_Cmd_Data[39:32]=`RSSI_THRESHOLD;
+			Main_Cmd_Data[31:24]=8'h4c;
+			Main_Cmd_Data[39:32]=8'h02;
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=5;
@@ -1292,7 +1292,7 @@ begin
 				Main_Current_State=16;
 			end
 		end
-		16:
+		16://PKT_FIELD_1_CRC_CONFIG
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
@@ -1456,13 +1456,13 @@ begin
 				Main_Current_State=32;
 			end
 		end
-		32: //循环校验 CRC
+		32: //循环校验  PKT_CRC_CONFIG
 		begin
 			Main_Cmd_Data[7:0]=8'h11;
 			Main_Cmd_Data[15:8]=8'h12;
 			Main_Cmd_Data[23:16]=8'h01;
 			Main_Cmd_Data[31:24]=8'h00;
-			Main_Cmd_Data[39:32]=8'h83;
+			Main_Cmd_Data[39:32]=8'h88;//32bit CRC CASTAGNOLI
 			Main_Cmd=1;
 			Main_start=1;
 			Main_Data_len=5;

@@ -325,8 +325,18 @@ static void update_device_with_new_config(int val)
 {
 	u16 len;
 	u8 tmp[2];
-	tmp[0] = global_modes_array[val][1];
-	tmp[1] = global_modes_array[val][0];
+	unsigned char (*modes_array) [SIZE_PER_MODE_BYTE];
+
+	if(global_si4463_status.freq == 433)
+		modes_array = global_modes_array_433;
+	else if(global_si4463_status.freq == 915)
+		modes_array = global_modes_array_915;
+	else {
+		printk(KERN_ALERT "update_device_with_new_config: Unsupported freq!\n");
+		return ;
+	}
+	tmp[0] = modes_array[val][1];
+	tmp[1] = modes_array[val][0];
 	memcpy(&len, tmp, 2);
 	printk(KERN_ALERT "Config len: %d\n", len);
 	struct spi_transfer	tcmd = {
@@ -335,7 +345,7 @@ static void update_device_with_new_config(int val)
 					.cs_change	= 0
 				};
 	struct spi_transfer	t = {
-				.tx_buf		= global_modes_array[val],
+				.tx_buf		= modes_array[val],
 				.len		= len+2,
 				.cs_change	= 0
 			};
@@ -720,14 +730,27 @@ static int si4463_start(struct net_device *dev)
 {
 //	u8 val;
 	int ret, irq;
-//	int saved_muxing = 0;
-//	int err,tmp;
-
 	u16 len;
 	u8 tmp[2];
-	tmp[0] = global_modes_array[DEFAULT_MODE][1];
-	tmp[1] = global_modes_array[DEFAULT_MODE][0];
+	unsigned char (*modes_array) [SIZE_PER_MODE_BYTE];
+//	int saved_muxing = 0;
+//	int err,tmp;
+	if(global_si4463_status.freq == 433)
+		modes_array = global_modes_array_433;
+	else if(global_si4463_status.freq == 915)
+		modes_array = global_modes_array_915;
+	else {
+		printk(KERN_ALERT "si4463_start: Unsupported freq!\n");
+		return -22;
+	}
+
+	tmp[0] = modes_array[DEFAULT_MODE][1];
+	tmp[1] = modes_array[DEFAULT_MODE][0];
 	memcpy(&len, tmp, 2);
+	if(len <= 0){
+		printk(KERN_ALERT "si4463_start: DEFAULT_MODE ERROR!\n");
+		return -22;
+	}
 	printk(KERN_ALERT "Config len: %d\n", len);
 	struct spi_transfer	tcmd = {
 					.tx_buf		= configcmd,
@@ -735,7 +758,7 @@ static int si4463_start(struct net_device *dev)
 					.cs_change	= 0
 				};
 	struct spi_transfer	t = {
-				.tx_buf		= global_modes_array[DEFAULT_MODE],
+				.tx_buf		= modes_array[DEFAULT_MODE],
 				.len		= len+2,
 				.cs_change	= 0
 			};
@@ -773,7 +796,7 @@ static int si4463_probe(struct spi_device *spi)
 	struct si4463 *devrec;
 
 //	struct pinctrl *pinctrl;
-	printk(KERN_ALERT "si4463: probe(). VERSION:%s, IRQ: %d\n", "20160721,12:22", spi->irq);
+	printk(KERN_ALERT "si4463: probe(). VERSION:%s, IRQ: %d\n", "20160728,13:49, C2A", spi->irq);
 
 	devrec = kzalloc(sizeof(struct si4463), GFP_KERNEL);
 	if (!devrec)
@@ -858,6 +881,12 @@ static int si4463_probe(struct spi_device *spi)
 	}
 	global_devrec->spi->irq = irq;
 
+	/**
+	 * initial global_si4463_status
+	 */
+	global_si4463_status.freq = DEFAULT_FREQ;
+	global_si4463_status.speed_kbps = DEFAULT_MODE * 100;
+	global_si4463_status.power_lvl = 0x7f;
 
 	return 0;
 
@@ -1008,21 +1037,40 @@ status_speed_write(struct file *filp, char __user *ubuf,
 	int i,j=1,k;
 	unsigned int val;
 	int ret;
+	unsigned char (*modes_array) [SIZE_PER_MODE_BYTE];
+
 	struct si4463_status *st = filp->private_data;
 
 	ret = kstrtouint_from_user(ubuf, cnt, 10, &val);
 	if (ret)
 		return ret;
 
+	if(global_si4463_status.freq == 433)
+		modes_array = global_modes_array_433;
+	else if(global_si4463_status.freq == 915)
+		modes_array = global_modes_array_915;
+	else {
+		printk(KERN_ALERT "status_speed_write: Unsupported freq!\n");
+		return ;
+	}
+
 	/*需要选择到最近的档位*/
+	if(val < 100){
+		printk(KERN_ALERT "Select speed: 50 kbps\n");
+		/* reboot device with new configuration! */
+		update_device_with_new_config(50);
+		st->speed_kbps=50;
+		return cnt;
+	}
+
 	val=val/100;
 	if(val > SIZE_OF_MODES)
 		val = SIZE_OF_MODES;
-	while(val>0 && global_modes_array[val][0]==0){
+	while(val>0 && modes_array[val][0]==0){
 		val--;
 	}
 	if(val==0){
-		while(val<=SIZE_OF_MODES && global_modes_array[val][0]==0){
+		while(val<=SIZE_OF_MODES && modes_array[val][0]==0){
 			val++;
 		}
 	}
@@ -1084,6 +1132,45 @@ status_rssi_last_pkt_read(struct file *filp, char __user *ubuf,
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
 }
 
+static int
+status_freq_read(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	char buf[32];
+	int r;
+	struct si4463_status *st = filp->private_data;
+	r = snprintf(buf, sizeof(buf), "%d\n", st->freq);
+	if (r > sizeof(buf))
+		r = sizeof(buf);
+	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
+}
+
+static int
+status_freq_write(struct file *filp, char __user *ubuf,
+		    size_t cnt, loff_t *ppos)
+{
+	int i,j=1,k;
+	unsigned int val;
+	int ret;
+	struct si4463_status *st = filp->private_data;
+
+	ret = kstrtouint_from_user(ubuf, cnt, 10, &val);
+	if (ret)
+		return ret;
+
+	/*需要选择到最近的freq*/
+	/*目前只支持433MHz和915MHz*/
+	if(val<=500)
+		st->freq = 433;
+	else
+		st->freq = 915;
+
+	printk(KERN_ALERT "Select freq: %d MHz\n", st->freq);
+	printk(KERN_ALERT "Please select a speed to reboot the FPGA!\n");
+	return cnt;
+
+}
+
 struct dentry *si4463_status_create_file(const char *name,
 				 umode_t mode,
 				 struct dentry *parent,
@@ -1115,6 +1202,14 @@ static const struct file_operations status_rssi_last_pkt = {
 	.open		= status_open_generic,
 	.read		= status_rssi_last_pkt_read,
 };
+
+static const struct file_operations status_freq = {
+	.open		= status_open_generic,
+	.read		= status_freq_read,
+	.write		= status_freq_write,
+};
+
+
 static int si4463_create_debugfs(void)
 {
 	struct dentry *d_status;
@@ -1132,6 +1227,9 @@ static int si4463_create_debugfs(void)
 
 	si4463_status_create_file("rssi_last_pkt", 0444, d_status,
 			&global_si4463_status, &status_rssi_last_pkt);
+
+	si4463_status_create_file("freq", 0644, d_status,
+			&global_si4463_status, &status_freq);
 
 }
 

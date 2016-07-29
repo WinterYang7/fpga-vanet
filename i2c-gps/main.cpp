@@ -29,6 +29,9 @@
 #define LOGFILE_BASE	"/home/root/"
 #define RF_LOGFILE		"rflog.txt"
 #define WIFI_LOGFILE	"wifilog.txt"
+#define SEND_LOGFILE	"sendlog.txt"
+
+char send_logfile_str[200];
 
 char mywifi_ip[30];
 char myrf_ip[30];
@@ -73,6 +76,35 @@ void* send_tester_loop(void * parm) {
 
 	int ret,len ;
 	char sendbuf[BUFSIZ];
+
+	/**
+	 * Send log file
+	 */
+#ifndef DEBUG
+	//wait for GPS validation
+	while(!m8_Gps_->datetime.valid){
+		printf("send_tester_loop: waiting for GPS validation\n");
+		usleep(500 * 1000);
+	}
+#endif
+	FILE* fp_send;
+	char tmp[100];
+	char logfile_name[200];
+	strcpy(logfile_name, LOGFILE_BASE);
+
+	sprintf(tmp, "%d%d%d-%d-%d-", m8_Gps_->datetime.year,
+			m8_Gps_->datetime.month, m8_Gps_->datetime.day,
+			m8_Gps_->datetime.hours, m8_Gps_->datetime.minutes);
+	strcat(logfile_name, tmp);
+	sprintf(tmp, SEND_LOGFILE);
+	strcat(logfile_name, tmp);
+	strcpy(send_logfile_str, logfile_name);
+	fp_send = fopen(logfile_name, "a+");
+	if(fp_send==NULL){
+		perror("*******LOG FILE OPEN ERROR********\n");
+		exit(0);
+	}
+	fprintf(fp_send, "/* Sub1G: Speed = %d, pwr_lvl = %d */\n", speed, pwr_lvl);
 
 	memset(&rf_send_addr, 0, sizeof(rf_send_addr));
 	rf_send_addr.sin_family = AF_INET;
@@ -148,32 +180,45 @@ void* send_tester_loop(void * parm) {
 	long long rf_sn = 1;
 	bool rest=0;
 	int pos = 0;
+	uint8_t hours, minutes, seconds;
+	uint16_t millis;
+	float latitude, longitude;
+	uint16_t speed;
+	struct  timeval localtime;
+
   	while(1){
 #ifndef DEBUG
 		if(m8_Gps_->datetime.valid){
 #endif
+			hours = m8_Gps_->datetime.hours;
+			minutes = m8_Gps_->datetime.minutes;
+			seconds = m8_Gps_->datetime.seconds;
+			millis = m8_Gps_->datetime.millis;
+			longitude = m8_Gps_->longitude;
+			latitude = m8_Gps_->latitude;
+			speed = m8_Gps_->speed;
 			pos = 0;
 			memcpy(sendbuf+pos, &sn, sizeof(long long));
 			pos += sizeof(long long);
-			memcpy(sendbuf+pos, &m8_Gps_->datetime.hours, 1);
+			memcpy(sendbuf+pos, &hours, 1);
 			pos += 1;
-			memcpy(sendbuf+pos, &m8_Gps_->datetime.minutes, 1);
+			memcpy(sendbuf+pos, &minutes, 1);
 			pos += 1;
-			memcpy(sendbuf+pos, &m8_Gps_->datetime.seconds, 1);
+			memcpy(sendbuf+pos, &seconds, 1);
 			pos += 1;
-			memcpy(sendbuf+pos, &m8_Gps_->datetime.millis, 2);
+			memcpy(sendbuf+pos, &millis, 2);
 			pos += 2;
-			memcpy(sendbuf+pos, &m8_Gps_->longitude, sizeof(float));
+			memcpy(sendbuf+pos, &longitude, sizeof(float));
 			pos += sizeof(float);
-			memcpy(sendbuf+pos, &m8_Gps_->latitude, sizeof(float));
+			memcpy(sendbuf+pos, &latitude, sizeof(float));
 			pos += sizeof(float);
-			memcpy(sendbuf+pos, &m8_Gps_->speed, 2);
+			memcpy(sendbuf+pos, &speed, 2);
 			pos += 2;
 
 			/**
 			 * sub1G sending
 			 */
-			if(!rest) {
+//			if(!rest) {
 				memcpy(sendbuf, &rf_sn, sizeof(long long));
 				rf_sn++;
 				if ((len = sendto(sock_rf, sendbuf, pos, 0,
@@ -181,10 +226,10 @@ void* send_tester_loop(void * parm) {
 					perror("sendto");
 					return NULL;
 				}
-				rest = 1;
-			} else {
-				rest = 0;
-			}
+//				rest = 1;
+//			} else {
+//				rest = 0;
+//			}
 
 			/**
 			 * 802.11p sending
@@ -200,6 +245,15 @@ void* send_tester_loop(void * parm) {
 				return NULL;
 			}
 			sn++;
+
+			gettimeofday(&localtime, NULL);
+			fprintf(fp_send, "SN@%lld ", sn);
+			fprintf(fp_send, "TIME@%d:%d:%d %u ", hours, minutes, seconds, millis);
+			fprintf(fp_send, "LTIME@%ld ", localtime.tv_sec);
+			fprintf(fp_send, "GPSCURR@%f,%f ", longitude, latitude);
+			fprintf(fp_send, "SPEED@%u\n", speed);
+			fflush(fp_send);
+
 			usleep(1000 * 100);
 #ifndef DEBUG
 		} else {
@@ -245,6 +299,9 @@ struct dist{
 	int rssi_wifi_lastpkt;
 	float pkt_loss_rate_rf_last20;
 	float pkt_loss_rate_wifi_last20;
+
+	char rflogStr[200];
+	char wifilogStr[200];
 	pthread_mutex_t lock;
 };
 void* print_distance_loop(void *parm) {
@@ -253,6 +310,9 @@ void* print_distance_loop(void *parm) {
 		pthread_testcancel();
 
 		system("clear");
+		printf("RF-sub1G LogFile: %s\n", dist_->rflogStr);
+		printf("802.11p  LogFile: %s\n", dist_->wifilogStr);
+		printf("Send LogFile: %s\n", send_logfile_str);
 		if(dist_->rf_valid){
 
 			printf("RF-sub1G distance: %f, rssi: %d, pkt_loss_rate_last20: %f\n",
@@ -310,11 +370,6 @@ void* recv_tester_loop(void * parm) {
 	pthread_t disttid;
 	struct dist* dist_;
 	dist_ = (struct dist*)malloc(sizeof(struct dist));
-	pthread_mutex_init(&dist_->lock, NULL);
-	dist_->m8_Gps = m8_Gps_;
-	dist_->rf_valid=0;
-	dist_->wifi_valid=0;
-	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
 
 #ifndef DEBUG
 	//wait for GPS validation
@@ -348,6 +403,7 @@ void* recv_tester_loop(void * parm) {
 	sprintf(tmp, WIFI_LOGFILE);
 	strcat(logfile_name, tmp);
 
+	strcpy(dist_->wifilogStr, logfile_name);
 	printf("LOG FILE: %s\n", logfile_name);
 	fp_wifi = fopen(logfile_name, "a+");
 	if(fp_wifi==NULL){
@@ -374,6 +430,7 @@ void* recv_tester_loop(void * parm) {
 	sprintf(tmp, RF_LOGFILE);
 	strcat(logfile_name, tmp);
 
+	strcpy(dist_->rflogStr, logfile_name);
 	printf("LOG FILE: %s\n", logfile_name);
 	fp_rf = fopen(logfile_name, "a+");
 	if(fp_rf==NULL){
@@ -381,6 +438,16 @@ void* recv_tester_loop(void * parm) {
 		exit(0);
 	}
 	fprintf(fp_rf, "/* Sub1G: Speed = %d, pwr_lvl = %d */\n", speed, pwr_lvl);
+
+	/**
+	 * Print LOOP
+	 */
+	pthread_mutex_init(&dist_->lock, NULL);
+	dist_->m8_Gps = m8_Gps_;
+	dist_->rf_valid=0;
+	dist_->wifi_valid=0;
+
+	pthread_create(&disttid, NULL, print_distance_loop, (void*)dist_);
 
 	/**
 	 * RSSI file of rfsub1G
@@ -455,6 +522,7 @@ void* recv_tester_loop(void * parm) {
 	memset(pktsn_rf_last20, -1, 20*sizeof(long long));
 	memset(pktsn_wifi_last20, -1, 20*sizeof(long long));
 
+	struct  timeval localtime;
 	/**
 	 * select LOOP
 	 */
@@ -516,12 +584,15 @@ void* recv_tester_loop(void * parm) {
 				fscanf(fp_rf_rssi, "%d", &rf_rssi);
 				fclose(fp_rf_rssi);
 
+				gettimeofday(&localtime, NULL);
+
 				fprintf(fp_rf, "SN@%lld ", sn);
 				fprintf(fp_rf, "TIME@%d:%d:%d %u ", hours, minutes, seconds, mills);
 				fprintf(fp_rf, "GPSPKT@%f,%f ", longitude, latitude);
 				fprintf(fp_rf, "GPSCURR@%f,%f ", m8_Gps_->longitude, m8_Gps_->latitude);
 				fprintf(fp_rf, "SPEED@%d ", speed);
-				fprintf(fp_rf, "RSSI@%d\n", rf_rssi);
+				fprintf(fp_rf, "RSSI@%d ", rf_rssi);
+				fprintf(fp_rf, "LTIME@%ld\n", localtime.tv_sec);
 				fflush(fp_rf);
 
 				pktsn_rf_last20[pkt_rf_p] = sn;
@@ -582,7 +653,8 @@ void* recv_tester_loop(void * parm) {
 				fprintf(fp_wifi, "GPSPKT@%f,%f ", longitude, latitude);
 				fprintf(fp_wifi, "GPSCURR@%f,%f ", m8_Gps_->longitude, m8_Gps_->latitude);
 				fprintf(fp_wifi, "SPEED@%u ", speed);
-				fprintf(fp_wifi, "SNR@%d\n", wifi_rssi);
+				fprintf(fp_wifi, "SNR@%d ", wifi_rssi);
+				fprintf(fp_wifi, "LTIME@%ld\n", localtime.tv_sec);
 				fflush(fp_wifi);
 
 				pktsn_wifi_last20[pkt_wifi_p] = sn;
