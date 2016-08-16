@@ -26,7 +26,7 @@
 #define RF_RSSI_LOC		"/home/root/d/si4463/rssi_last_pkt"
 #define WIFI_RSSI_LOC_BASE	"/home/root/d/ieee80211/phy0/netdev:wlp1s0/stations/"
 #define WIFI_RSSI_LOC_TAIL	"/last_signal"
-#define LOGFILE_BASE	"/home/root/"
+#define LOGFILE_BASE	"/media/realroot/"
 #define RF_LOGFILE		"rflog.txt"
 #define WIFI_LOGFILE	"wifilog.txt"
 #define SEND_LOGFILE	"sendlog.txt"
@@ -677,7 +677,7 @@ void* recv_tester_loop(void * parm) {
 void* gpsdata_decode_loop(void * parm) {
 	Ublox *M8_Gps_ = (Ublox*)parm;
 	i2cgps gps;
-
+	bool ret;
 	printf("%d\n",gps.write_gps_config(gps_config_change, 40));
 
 	int totalBytes, bytes;
@@ -691,7 +691,11 @@ void* gpsdata_decode_loop(void * parm) {
 		    }
 		    for (int i = 0; i < bytes; i++) {
 		      if((gps.gpsdata_buf())[i]!=0xff)
-		        M8_Gps_->encode((char)(gps.gpsdata_buf())[i]);
+		        ret = M8_Gps_->encode((char)(gps.gpsdata_buf())[i]);
+		        if (ret == false) {
+		        	printf("gpsdata_decode_loop: encode false!\n");
+		        	exit(-1);
+		        }
 		    }
 		    totalBytes -= bytes;
 		}
