@@ -85,7 +85,8 @@ bool Ublox::process_buf()
 
     if(strncmp(buf, "$GPGSV", 6) == 0)
     {
-        read_gsv();
+//        read_gsv();//Bug exist!!
+
     }
 
     if(strncmp(buf, "$GNRMC", 6) == 0)

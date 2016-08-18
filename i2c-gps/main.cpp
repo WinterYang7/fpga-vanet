@@ -853,7 +853,30 @@ int main(int argc, char **argv){
 	printf("%s\n", tmpbuf);
 	system(tmpbuf);
 
+	/**
+	 * reload FPGA
+	 */
+	system("echo 14 > /sys/class/gpio/export");
+	system("echo 62 > /sys/class/gpio/export");
+	system("echo 76 > /sys/class/gpio/export");
+	system("echo 64 > /sys/class/gpio/export");
+
+	system("echo 0 > /sys/class/gpio/gpio76/value");
+	system("echo 0 > /sys/class/gpio/gpio64/value");
+	system("echo low > /sys/class/gpio/gpio14/direction");
+	system("echo low > /sys/class/gpio/gpio62/direction");
+	system("echo 0 > /sys/class/gpio/gpio14/value");
+	system("echo 0 > /sys/class/gpio/gpio62/value");
+	usleep(1000);
+	system("echo 1 > /sys/class/gpio/gpio14/value");
+	system("echo 1 > /sys/class/gpio/gpio62/value");
+	for(int kk = 9; kk > 0; kk--){
+		sleep(1);
+		printf("Waiting for FPGA reloading! remains %d s\n", kk);
+	}
+
 	system("rmmod spidev");
+	system("rmmod si4463_fpga.ko");
 	system("insmod /home/root/si4463_fpga.ko");
 	system("iptables -I OUTPUT -d 8.8.0.0/16 -j DROP");
 	system("iptables -A OUTPUT -p udp --dport 1534 -j DROP");
