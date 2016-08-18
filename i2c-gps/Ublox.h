@@ -65,7 +65,7 @@ public:
 
     _fixtype fixtype; //0 = no fix, 1 = satellite only, 2 = differential fix
     int fixtype_age;
-    _fix fix;
+    _fix fix; //1=No Fix, 2=2D Fix, 3=3D Fix
     int fix_age;
 
     float pdop, hdop, vdop; //positional, horizontal and vertical dilution of precision

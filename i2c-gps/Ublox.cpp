@@ -1,5 +1,6 @@
 #include "Ublox.h"
 #include <sys/time.h>
+
 Ublox::Tokeniser::Tokeniser(char* _str, char _token)
 {
     str = _str;
@@ -66,6 +67,7 @@ bool Ublox::process_buf()
 {
     if(!check_checksum()) //if checksum is bad
     {
+//    	printf("Ublox::encode check_checksum error!\n");
         return false; //return
     }
 
@@ -153,7 +155,7 @@ void Ublox::read_gga()
         }
         break;
         case 6:
-        {
+        {	//0=No Fix, 1=Autonomous GNSS Fix, 2=Differential GNSS Fix, 6=Estimated/Dead Reckoning Fix
             fixtype = _fixtype(atoi(token));
         }
         break;
@@ -289,7 +291,7 @@ void Ublox::read_rmc()
         break;
         case 2:
         {
-            if(token[0] == 'A')
+            if(token[0] == 'A' && this->fix == FIX_3D)
                 datetime.valid = true;
             if(token[0] == 'V')
                 datetime.valid = false;
@@ -390,9 +392,9 @@ bool Ublox::check_checksum()
 
         for (uint8_t i=1; i < (strlen(buf)-5); i++)
             sum ^= buf[i];
-        if (sum != 0)
-            return false;
-
+        if (sum != 0) {
+        	return false;
+        }
         return true;
     }
     return false;
