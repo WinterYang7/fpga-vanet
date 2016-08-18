@@ -1,5 +1,6 @@
 #include "Ublox.h"
 #include <sys/time.h>
+#include <stdio.h>
 
 Ublox::Tokeniser::Tokeniser(char* _str, char _token)
 {
@@ -67,7 +68,7 @@ bool Ublox::process_buf()
 {
     if(!check_checksum()) //if checksum is bad
     {
-//    	printf("Ublox::encode check_checksum error!\n");
+    	printf("Ublox::encode check_checksum error!\n");
         return false; //return
     }
 
@@ -291,7 +292,7 @@ void Ublox::read_rmc()
         break;
         case 2:
         {
-            if(token[0] == 'A' && this->fix == FIX_3D)
+            if(token[0] == 'A')
                 datetime.valid = true;
             if(token[0] == 'V')
                 datetime.valid = false;

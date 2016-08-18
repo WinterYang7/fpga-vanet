@@ -1,4 +1,5 @@
 #include "i2c-gps.h"
+#include "serial-gps.h"
 #include "Ublox.h"
 
 #include <stdio.h>
@@ -68,6 +69,7 @@ bool changeGpsplatformFlag = 0;
 void* gpsdata_decode_loop(void * parm) {
 	Ublox *M8_Gps_ = (Ublox*)parm;
 	i2cgps gps;
+	serialGps gps_serial;
 	bool ret;
 
 	if(changeGpsplatformFlag) {
@@ -78,25 +80,19 @@ void* gpsdata_decode_loop(void * parm) {
 
 	printf("%d\n",gps.write_gps_config(gps_config_change, sizeof(gps_config_change)));
 
-	int totalBytes, bytes;
+	int bytesread;
 	while(1) {
-		totalBytes = gps.get_byte_available();
-		while (totalBytes > 0) {
-		    bytes = gps.get_gps_data2buf(totalBytes);
-		    if(bytes < 0){
-		    	printf("gpsdata_decode_loop: bytes<0!\n");
-		    	exit(0);
-		    }
-		    for (int i = 0; i < bytes; i++) {
-		      if((gps.gpsdata_buf())[i]!=0xff)
-		        ret = M8_Gps_->encode((char)(gps.gpsdata_buf())[i]);
-//		        if (ret == false) {
-//		        	printf("gpsdata_decode_loop: encode false!\n");
-//		        	exit(-1);
-//		        }
-		    }
-		    totalBytes -= bytes;
+		bytesread = gps_serial.get_gps_data2buf();
+	    if(bytesread < 0){
+	    	printf("gpsdata_decode_loop: bytes<0!\n");
+	    	exit(0);
+	    }
+
+		for (int i = 0; i < bytesread; i++) {
+			M8_Gps_->encode((char)(gps_serial.gpsdata_buf())[i]);
+
 		}
+
 		pthread_testcancel();
 	}
 }
