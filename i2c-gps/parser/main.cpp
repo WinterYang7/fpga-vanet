@@ -9,8 +9,9 @@
 #include <algorithm>
 using namespace std;
 
-#define AVER_PKT_NUM 100.0
+#define AVER_PKT_NUM 50.0
 #define AVER_DISTANCE	1
+#define DISTANCE_BARRIER 1000
 
 struct elements_perline{
 	long long sn;
@@ -57,19 +58,66 @@ double get_distance(double lat1, double lng1, double lat2, double lng2)
     return dst*1000;
 }
 
+/**
+ * 利用k-order Bursty Degree计算时间相关性(2010-mobicom-toward)
+ */
+#define DISTANCE_BARRI_UP 600
+#define DISTANCE_BARRI_DOWN 0
+double get_korder_Bursty_Degree_at_x(int x,int n, map<long, struct elements_time> *obj){
+	double r0 = 0.0;
+	double t0, t1;
+	map<long, struct elements_time>::iterator i0,i1;
+
+	for(int t=x; t<=n; t++){
+		double t0 = (obj->find(t)->second).pdr;
+		double t1 = (obj->find(t-x)->second).pdr;
+
+		i0 = obj->find(t);
+		i1 = obj->find(t-x);
+		if(i0 == obj->end())
+			t0 = 0.0;
+		else if(i0->second.distance < DISTANCE_BARRI_DOWN || i0->second.distance > DISTANCE_BARRI_UP) {
+			continue;
+		} else
+			t0 = i0->second.pdr;
+		if(i1 == obj->end())
+			t1 = 0.0;
+		else if(i0->second.distance < DISTANCE_BARRI_DOWN || i0->second.distance > DISTANCE_BARRI_UP) {
+			continue;
+		} else
+			t1 = i0->second.pdr;
+
+
+		r0 += pow(t0 - t1, 2);
+		if(r0>0){
+			double xxx=1;
+		}
+	}
+	r0 = (1/(2*((double)n-(double)x))) * r0;
+	r0 = sqrt(r0);
+	return r0;
+}
+
 int main(int argc,char **argv)
 {
 	vector<struct elements_perline> data_vec;
 	vector<int> gps_loss_vec;
+	vector<int> pir_vec;
 	map<double, int> distance_rssi_map;
 	map<double, float> distance_pdr_map;
 	map<double, int> distance_count_map;
+	map<double, vector<float> > distance_pdrvec_map;
+	map<double, float> speed_pdr_map_1;
+	map<double, float> speed_pdr_map_2;
+	map<double, int> speed_count_map_1;
+	map<double, int> speed_count_map_2;
 
 	map<long, struct elements_time> time_rpd_map;
 
 	char filename[200];
 	char StrLine[1024];
 	char* tmp[20];
+	long beginTime = -1;
 	//int sn;
 	//double lati_pkt, longi_pkt, lati_curr, longi_curr, distance;
 	//int speed;
@@ -79,150 +127,213 @@ int main(int argc,char **argv)
 		tmp[i] = (char*)malloc(200);
 	}
 
-	strcpy(filename, argv[1]);//"/home/wu/Desktop/workspace/i2cpgsParser/0819/16819-1-59-rflog.txt");//
+	strcpy(filename, "/home/wu/Desktop/workspace/i2cpgsParser/0819/highway-all-rf.txt");//argv[1]);//
 	FILE *fp;
 	if((fp = fopen(filename,"r")) == NULL)
 	{
 		cout<<"error!"<<endl;
 		return -1;
 	}
-	//去掉第一行的header
-	fgets(StrLine, 1024, fp);
-	fgets(StrLine, 1024, fp);
-	fgets(StrLine, 1024, fp);
 
 	while (!feof(fp))
 	{
-		int i = 0;
-		struct elements_perline ele_;
-		struct elements_time ele_time_;
-		fgets(StrLine,1024,fp);  //读取一行
-		char* token = strtok( StrLine, " ");
-		while( token != NULL )
+		bool newfile = false;
+		//去掉第一行的header
+		fgets(StrLine, 1024, fp);
+		fgets(StrLine, 1024, fp);
+		fgets(StrLine, 1024, fp);
+
+		while (!feof(fp))
 		{
-			strcpy(tmp[i++], token);
-			/* While there are tokens in "string" */
-			//printf( "%s ", token );
-			/* Get next token: */
+			int i = 0;
+			struct elements_perline ele_;
+			struct elements_time ele_time_;
+			fgets(StrLine,1024,fp);  //读取一行
+
+			if(strstr(StrLine, "/* Sub1G: Speed = ")){
+				newfile = true;
+				break;
+			}
+
+			char* token = strtok( StrLine, " ");
+			while( token != NULL )
+			{
+				strcpy(tmp[i++], token);
+				/* While there are tokens in "string" */
+				//printf( "%s ", token );
+				/* Get next token: */
+				token = strtok( NULL, " ");
+			}
+			if(i<6)
+				break;
+			ele_.sn = atoi(strchr(tmp[0], '@')+1);
+			token = strtok(strchr(tmp[3], '@')+1, ",");
+			ele_.longi_pkt = atof(token);
 			token = strtok( NULL, " ");
+			ele_.lati_pkt = atof(token);
+
+			token = strtok(strchr(tmp[4], '@')+1, ",");
+			ele_.longi_curr = atof(token);
+			token = strtok( NULL, " ");
+			ele_.lati_curr = atof(token);
+
+			ele_.speed = atoi(strchr(tmp[5], '@')+1);
+			ele_.rssi = atoi(strchr(tmp[6], '@')+1);
+
+			ele_.ltime = atol(strchr(tmp[7], '@')+1);
+
+			ele_.distance = get_distance(ele_.lati_pkt, ele_.longi_pkt, ele_.lati_curr, ele_.longi_curr);
+
+			data_vec.push_back(ele_);
+
 		}
-		if(i<6)
-			break;
-		ele_.sn = atoi(strchr(tmp[0], '@')+1);
-		token = strtok(strchr(tmp[3], '@')+1, ",");
-		ele_.longi_pkt = atof(token);
-		token = strtok( NULL, " ");
-		ele_.lati_pkt = atof(token);
+		double last_distance = -1;
+		long long last_sn = -1;
 
-		token = strtok(strchr(tmp[4], '@')+1, ",");
-		ele_.longi_curr = atof(token);
-		token = strtok( NULL, " ");
-		ele_.lati_curr = atof(token);
+		for (vector<struct elements_perline>::iterator iter = data_vec.begin(); iter != data_vec.end(); ++iter)
+		{
+			double round_distance = round((*iter).distance);
+			if(last_distance != -1) {
+				if(fabs(last_distance - round_distance) > 2000) {
+					gps_loss_vec.push_back((*iter).ltime);
+					continue;
+				}
+				last_distance = round_distance;
+			} else {
+				last_distance = round_distance;
+			}
 
-		ele_.speed = atoi(strchr(tmp[5], '@')+1);
-		ele_.rssi = atoi(strchr(tmp[6], '@')+1);
+			//距离与RSSI的关系
+			map<double, int>::iterator t1 = distance_rssi_map.find(round_distance);
+			if(t1 != distance_rssi_map.end()) {
+				distance_rssi_map[round_distance] = (distance_rssi_map[round_distance] + (*iter).rssi)/2;
+				//distance_count_map[round_distance]++;
+			}
+			else {
+				distance_rssi_map[round_distance] = (*iter).rssi;
+				//distance_count_map[round_distance] = 1;
+			}
+			//距离与pdr的关系，每项的pdr由该项前N个包算出
+			//先计算前20个包的pdr
+			float pdr;
 
-		ele_.ltime = atol(strchr(tmp[7], '@')+1);
+			vector<struct elements_perline>::iterator iter_pdr = iter;
 
-		ele_.distance = get_distance(ele_.lati_pkt, ele_.longi_pkt, ele_.lati_curr, ele_.longi_curr);
+			if(iter_pdr == data_vec.begin())
+				pdr = 1.0;
+			else
+			{
+				int start = (*iter_pdr).sn;
+				int end = start - AVER_PKT_NUM;
+				float pkt_count = 0.0;
+				int i=0;
+				do
+				{
+					if((*iter_pdr).sn > end)
+						pkt_count++;
+					iter_pdr--;
+					i++;
+				} while(iter_pdr!=data_vec.begin() && i < AVER_PKT_NUM);
+				if(i < AVER_PKT_NUM)
+					continue;//前20个包不计入pdr
+				pdr = pkt_count/AVER_PKT_NUM;
+			}
 
-		data_vec.push_back(ele_);
+//			if(round_distance > 500 && pdr > 0.3) continue;
 
-	}
-	int debug_size = data_vec.size();
-	double last_distance = -1;
-	long beginTime = -1;
-	for (vector<struct elements_perline>::iterator iter = data_vec.begin(); iter != data_vec.end(); ++iter)
-	{
-		double round_distance = round((*iter).distance);
-		if(last_distance != -1) {
-			if(fabs(last_distance - round_distance) > 2000) {
-				gps_loss_vec.push_back((*iter).ltime);
+			map<double, float>::iterator t2 = distance_pdr_map.find(round_distance);
+			if(t2 != distance_pdr_map.end()){
+				distance_pdr_map[round_distance] = (distance_pdr_map[round_distance] + pdr)/2.0;
+				distance_count_map[round_distance]++;
+			}
+			else{
+				distance_pdr_map[round_distance] = pdr;
+				distance_count_map[round_distance] = 1;
+			}
+
+//			map<double, vector<float>>::iterator t21 = distance_pdrvec_map.find(round_distance);
+			/**
+			 * 列出该距离下的pdr（不做平均）
+			 */
+			distance_pdrvec_map[round_distance].push_back(pdr);
+
+			/**
+			 * 速度和PDR的关系,分为两档，大于，小于
+			 */
+			double round_speed_ms = round(((double)(*iter).speed)/100.0 * 0.2777778);
+
+			map<double, float>::iterator t21;
+			if (round_distance < DISTANCE_BARRIER) {
+				t21 = speed_pdr_map_1.find(round_speed_ms);
+				if(t21 != speed_pdr_map_1.end()){
+					speed_pdr_map_1[round_speed_ms] = (speed_pdr_map_1[round_speed_ms] + pdr)/2.0;
+				}
+				else{
+					speed_pdr_map_1[round_speed_ms] = pdr;
+				}
+				speed_count_map_1[round_speed_ms]++;
+			} else {
+				t21 = speed_pdr_map_2.find(round_speed_ms);
+				if(t21 != speed_pdr_map_2.end()){
+					speed_pdr_map_2[round_speed_ms] = (speed_pdr_map_2[round_speed_ms] + pdr)/2.0;
+				}
+				else{
+					speed_pdr_map_2[round_speed_ms] = pdr;
+				}
+				speed_count_map_2[round_speed_ms]++;
+			}
+			/**
+			 * 时间和pdr，场强，距离的关系
+			 * map<long, int> time_rssi_map;
+			 * map<long, float> time_pdr_map;
+			 * map<long, double> time_distance_map;
+			 */
+			long ltime = (*iter).ltime;
+
+			if(beginTime == -1){
+				beginTime = ltime;
+			}
+			ltime -= beginTime;
+
+			map<long, struct elements_time>::iterator t = time_rpd_map.find(ltime);
+
+			if(t != time_rpd_map.end()) {
+				time_rpd_map[ltime].rssi = (time_rpd_map[ltime].rssi + (*iter).rssi)/2;
+				time_rpd_map[ltime].pdr = (time_rpd_map[ltime].pdr + pdr)/2.0;
+				time_rpd_map[ltime].distance = (time_rpd_map[ltime].distance + round_distance)/2.0;
+			}
+			else {
+				time_rpd_map[ltime].rssi = (*iter).rssi;
+				time_rpd_map[ltime].pdr = pdr;
+				time_rpd_map[ltime].distance = round_distance;
+			}
+
+			/**
+			 * 计算PIR
+			 */
+#define PIR_UPER_BARRI 400
+#define PIR_DOWN_BARRI 300
+			if(round_distance > PIR_UPER_BARRI || round_distance < PIR_DOWN_BARRI) {
+				last_sn = (*iter).sn;
 				continue;
 			}
-			last_distance = round_distance;
-		} else {
-			last_distance = round_distance;
-		}
 
-		//距离与RSSI的关系
-		map<double, int>::iterator t1 = distance_rssi_map.find(round_distance);
-		if(t1 != distance_rssi_map.end()) {
-			distance_rssi_map[round_distance] = (distance_rssi_map[round_distance] + (*iter).rssi)/2;
-			distance_count_map[round_distance]++;
-		}
-		else {
-			distance_rssi_map[round_distance] = (*iter).rssi;
-			distance_count_map[round_distance] = 1;
-		}
-		//距离与pdr的关系，每项的pdr由该项前N个包算出
-		//先计算前20个包的pdr
-		float pdr;
+			if(last_sn == -1)
+				last_sn = (*iter).sn;
+			else {
+				pir_vec.push_back(((*iter).sn - last_sn)*100);
+				if((*iter).sn - last_sn)*100 > 80000) {
+					printf("ssss");
+				}
+				last_sn = (*iter).sn;
+			}
 
-		vector<struct elements_perline>::iterator iter_pdr = iter;
-
-		if(iter_pdr == data_vec.begin())
-			pdr = 1.0;
-		else
-		{
-			int start = (*iter_pdr).sn;
-			int end = start - AVER_PKT_NUM;
-			float pkt_count = 0.0;
-			int i=0;
-			do
-			{
-				if((*iter_pdr).sn > end)
-					pkt_count++;
-				iter_pdr--;
-				i++;
-			} while(iter_pdr!=data_vec.begin() && i < AVER_PKT_NUM);
-			if(i < AVER_PKT_NUM)
-				continue;//前20个包不计入pdr
-			pdr = pkt_count/AVER_PKT_NUM;
 		}
-
-		map<double, float>::iterator t2 = distance_pdr_map.find(round_distance);
-		if(t2 != distance_pdr_map.end()){
-			distance_pdr_map[round_distance] = (distance_pdr_map[round_distance] + pdr)/2.0;
-			distance_count_map[round_distance]++;
-		}
-		else{
-			distance_pdr_map[round_distance] = pdr;
-			distance_count_map[round_distance] = 1;
-		}
-
-		/**
-		 * 时间和pdr，场强，距离的关系
-		 * map<long, int> time_rssi_map;
-		 * map<long, float> time_pdr_map;
-		 * map<long, double> time_distance_map;
-		 */
-		long ltime = (*iter).ltime;
-
-		if(beginTime == -1){
-			beginTime = ltime;
-		}
-		ltime -= beginTime;
-
-		map<long, struct elements_time>::iterator t = time_rpd_map.find(ltime);
-
-		if(ltime == 669) {
-			debug_size = time_rpd_map.size();
-		}
-		if(t != time_rpd_map.end()) {
-			time_rpd_map[ltime].rssi = (time_rpd_map[ltime].rssi + (*iter).rssi)/2;
-			time_rpd_map[ltime].pdr = (time_rpd_map[ltime].pdr + pdr)/2.0;
-			time_rpd_map[ltime].distance = (time_rpd_map[ltime].distance + round_distance)/2.0;
-		}
-		else {
-			time_rpd_map[ltime].rssi = (*iter).rssi;
-			time_rpd_map[ltime].pdr = pdr;
-			time_rpd_map[ltime].distance = round_distance;
-		}
-
 	}
 
-	debug_size = gps_loss_vec.size();
+	/**
+	 * 上面这个循环走完了以后，没有收到数据的点没有得到计算，此时需要进行补充。
+	 */
 
 	map<double, int>::iterator iter_map_rssi;
 	map<double, float>::iterator iter_map_pdr;
@@ -250,21 +361,70 @@ int main(int argc,char **argv)
 	}
 	cout<<"距离-PDR\n"<<endl;
 	float sum=0, distance_sum=0, count=0;
+	long distance_count=0;
 	for(iter_map_pdr = distance_pdr_map.begin(); iter_map_pdr != distance_pdr_map.end(); iter_map_pdr++)
 	{
 		sum += iter_map_pdr->second;
 		distance_sum += iter_map_pdr->first;
+		distance_count += distance_count_map[iter_map_pdr->first];
 		count++;
 		if(count == AVER_DISTANCE) {
-			printf("%f, %f\n", distance_sum/AVER_DISTANCE, sum/AVER_DISTANCE);
-			fprintf(fp, "%f %f\n", distance_sum/AVER_DISTANCE, sum/AVER_DISTANCE);
+			printf("%f, %f %ld\n", distance_sum/AVER_DISTANCE, sum/AVER_DISTANCE, distance_count/AVER_DISTANCE);
+			fprintf(fp, "%f %f %ld\n", distance_sum/AVER_DISTANCE, sum/AVER_DISTANCE, distance_count/AVER_DISTANCE);
 			sum = 0;
 			distance_sum = 0;
+			distance_count = 0;
 			count = 0;
 		}
-
+	}
+	//distance_pdrvec_map
+	fclose(fp);
+	if((fp = fopen("distance-PDR_Vector.txt","w+")) == NULL)
+	{
+		cout<<"error!"<<endl;
+		return -1;
 	}
 
+	for(map<double, vector<float> >::iterator iter_tmp = distance_pdrvec_map.begin(); iter_tmp != distance_pdrvec_map.end(); iter_tmp++)
+	{
+		fprintf(fp, "%f ", iter_tmp->first);
+		vector<float>::iterator iter_vec;
+		for(iter_vec = (iter_tmp->second).begin(); iter_vec != (iter_tmp->second).end(); iter_vec++)
+		{
+			fprintf(fp, "%f ", *iter_vec);
+		}
+		fprintf(fp, "\n");
+	}
+
+
+	/**
+	 * speed and PDR
+	 */
+	fclose(fp);
+	if((fp = fopen("speed-PDR_1.txt","w+")) == NULL)
+	{
+		cout<<"error!"<<endl;
+		return -1;
+	}
+	for(map<double, float>::iterator iter_tmp = speed_pdr_map_1.begin(); iter_tmp != speed_pdr_map_1.end(); iter_tmp++)
+	{
+		fprintf(fp, "%f %f %d\n", iter_tmp->first, iter_tmp->second, speed_count_map_1[iter_tmp->first]);
+	}
+
+	fclose(fp);
+	if((fp = fopen("speed-PDR_2.txt","w+")) == NULL)
+	{
+		cout<<"error!"<<endl;
+		return -1;
+	}
+	for(map<double, float>::iterator iter_tmp = speed_pdr_map_2.begin(); iter_tmp != speed_pdr_map_2.end(); iter_tmp++)
+	{
+		fprintf(fp, "%f %f %d\n", iter_tmp->first, iter_tmp->second, speed_count_map_2[iter_tmp->first]);
+	}
+
+	/**
+	 * Time - distance -rssi - PDR
+	 */
 	cout<<"Time-distance-rssi-PDR\n"<<endl;
 	fclose(fp);
 	if((fp = fopen("time-distance-rssi-pdr.txt","w+")) == NULL)
@@ -287,6 +447,40 @@ int main(int argc,char **argv)
 			}
 		}
 	}
+
+	/**
+	 * PIR
+	 */
+	fclose(fp);
+	if((fp = fopen("PIR.txt","w+")) == NULL)
+	{
+		cout<<"error!"<<endl;
+		return -1;
+	}
+	vector<int>::iterator iter_tmp = pir_vec.begin();
+	iter_tmp++;
+	for( ; iter_tmp != pir_vec.end(); iter_tmp++){
+		if(*iter_tmp>0)
+			fprintf(fp, "%d\n", *iter_tmp);
+	}
+
+	/**
+	 * 计算k-order Bursty Degree
+	 * double get_korder_Bursty_Degree_at_x(int x,int n, map<long, struct elements_time> *obj){
+	 */
+	fclose(fp);
+	if((fp = fopen("k-order.txt","w+")) == NULL)
+	{
+		cout<<"error!"<<endl;
+		return -1;
+	}
+	for(int k=1; k<200; k++){
+		double r0 = get_korder_Bursty_Degree_at_x(k, time_rpd_map.rbegin()->first, &time_rpd_map);
+		fprintf(fp, "%d %f\n", k, r0);
+	}
+
+
+
 /*	for(t = time_rpd_map.begin(); t != time_rpd_map.end(); t++){
 		printf("%ld %f %d %f\n", t->first, (t->second).distance, (t->second).rssi, (t->second).pdr);
 		fprintf(fp, "%ld %f %d %f\n", t->first, (t->second).distance/5, abs((t->second).rssi/2), (t->second).pdr*100);
