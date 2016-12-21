@@ -15,8 +15,11 @@
 #include <assert.h>
 #include <vector>
 #include <list>
+#include <map>
 #include <string>
+#include <utility>
 #include <algorithm>
+
 
 using namespace boost;
 using namespace rapidjson;
@@ -51,6 +54,7 @@ typedef boost::bimap< std::string, int > bm_type;
 typedef bm_type::value_type position;
 
 std::vector<Node> nodes_;
+std::map<int,float> roads_map_;
 std::vector<Road> roads_;
 std::vector<Edge> edges_; // XXX: an edge describes a road between two nodes.
 Map* map_;
@@ -102,6 +106,7 @@ int main() {
 		//Road
 		Road r((*itr)["properties"]["osm_id"].GetInt(), 0);//TYPE UNDEFINED!!!!
 		roads_.push_back(r);
+		roads_map_.insert(std::make_pair((*itr)["properties"]["osm_id"].GetInt(), 0.0));//TYPE UNDEFINED!!!!
 		for (Value::ConstValueIterator coitr = (*itr)["geometry"]["coordinates"].Begin(); coitr != (*itr)["geometry"]["coordinates"].End(); ++coitr)
 		{//Road's coordinates combination
 			assert((*coitr).IsArray());
@@ -205,20 +210,35 @@ int out_degree_from_id(std::string node_id, Map & g, vertex_descriptor & u)
     return -1;
 }
 
-void remove_vertex_from_graph(vertex_descriptor u, Map & g)
+void remove_vertex_from_graph(std::string node_id, Map & g)
 {
+	bm_type::left_iterator it = coordinate_id_bimap.left.find(node_id);
+	assert(it != coordinate_id_bimap.left.end());
+	vertex_descriptor u = vertex(it->second, g);
 	clear_vertex(u, g);
 	remove_vertex(u, g);
+	//Update bimap
+	coordinate_id_bimap.left.erase(node_id);
+	for(int pos = it->second + 1; pos < node_count_bimap; pos++) {
+	    bm_type::right_iterator it = coordinate_id_bimap.right.find(pos);
+		assert(it != coordinate_id_bimap.right.end());
+	    bool successful_modify = coordinate_id_bimap.right.modify_key( it, boost::bimaps::_key = (pos-1) );
+	    assert(successful_modify);
+	}
+	node_count_bimap--;
+	return;
 }
 /**
  * Remove the data of a tile from the map list.
  * "Document" is a class from Rapidjson. The tile data need to be filtered first.
  */
-int remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold, int n_hold, Map & g)
+void remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold, int n_hold, Map & g)
 {
 	//1. Import road id set from data_hold.
 	std::vector<int> road_id_set;
 	std::vector<int> remove_road_id_set;
+	char coordStr[30];
+
 	for(int i=0; i< n_hold; i++) {
 		for (Value::ConstValueIterator itr = (*data_hold[i]).Begin(); itr != (*data_hold[i]).End(); ++itr) {
 			road_id_set.push_back((*itr)["properties"]["osm_id"].GetInt());
@@ -247,9 +267,6 @@ int remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold
 			for (Value::ConstValueIterator coitr = (*itr)["geometry"]["coordinates"].Begin(); coitr != (*itr)["geometry"]["coordinates"].End(); ++coitr)
 			{//Road's coordinates combination
 				//get ID
-//				double s_d = (*coitr)[0].GetDouble();
-//				int sid = (s_d - (int)s_d) * GPS_DECIMALS;
-				char coordStr[30];
 				make_coordinate_string(coordStr, (*coitr)[0].GetDouble(), (*coitr)[1].GetDouble() );
 				int degree;
 				vertex_descriptor u;
@@ -257,7 +274,7 @@ int remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold
 				{
 					degree = out_degree_from_id(coordStr, g, u);
 					if(degree > 1) {
-						remove_vertex_from_graph(u, g);
+						remove_vertex_from_graph(coordStr, g);
 					} else if (degree < 0){
 						printf("out_degree_from_id fatal error !!\n");
 						exit(0);
@@ -265,7 +282,7 @@ int remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold
 				} else {
 					degree = out_degree_from_id(coordStr, g, u);
 					if(degree > 2) {
-						remove_vertex_from_graph(u, g);
+						remove_vertex_from_graph(coordStr, g);
 					} else if (degree < 0){
 						printf("out_degree_from_id fatal error !!\n");
 						exit(0);
@@ -273,6 +290,72 @@ int remove_data_from_list(Document ** data_del, int n_del, Document ** data_hold
 				}
 			}
 
+			//Remove road form roads_map_
+			roads_map_.erase(id);
+
 		}
+	}
+}
+
+void add_data_to_list(Document ** data_add, int n_add, Map & g)
+{
+	/**
+	 * Find out roads need to be removed, and then remove it!!
+	 */
+	double x,y;
+	char coordStr1[30];
+	char coordStr2[30];
+	int sid,eid;
+	for(int i=0; i< n_add; i++) {
+		for (Value::ConstValueIterator itr = (*data_add[i]).Begin(); itr != (*data_add[i]).End(); ++itr) {
+			int id = (*itr)["properties"]["osm_id"].GetInt();
+			std::map<int, float>::iterator rit = roads_map_.find(id);
+			if(rit != roads_map_.end())
+				continue; //this road is duplicated
+
+			//Update roads_map_
+			roads_map_.insert(std::make_pair(id, 0.0)); //TYPE UNDEFINED!!!!
+
+			for (Value::ConstValueIterator coitr = (*itr)["geometry"]["coordinates"].Begin(); coitr != (*itr)["geometry"]["coordinates"].End(); ++coitr)
+			{//Road's coordinates combination
+				assert((*coitr).IsArray());
+
+				//Start node:
+				x = (*coitr)[0].GetDouble();
+				y = (*coitr)[1].GetDouble();
+				make_coordinate_string(coordStr1, x, y);
+
+				bm_type::left_iterator it = coordinate_id_bimap.left.find(coordStr1);
+				if(it == coordinate_id_bimap.left.end()) {
+					//push into bimap
+					coordinate_id_bimap.insert(position(coordStr1,  node_count_bimap));
+					sid = node_count_bimap++;
+				} else {
+					sid = it->second;
+				}
+
+				if(++coitr == (*itr)["geometry"]["coordinates"].End())
+					break;
+
+				//End node:
+				x = (*coitr)[0].GetDouble();
+				y = (*coitr)[1].GetDouble();
+				make_coordinate_string(coordStr2, x, y);
+				it = coordinate_id_bimap.left.find(coordStr2);
+				if(it == coordinate_id_bimap.left.end()) {
+					//push into bimap
+					coordinate_id_bimap.insert(position(coordStr2,  node_count_bimap));
+					eid = node_count_bimap++;
+				} else {
+					eid = it->second;
+				}
+
+				//Add an edge
+				add_edge(vertex(sid, g), vertex(eid, g), g);
+
+			}
+		}
+
+
 	}
 }
