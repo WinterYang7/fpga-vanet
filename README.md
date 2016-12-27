@@ -8,4 +8,5 @@ TDMA MAC for VANET on FPGA
 
 ## 仓库目录和文件组织
 doc 所有文档
+ * [doc/build-galileo-kernel/build-galileo-kernel-80211p.md](doc/build-galileo-kernel/build-galileo-kernel-80211p.md): Cross-compile a 802.11p kernel for Galileo.
 src 所有代码
